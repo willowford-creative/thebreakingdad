@@ -1,0 +1,96 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Work with us — The Breaking Dad"
+  description="Brand and PR collaboration enquiries for The Breaking Dad. Based in Hampshire, writing about family life, co-parenting, and product reviews for an engaged UK parent audience."
+>
+  <div class="static-page">
+    <div class="container--narrow">
+
+      <nav class="static-page__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">Work with us</span>
+      </nav>
+
+      <h1 class="static-page__title">Work with us</h1>
+
+      <div class="prose">
+
+        <p>
+          The Breaking Dad reaches an engaged audience of UK parents — primarily separated
+          or co-parenting mums and dads who are actively looking for practical information,
+          honest product recommendations, and content that reflects their actual lives.
+          The readership skews heavily mobile, and most of the traffic comes from
+          organic search on high-intent queries.
+        </p>
+
+        <h2>What I'm open to</h2>
+        <p>
+          I work with brands on a selective basis. The non-negotiables:
+        </p>
+        <ul>
+          <li>The product or service has to be something I'd genuinely consider for my own family.</li>
+          <li>Editorial independence is not up for negotiation. I write what I actually think.</li>
+          <li>Paid coverage is disclosed clearly and honestly. Always.</li>
+          <li>I don't do link insertions into existing content for SEO purposes.</li>
+        </ul>
+
+        <p>Things I'm interested in:</p>
+        <ul>
+          <li><strong>Product reviews</strong> — long-form, honest, based on real-world use over weeks or months. Not a weekend test and a listicle.</li>
+          <li><strong>Sponsored content</strong> — written in my voice, clearly disclosed, genuinely useful to my readers.</li>
+          <li><strong>Brand partnerships</strong> — where there's a genuine fit with co-parenting, family tech, sustainable home products, or fitness.</li>
+        </ul>
+
+        <h2>Audience</h2>
+        <p>
+          The majority of readers are UK-based parents aged 28–45. Core topics with the
+          highest engagement are separated parenting (co-parenting, benefits, legal rights)
+          and product reviews in family tech, footwear, and days out. Traffic is
+          predominantly organic and mobile.
+        </p>
+
+        <h2>Get in touch</h2>
+        <p>
+          Drop me a note via the <a href="/contact/">contact page</a> with a brief
+          overview of what you have in mind. If there's a fit, I'll come back to you quickly.
+          If there isn't, I'll say so — no point wasting either of our time.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .static-page {
+    padding-block: 2rem 5rem;
+  }
+
+  .static-page__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .static-page__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .static-page__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .static-page__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.875rem, 5vw, 2.5rem);
+    font-weight: 700;
+    margin: 0 0 2rem;
+  }
+</style>

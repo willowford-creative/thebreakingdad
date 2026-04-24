@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '~/components/PostCard.astro';
+
+export interface Props {
+  slugs: string[];
+  heading?: string;
+}
+
+const { slugs, heading = 'You might also like' } = Astro.props;
+
+// Fetch from both posts and reviews, match by slug
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const allReviews = await getCollection('reviews', ({ data }) => !data.draft);
+
+const subhubLabels: Record<string, string> = {
+  'co-parenting': 'Co-parenting',
+  'blended-family': 'Blended family',
+  'money-and-benefits': 'Money and benefits',
+  'rights-and-law': 'Rights and law',
+  'starting-over': 'Starting over',
+};
+
+const categoryLabels: Record<string, string> = {
+  'family-tech': 'Family tech',
+  'parenting-kit': 'Parenting kit',
+  'shoes-and-fitness': 'Shoes & fitness',
+  'home-and-lifestyle': 'Home & lifestyle',
+  'days-out': 'Days out',
+};
+
+type RelatedItem = {
+  title: string;
+  description: string;
+  href: string;
+  image?: string;
+  imageAlt?: string;
+  categoryLabel: string;
+  categoryHref: string;
+  date: Date;
+  rating?: number;
+};
+
+const related: RelatedItem[] = slugs
+  .map((slug) => {
+    const post = allPosts.find((p) => p.id === slug || p.id === `${slug}.md` || p.id === `${slug}.mdx`);
+    if (post) {
+      return {
+        title: post.data.title,
+        description: post.data.description,
+        href: `/separated-parents/${slug}/`,
+        image: post.data.heroImage,
+        imageAlt: post.data.heroAlt,
+        categoryLabel: subhubLabels[post.data.subhub] ?? post.data.subhub,
+        categoryHref: `/separated-parents/${post.data.subhub}/`,
+        date: post.data.publishDate,
+      };
+    }
+
+    const review = allReviews.find((r) => r.id === slug || r.id === `${slug}.md` || r.id === `${slug}.mdx`);
+    if (review) {
+      return {
+        title: review.data.title,
+        description: review.data.description,
+        href: `/reviews/${slug}/`,
+        image: review.data.heroImage,
+        imageAlt: review.data.heroAlt,
+        categoryLabel: categoryLabels[review.data.productCategory] ?? review.data.productCategory,
+        categoryHref: '/reviews/',
+        date: review.data.publishDate,
+        rating: review.data.rating,
+      };
+    }
+
+    return null;
+  })
+  .filter((item): item is RelatedItem => item !== null);
+---
+
+{related.length > 0 && (
+  <section class="related-posts">
+    <h2 class="related-posts__heading">{heading}</h2>
+    <div class="related-posts__grid">
+      {related.map((item) => (
+        <PostCard
+          title={item.title}
+          description={item.description}
+          href={item.href}
+          image={item.image}
+          imageAlt={item.imageAlt}
+          categoryLabel={item.categoryLabel}
+          categoryHref={item.categoryHref}
+          date={item.date}
+          rating={item.rating}
+        />
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .related-posts__heading {
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--color-text);
+  }
+
+  .related-posts__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+</style>

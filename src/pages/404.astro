@@ -1,0 +1,84 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Page not found — The Breaking Dad"
+  description="Sorry, we couldn't find that page."
+  noindex={true}
+>
+  <div class="not-found">
+    <div class="container--narrow">
+      <div class="not-found__inner">
+        <p class="not-found__code">404</p>
+        <h1 class="not-found__title">Page not found</h1>
+        <p class="not-found__message">
+          Sorry — that page doesn't exist here. It might have moved when we migrated
+          from WordPress. Try one of the links below, or use your browser's back button.
+        </p>
+        <nav class="not-found__links" aria-label="Helpful links">
+          <a href="/" class="not-found__link">← Back to home</a>
+          <a href="/separated-parents/" class="not-found__link">Separated parents</a>
+          <a href="/reviews/" class="not-found__link">Reviews</a>
+          <a href="/about/" class="not-found__link">About Dan</a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: 5rem;
+    text-align: center;
+  }
+
+  .not-found__inner {
+    max-width: 480px;
+    margin-inline: auto;
+  }
+
+  .not-found__code {
+    font-family: var(--font-sans);
+    font-size: 6rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-highlight);
+    margin: 0 0 0.5rem;
+  }
+
+  .not-found__title {
+    font-family: var(--font-sans);
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+    color: var(--color-text);
+  }
+
+  .not-found__message {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    margin: 0 0 2rem;
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .not-found__link {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .not-found__link:hover {
+    text-decoration: underline;
+  }
+</style>

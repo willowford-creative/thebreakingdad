@@ -1,0 +1,236 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PostCard from '~/components/PostCard.astro';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+const subhubs = [
+  {
+    slug: 'co-parenting',
+    label: 'Co-parenting',
+    description: 'The mechanics of making it work — parenting plans, schedules, mediation, and what to do when it gets hard.',
+    icon: '🤝',
+  },
+  {
+    slug: 'blended-family',
+    label: 'Blended family',
+    description: 'Introducing new partners, step-parenting, navigating the chaos and the joy of a bigger, noisier family.',
+    icon: '🏡',
+  },
+  {
+    slug: 'money-and-benefits',
+    label: 'Money and benefits',
+    description: 'Universal Credit, child maintenance, grants, and making the numbers work as a single or separated parent.',
+    icon: '💷',
+  },
+  {
+    slug: 'rights-and-law',
+    label: 'Rights and law',
+    description: 'Understanding your legal position — child arrangements, primary carer rights, CMS, and what your options actually are.',
+    icon: '⚖️',
+  },
+  {
+    slug: 'starting-over',
+    label: 'Starting over',
+    description: 'Dating again, rebuilding your identity, the emotional side of separation, and life as a single dad.',
+    icon: '🌱',
+  },
+];
+
+const subhubLabels: Record<string, string> = {
+  'co-parenting': 'Co-parenting',
+  'blended-family': 'Blended family',
+  'money-and-benefits': 'Money and benefits',
+  'rights-and-law': 'Rights and law',
+  'starting-over': 'Starting over',
+};
+---
+
+<BaseLayout
+  title="Separated parents — co-parenting, blended families, rights and money"
+  description="Practical, honest guides for separated parents in the UK — co-parenting, blended family life, benefits, legal rights, and starting over. Written by Dan Betts."
+>
+  <div class="pillar-hub">
+    <div class="container">
+
+      <!-- Intro -->
+      <header class="pillar-hub__header">
+        <nav class="pillar-hub__breadcrumb" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true"> / </span>
+          <span aria-current="page">Separated parents</span>
+        </nav>
+        <h1 class="pillar-hub__title">Separated parents</h1>
+        <div class="pillar-hub__intro prose">
+          <p>
+            I separated from my daughter Evie's mum in 2016. Eight years on, I'm also
+            six years into blended family life with my partner Rosie, two stepdaughters,
+            and our youngest, Millie. I've lived most of what I write about here.
+          </p>
+          <p>
+            This section covers the practical and emotional side of life as a separated parent
+            in the UK — from the mechanics of co-parenting to understanding your legal rights
+            to navigating the benefits system. I'm not a solicitor or an advisor. I'm a dad
+            who's been through it, who's made mistakes, and who wishes there had been more
+            honest writing about this stuff when I needed it.
+          </p>
+        </div>
+      </header>
+
+      <!-- Subhub cards -->
+      <section class="pillar-hub__subhubs">
+        <h2 class="pillar-hub__section-title">Browse by topic</h2>
+        <div class="subhub-grid">
+          {subhubs.map((hub) => (
+            <a href={`/separated-parents/${hub.slug}/`} class="subhub-card">
+              <span class="subhub-card__icon" aria-hidden="true">{hub.icon}</span>
+              <h3 class="subhub-card__title">{hub.label}</h3>
+              <p class="subhub-card__description">{hub.description}</p>
+              <span class="subhub-card__cta">Browse →</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <!-- Recent posts -->
+      {sortedPosts.length > 0 && (
+        <section class="pillar-hub__posts">
+          <h2 class="pillar-hub__section-title">Recent posts</h2>
+          <div class="pillar-hub__grid">
+            {sortedPosts.map((post) => {
+              const slugId = post.id.replace(/\.(md|mdx)$/, '');
+              return (
+                <PostCard
+                  title={post.data.title}
+                  description={post.data.description}
+                  href={`/separated-parents/${slugId}/`}
+                  image={post.data.heroImage}
+                  imageAlt={post.data.heroAlt}
+                  categoryLabel={subhubLabels[post.data.subhub] ?? post.data.subhub}
+                  categoryHref={`/separated-parents/${post.data.subhub}/`}
+                  date={post.data.publishDate}
+                />
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .pillar-hub {
+    padding-block: 2rem 5rem;
+  }
+
+  .pillar-hub__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .pillar-hub__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .pillar-hub__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .pillar-hub__title {
+    font-family: var(--font-sans);
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0 0 1.5rem;
+  }
+
+  .pillar-hub__intro {
+    max-width: 680px;
+    margin-bottom: 3.5rem;
+  }
+
+  .pillar-hub__section-title {
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: var(--color-text);
+    border-bottom: 2px solid var(--color-highlight);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+  }
+
+  .pillar-hub__subhubs {
+    margin-bottom: 4rem;
+  }
+
+  .subhub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .subhub-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-decoration: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .subhub-card:hover {
+    border-color: var(--color-highlight);
+    box-shadow: 0 2px 12px rgba(26, 31, 46, 0.07);
+    text-decoration: none;
+  }
+
+  .subhub-card__icon {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    line-height: 1;
+  }
+
+  .subhub-card__title {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+    color: var(--color-text);
+  }
+
+  .subhub-card__description {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0 0 1rem;
+    flex: 1;
+  }
+
+  .subhub-card__cta {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  .pillar-hub__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+</style>

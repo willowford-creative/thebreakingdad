@@ -1,0 +1,273 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import AuthorBio from '~/components/AuthorBio.astro';
+import RelatedPosts from '~/components/RelatedPosts.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  heroAlt?: string;
+  experienceNote: string;
+  ymylDisclaimer?: boolean;
+  subhub: string;
+  slug: string;
+  tags?: string[];
+  relatedSlugs?: string[];
+}
+
+const {
+  title,
+  description,
+  publishDate,
+  updatedDate,
+  heroImage,
+  heroAlt,
+  experienceNote,
+  ymylDisclaimer = false,
+  subhub,
+  slug,
+  tags = [],
+  relatedSlugs = [],
+} = Astro.props;
+
+const siteUrl = 'https://thebreakingdad.co.uk';
+const canonicalUrl = `${siteUrl}/separated-parents/${slug}/`;
+
+const subhubLabels: Record<string, string> = {
+  'co-parenting': 'Co-parenting',
+  'blended-family': 'Blended family',
+  'money-and-benefits': 'Money and benefits',
+  'rights-and-law': 'Rights and law',
+  'starting-over': 'Starting over',
+};
+
+const breadcrumbTrail = [
+  { label: 'Home', href: '/' },
+  { label: 'Separated parents', href: '/separated-parents/' },
+  { label: subhubLabels[subhub] ?? subhub, href: `/separated-parents/${subhub}/` },
+  { label: title, href: canonicalUrl },
+];
+
+// Article JSON-LD
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url: canonicalUrl,
+  datePublished: publishDate.toISOString(),
+  dateModified: (updatedDate ?? publishDate).toISOString(),
+  author: {
+    '@type': 'Person',
+    name: 'Dan Betts',
+    url: `${siteUrl}/about/`,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'The Breaking Dad',
+    url: siteUrl,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${siteUrl}/images/logo.png`,
+    },
+  },
+  ...(heroImage ? { image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}` } : {}),
+  keywords: tags.join(', '),
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonicalUrl,
+  },
+};
+
+// BreadcrumbList JSON-LD
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbTrail.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: item.label,
+    item: item.href.startsWith('http') ? item.href : `${siteUrl}${item.href}`,
+  })),
+};
+
+const formattedDate = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(publishDate);
+
+const formattedUpdatedDate = updatedDate
+  ? new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }).format(updatedDate)
+  : null;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  ogImage={heroImage}
+  ogType="article"
+  publishDate={publishDate}
+  updatedDate={updatedDate}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <article class="post-layout">
+    <div class="container--narrow">
+      <Breadcrumbs trail={breadcrumbTrail} />
+
+      {heroImage && (
+        <div class="post-layout__hero">
+          <img src={heroImage} alt={heroAlt ?? title} width="720" height="405" loading="eager" />
+        </div>
+      )}
+
+      <header class="post-layout__header">
+        <div class="post-layout__meta">
+          <a href={`/separated-parents/${subhub}/`} class="post-layout__subhub-tag">
+            {subhubLabels[subhub] ?? subhub}
+          </a>
+          <time datetime={publishDate.toISOString()}>
+            {formattedDate}
+          </time>
+          {formattedUpdatedDate && formattedUpdatedDate !== formattedDate && (
+            <span class="post-layout__updated">
+              Updated {formattedUpdatedDate}
+            </span>
+          )}
+        </div>
+        <h1 class="post-layout__title">{title}</h1>
+        <p class="post-layout__description">{description}</p>
+      </header>
+
+      {ymylDisclaimer && (
+        <div class="ymyl-disclaimer" role="note">
+          <strong>Important:</strong> This article covers benefits, legal rights, or financial information.
+          While I've done my best to keep it accurate, rules change and situations vary.
+          Always check with an official source — <a href="https://www.gov.uk" target="_blank" rel="noopener">GOV.UK</a>,
+          Citizens Advice, or a qualified professional — before making any decisions.
+        </div>
+      )}
+
+      <div class="experience-note" role="note">
+        {experienceNote}
+      </div>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <div class="post-layout__author-section">
+        <AuthorBio variant="default" />
+      </div>
+    </div>
+
+    {relatedSlugs.length > 0 && (
+      <div class="post-layout__related">
+        <div class="container">
+          <RelatedPosts slugs={relatedSlugs} />
+        </div>
+      </div>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .post-layout {
+    padding-block: 2rem 4rem;
+  }
+
+  .post-layout__hero {
+    margin-bottom: 2rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+  }
+
+  .post-layout__hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+  }
+
+  .post-layout__header {
+    margin-bottom: 2rem;
+  }
+
+  .post-layout__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1rem;
+  }
+
+  .post-layout__subhub-tag {
+    display: inline-block;
+    background: color-mix(in srgb, var(--color-accent) 12%, var(--color-background));
+    color: var(--color-accent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+    padding: 0.2rem 0.6rem;
+    border-radius: 2rem;
+    font-weight: 500;
+    text-decoration: none;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  .post-layout__subhub-tag:hover {
+    background: color-mix(in srgb, var(--color-accent) 20%, var(--color-background));
+    text-decoration: none;
+  }
+
+  .post-layout__updated {
+    font-style: italic;
+  }
+
+  .post-layout__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 0.75rem;
+    color: var(--color-text);
+  }
+
+  .post-layout__description {
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .post-layout__author-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .post-layout__related {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 2px solid var(--color-border);
+    background: var(--color-surface);
+    padding-bottom: 3rem;
+  }
+</style>

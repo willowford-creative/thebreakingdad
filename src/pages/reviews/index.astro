@@ -1,0 +1,222 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PostCard from '~/components/PostCard.astro';
+
+const allReviews = await getCollection('reviews', ({ data }) => !data.draft);
+const sortedReviews = allReviews.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+const categories = [
+  { slug: 'family-tech', label: 'Family tech' },
+  { slug: 'parenting-kit', label: 'Parenting kit' },
+  { slug: 'shoes-and-fitness', label: 'Shoes and fitness' },
+  { slug: 'home-and-lifestyle', label: 'Home and lifestyle' },
+  { slug: 'days-out', label: 'Days out' },
+];
+
+const categoryLabels: Record<string, string> = Object.fromEntries(
+  categories.map((c) => [c.slug, c.label])
+);
+
+// Group by category
+const byCategory = categories.map((cat) => ({
+  ...cat,
+  reviews: sortedReviews.filter((r) => r.data.productCategory === cat.slug),
+})).filter((cat) => cat.reviews.length > 0);
+---
+
+<BaseLayout
+  title="Reviews — honest product reviews for parents"
+  description="Honest, long-term reviews of products I've actually used as a dad — from barefoot shoes to screen-free kids' tech, home and lifestyle, and days out in Hampshire."
+>
+  <div class="reviews-hub">
+    <div class="container">
+
+      <nav class="reviews-hub__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">Reviews</span>
+      </nav>
+
+      <header class="reviews-hub__header">
+        <h1 class="reviews-hub__title">Reviews</h1>
+        <p class="reviews-hub__intro">
+          I only review things I've actually bought and used — sometimes for months or years.
+          These aren't press samples reviewed over a weekend. They're real-life assessments
+          from a dad using them in a busy family of six in Hampshire.
+          Affiliate links are marked. <a href="/affiliate-disclosure/">Full disclosure here</a>.
+        </p>
+      </header>
+
+      <!-- Category jump links -->
+      {byCategory.length > 1 && (
+        <nav class="reviews-hub__categories" aria-label="Review categories">
+          {byCategory.map((cat) => (
+            <a href={`#${cat.slug}`} class="reviews-hub__cat-link">
+              {cat.label}
+              <span class="reviews-hub__cat-count">{cat.reviews.length}</span>
+            </a>
+          ))}
+        </nav>
+      )}
+
+      <!-- All reviews -->
+      {sortedReviews.length === 0 ? (
+        <p class="reviews-hub__empty">Reviews are coming soon.</p>
+      ) : byCategory.length > 0 ? (
+        byCategory.map((cat) => (
+          <section class="reviews-hub__section" id={cat.slug}>
+            <h2 class="reviews-hub__cat-heading">{cat.label}</h2>
+            <div class="reviews-hub__grid">
+              {cat.reviews.map((review) => {
+                const slugId = review.id.replace(/\.(md|mdx)$/, '');
+                return (
+                  <PostCard
+                    title={review.data.title}
+                    description={review.data.description}
+                    href={`/reviews/${slugId}/`}
+                    image={review.data.heroImage}
+                    imageAlt={review.data.heroAlt}
+                    categoryLabel={categoryLabels[review.data.productCategory] ?? review.data.productCategory}
+                    categoryHref="/reviews/"
+                    date={review.data.publishDate}
+                    rating={review.data.rating}
+                  />
+                );
+              })}
+            </div>
+          </section>
+        ))
+      ) : (
+        <div class="reviews-hub__grid">
+          {sortedReviews.map((review) => {
+            const slugId = review.id.replace(/\.(md|mdx)$/, '');
+            return (
+              <PostCard
+                title={review.data.title}
+                description={review.data.description}
+                href={`/reviews/${slugId}/`}
+                image={review.data.heroImage}
+                imageAlt={review.data.heroAlt}
+                categoryLabel={categoryLabels[review.data.productCategory] ?? review.data.productCategory}
+                categoryHref="/reviews/"
+                date={review.data.publishDate}
+                rating={review.data.rating}
+              />
+            );
+          })}
+        </div>
+      )}
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .reviews-hub {
+    padding-block: 2rem 5rem;
+  }
+
+  .reviews-hub__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .reviews-hub__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .reviews-hub__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .reviews-hub__title {
+    font-family: var(--font-sans);
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    margin: 0 0 1rem;
+  }
+
+  .reviews-hub__intro {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    max-width: 640px;
+    margin: 0 0 2.5rem;
+  }
+
+  .reviews-hub__intro a {
+    color: var(--color-accent);
+  }
+
+  .reviews-hub__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .reviews-hub__cat-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    padding: 0.375rem 0.75rem;
+    border-radius: 2rem;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .reviews-hub__cat-link:hover {
+    border-color: var(--color-highlight);
+    background: color-mix(in srgb, var(--color-highlight) 15%, var(--color-background));
+    text-decoration: none;
+  }
+
+  .reviews-hub__cat-count {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    background: var(--color-border);
+    padding: 0.05rem 0.4rem;
+    border-radius: 2rem;
+  }
+
+  .reviews-hub__section {
+    margin-bottom: 3.5rem;
+  }
+
+  .reviews-hub__cat-heading {
+    font-family: var(--font-sans);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-highlight);
+    display: inline-block;
+  }
+
+  .reviews-hub__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .reviews-hub__empty {
+    font-family: var(--font-sans);
+    color: var(--color-muted);
+  }
+</style>

@@ -1,0 +1,169 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PostCard from '~/components/PostCard.astro';
+
+export async function getStaticPaths() {
+  const subhubs = [
+    {
+      slug: 'co-parenting',
+      label: 'Co-parenting',
+      description: 'Practical guides to the mechanics of co-parenting in the UK — parenting plans, schedules, mediation, parallel parenting, and navigating conflict.',
+      intro: `Co-parenting is the arrangement most separated parents end up in, and it's harder than anyone tells you upfront. There's no script. There's no manual. There's just two people who used to be together, now trying to do right by a child they both love. I've been co-parenting Evie since 2016. I've made mistakes. I've had breakthroughs. And I've written about both.`,
+    },
+    {
+      slug: 'blended-family',
+      label: 'Blended family',
+      description: 'Honest guides for navigating blended family life — introducing new partners, step-parenting, and making a bigger, noisier family actually work.',
+      intro: `Rosie and I moved in together in 2020, which overnight made us a household of six — Evie on shared care, Rosie's two girls, and our youngest Millie. Blended family life is brilliant and chaotic and occasionally overwhelming, and I write about it honestly. The stuff you don't find in the parenting books.`,
+    },
+    {
+      slug: 'money-and-benefits',
+      label: 'Money and benefits',
+      description: 'UK guides to Universal Credit, child maintenance, grants, and managing your finances as a single or separated parent.',
+      intro: `Money is one of the biggest stressors after separation, and one of the least talked-about. The benefits system is genuinely complex, the child maintenance system is genuinely frustrating, and nobody tells you what you're actually entitled to. These posts are my attempt to cut through that — written from experience and updated when the rules change.`,
+    },
+    {
+      slug: 'rights-and-law',
+      label: 'Rights and law',
+      description: 'Understanding your legal position as a separated parent in the UK — child arrangements, primary carer rights, CMS, and what your options are.',
+      intro: `I'm not a lawyer. I want to be clear about that upfront. But I've had to learn more about family law than I ever expected to — child arrangements orders, primary carer rights, the CMS. These posts share what I've learned, signpost you to official resources, and try to make a genuinely confusing area a bit clearer.`,
+    },
+    {
+      slug: 'starting-over',
+      label: 'Starting over',
+      description: 'The emotional and practical side of life after separation — dating as a single parent, rebuilding your identity, and what the research actually says about how separation affects children.',
+      intro: `Starting over after separation is about more than just logistics. It's about rebuilding your sense of who you are, figuring out how to date again (without messing everything up), and being honest about the emotional toll it takes on everyone — including the kids. I write about this honestly, including the bits I got wrong.`,
+    },
+  ];
+
+  return subhubs.map((subhub) => ({
+    params: { subhub: subhub.slug },
+    props: subhub,
+  }));
+}
+
+const { slug, label, description, intro } = Astro.props;
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft && data.subhub === slug);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+const subhubLabels: Record<string, string> = {
+  'co-parenting': 'Co-parenting',
+  'blended-family': 'Blended family',
+  'money-and-benefits': 'Money and benefits',
+  'rights-and-law': 'Rights and law',
+  'starting-over': 'Starting over',
+};
+---
+
+<BaseLayout title={`${label} — The Breaking Dad`} description={description}>
+  <div class="subhub-page">
+    <div class="container">
+
+      <nav class="subhub-page__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <a href="/separated-parents/">Separated parents</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">{label}</span>
+      </nav>
+
+      <header class="subhub-page__header">
+        <h1 class="subhub-page__title">{label}</h1>
+        <div class="prose">
+          <p>{intro}</p>
+        </div>
+      </header>
+
+      {sortedPosts.length > 0 ? (
+        <section>
+          <h2 class="subhub-page__posts-heading">
+            {sortedPosts.length} post{sortedPosts.length !== 1 ? 's' : ''} in {label.toLowerCase()}
+          </h2>
+          <div class="subhub-page__grid">
+            {sortedPosts.map((post) => {
+              const slugId = post.id.replace(/\.(md|mdx)$/, '');
+              return (
+                <PostCard
+                  title={post.data.title}
+                  description={post.data.description}
+                  href={`/separated-parents/${slugId}/`}
+                  image={post.data.heroImage}
+                  imageAlt={post.data.heroAlt}
+                  categoryLabel={subhubLabels[post.data.subhub] ?? post.data.subhub}
+                  categoryHref={`/separated-parents/${post.data.subhub}/`}
+                  date={post.data.publishDate}
+                />
+              );
+            })}
+          </div>
+        </section>
+      ) : (
+        <p class="subhub-page__empty">
+          Content for this topic is on its way. <a href="/separated-parents/">Browse all separated parents posts →</a>
+        </p>
+      )}
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .subhub-page {
+    padding-block: 2rem 5rem;
+  }
+
+  .subhub-page__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .subhub-page__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .subhub-page__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .subhub-page__title {
+    font-family: var(--font-sans);
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 700;
+    margin: 0 0 1.25rem;
+  }
+
+  .subhub-page__header {
+    max-width: 680px;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .subhub-page__posts-heading {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .subhub-page__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .subhub-page__empty {
+    font-family: var(--font-sans);
+    color: var(--color-muted);
+    font-size: 1rem;
+  }
+</style>

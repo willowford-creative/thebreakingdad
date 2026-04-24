@@ -1,0 +1,140 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const lastUpdated = '23 April 2026';
+---
+
+<BaseLayout
+  title="Affiliate disclosure — The Breaking Dad"
+  description="The Breaking Dad's affiliate disclosure — how affiliate links work on this site, which networks we use, and our editorial independence policy."
+>
+  <div class="static-page">
+    <div class="container--narrow">
+
+      <nav class="static-page__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">Affiliate disclosure</span>
+      </nav>
+
+      <h1 class="static-page__title">Affiliate disclosure</h1>
+      <p class="static-page__updated">Last updated: {lastUpdated}</p>
+
+      <div class="prose">
+
+        <p>
+          Some links on The Breaking Dad are affiliate links. This means if you click through
+          and buy something, I may earn a small commission — at no extra cost to you.
+          I want to be completely upfront about this, because I think honesty is the only
+          way to build a site worth reading.
+        </p>
+
+        <h2>What affiliate links mean in practice</h2>
+        <p>
+          When a review or article contains affiliate links, I say so clearly at the top
+          of that piece. The commission I might earn is typically a small percentage of the
+          sale price — the kind of thing that helps pay for hosting and keeps me writing,
+          but isn't a living wage in itself.
+        </p>
+        <p>
+          Affiliate income does <strong>not</strong> influence what I say about a product.
+          If something isn't good enough, I say so. I've written negative reviews of products
+          I have affiliate links for, and I've recommended products with no affiliate arrangement
+          at all because they're the right answer for the question being asked.
+        </p>
+
+        <h2>Which affiliate networks I use</h2>
+        <p>
+          I currently work with:
+        </p>
+        <ul>
+          <li><strong>Amazon Associates</strong> — UK programme</li>
+          <li><strong>Awin</strong> — used for various UK retailers</li>
+          <li>Individual brand affiliate programmes where applicable</li>
+        </ul>
+        <p>
+          This list may change over time. When I add a new affiliate relationship, I update
+          the disclosure blocks on relevant posts.
+        </p>
+
+        <h2>Press samples and gifted products</h2>
+        <p>
+          Occasionally I receive products for review. When I do, I say so in the review.
+          Receiving a product for free does not guarantee a positive review — if it's not
+          good, I'll say so.
+        </p>
+        <p>
+          I do not accept payment to write positive reviews. I do not accept payment to
+          change my editorial position after a review has been published.
+        </p>
+
+        <h2>Sponsored content</h2>
+        <p>
+          Occasionally I work with brands on sponsored content — articles or posts where
+          I've been paid to write about a product or topic. These are always clearly labelled
+          as "sponsored" or "in partnership with [brand]". The editorial voice is still mine,
+          and I still say what I actually think.
+        </p>
+
+        <h2>Your trust matters more than my commission</h2>
+        <p>
+          I've been writing this site long enough to know that if I write something dishonest
+          to chase a commission, I lose the thing that makes the site worth reading in the
+          first place. The commercial side of this is only sustainable if the editorial side
+          is trustworthy.
+        </p>
+        <p>
+          If you ever feel that a piece of content on this site doesn't reflect my honest
+          opinion, please tell me. <a href="/contact/">Get in touch here</a>.
+        </p>
+
+        <h2>UK law</h2>
+        <p>
+          This disclosure is made in accordance with the UK's CAP Code and the Competition
+          and Markets Authority (CMA) guidance on online reviews and endorsements.
+          Any paid-for content also complies with the Advertising Standards Authority (ASA)
+          requirements for clear labelling.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .static-page {
+    padding-block: 2rem 5rem;
+  }
+
+  .static-page__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .static-page__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .static-page__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .static-page__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.875rem, 5vw, 2.5rem);
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+
+  .static-page__updated {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    margin: 0 0 2rem;
+    font-style: italic;
+  }
+</style>

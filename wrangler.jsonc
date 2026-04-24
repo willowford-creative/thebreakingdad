@@ -1,0 +1,13 @@
+{
+  // The Breaking Dad — Cloudflare Workers static deployment
+  // No `main` entry — pure static asset serving via Workers Assets.
+  // Workers Assets is the replacement for Cloudflare Pages; it natively
+  // handles _redirects files and custom 404.html just like Pages did.
+  "name": "thebreakingdad",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS"
+  }
+}

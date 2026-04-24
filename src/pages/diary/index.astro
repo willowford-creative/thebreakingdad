@@ -1,0 +1,179 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const allDiary = await getCollection('diary', ({ data }) => !data.draft);
+const sortedDiary = allDiary.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+---
+
+<BaseLayout
+  title="Diary — personal writing from The Breaking Dad"
+  description="Personal pieces from Dan Betts — voice, reflection, and the real day-to-day of life as a dad. Not SEO. Just honest writing."
+>
+  <div class="diary-hub">
+    <div class="container--narrow">
+
+      <nav class="diary-hub__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">Diary</span>
+      </nav>
+
+      <header class="diary-hub__header">
+        <h1 class="diary-hub__title">Diary</h1>
+        <p class="diary-hub__intro">
+          This is where I write without an SEO brief. No keyword research, no subheadings
+          optimised for Google. Just me, writing about what it actually feels like to be
+          a dad — the brilliant bits, the hard bits, the bits that are difficult to explain
+          unless you've been through it too.
+        </p>
+      </header>
+
+      {sortedDiary.length === 0 ? (
+        <p class="diary-hub__empty">Diary entries are coming soon.</p>
+      ) : (
+        <ol class="diary-hub__list" reversed>
+          {sortedDiary.map((entry) => {
+            const slugId = entry.id.replace(/\.(md|mdx)$/, '');
+            const formattedDate = new Intl.DateTimeFormat('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            }).format(entry.data.publishDate);
+
+            return (
+              <li class="diary-entry">
+                <time class="diary-entry__date" datetime={entry.data.publishDate.toISOString()}>
+                  {formattedDate}
+                </time>
+                <h2 class="diary-entry__title">
+                  <a href={`/diary/${slugId}/`} class="diary-entry__link">
+                    {entry.data.title}
+                  </a>
+                </h2>
+                {entry.data.description && (
+                  <p class="diary-entry__description">{entry.data.description}</p>
+                )}
+                <a href={`/diary/${slugId}/`} class="diary-entry__read">Read →</a>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .diary-hub {
+    padding-block: 2rem 5rem;
+  }
+
+  .diary-hub__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .diary-hub__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .diary-hub__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .diary-hub__title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    font-weight: 400;
+    font-style: italic;
+    margin: 0 0 1rem;
+  }
+
+  .diary-hub__intro {
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--color-muted);
+    margin: 0 0 3rem;
+    font-style: italic;
+  }
+
+  .diary-hub__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .diary-entry {
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .diary-entry:first-child {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .diary-entry__date {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+
+  .diary-entry__title {
+    font-family: var(--font-serif);
+    font-size: 1.3125rem;
+    font-weight: 400;
+    margin: 0 0 0.5rem;
+    line-height: 1.35;
+  }
+
+  .diary-entry__link {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .diary-entry__link:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .diary-entry__description {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    color: var(--color-muted);
+    margin: 0 0 0.75rem;
+    max-width: 560px;
+  }
+
+  .diary-entry__read {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .diary-entry__read:hover {
+    text-decoration: underline;
+  }
+
+  .diary-hub__empty {
+    font-family: var(--font-sans);
+    color: var(--color-muted);
+  }
+</style>

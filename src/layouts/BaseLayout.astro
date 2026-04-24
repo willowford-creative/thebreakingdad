@@ -1,0 +1,123 @@
+---
+import Nav from '~/components/Nav.astro';
+import Footer from '~/components/Footer.astro';
+import '~/styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  publishDate?: Date;
+  updatedDate?: Date;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl,
+  ogImage = '/images/og-default.jpg',
+  ogType = 'website',
+  publishDate,
+  updatedDate,
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = 'https://thebreakingdad.co.uk';
+const resolvedCanonical = canonicalUrl ?? new URL(Astro.url.pathname, siteUrl).href;
+const fullTitle = title.includes('The Breaking Dad') ? title : `${title} | The Breaking Dad`;
+const ogImageAbsolute = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
+
+// Organization + Person JSON-LD — emitted on every page
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'The Breaking Dad',
+  url: siteUrl,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${siteUrl}/images/logo.png`,
+  },
+  sameAs: [
+    'https://www.instagram.com/thebreakingdad',
+  ],
+};
+
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Dan Betts',
+  url: `${siteUrl}/about/`,
+  image: `${siteUrl}/images/dan-betts.jpg`,
+  jobTitle: 'Writer and blogger',
+  description: 'UK dad writing about co-parenting, blended family life, and honest product reviews.',
+  sameAs: [
+    'https://www.instagram.com/thebreakingdad',
+  ],
+  worksFor: {
+    '@type': 'Organization',
+    name: 'The Breaking Dad',
+    url: siteUrl,
+  },
+};
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={resolvedCanonical} />
+
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={resolvedCanonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageAbsolute} />
+    <meta property="og:site_name" content="The Breaking Dad" />
+    <meta property="og:locale" content="en_GB" />
+
+    {publishDate && (
+      <meta property="article:published_time" content={publishDate.toISOString()} />
+    )}
+    {updatedDate && (
+      <meta property="article:modified_time" content={updatedDate.toISOString()} />
+    )}
+
+    <!-- Twitter/X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbsolute} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- RSS -->
+    <link rel="alternate" type="application/rss+xml" title="The Breaking Dad RSS Feed" href="/rss.xml" />
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
+
+    <!-- Additional head content from child layouts (Article/Review/BreadcrumbList schema etc.) -->
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <Nav />
+    <main id="main-content">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

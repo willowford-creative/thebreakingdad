@@ -1,0 +1,143 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import AuthorBio from '~/components/AuthorBio.astro';
+
+export interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  heroAlt?: string;
+  slug: string;
+  tags?: string[];
+}
+
+const {
+  title,
+  description,
+  publishDate,
+  updatedDate,
+  heroImage,
+  heroAlt,
+  slug,
+} = Astro.props;
+
+const siteUrl = 'https://thebreakingdad.co.uk';
+const canonicalUrl = `${siteUrl}/diary/${slug}/`;
+
+const formattedDate = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(publishDate);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  ogImage={heroImage}
+  ogType="article"
+  publishDate={publishDate}
+  updatedDate={updatedDate}
+>
+  <article class="diary-layout">
+    <div class="container--narrow">
+      <nav class="diary-layout__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <a href="/diary/">Diary</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">{title}</span>
+      </nav>
+
+      {heroImage && (
+        <div class="diary-layout__hero">
+          <img src={heroImage} alt={heroAlt ?? title} width="720" height="405" loading="eager" />
+        </div>
+      )}
+
+      <header class="diary-layout__header">
+        <time class="diary-layout__date" datetime={publishDate.toISOString()}>
+          {formattedDate}
+        </time>
+        <h1 class="diary-layout__title">{title}</h1>
+      </header>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <div class="diary-layout__author-section">
+        <AuthorBio variant="default" />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .diary-layout {
+    padding-block: 2rem 4rem;
+  }
+
+  .diary-layout__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .diary-layout__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .diary-layout__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .diary-layout__hero {
+    margin-bottom: 2rem;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .diary-layout__hero img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .diary-layout__header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .diary-layout__date {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+
+  .diary-layout__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 5vw, 2.25rem);
+    font-weight: 400;
+    font-style: italic;
+    line-height: 1.3;
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .diary-layout__author-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+</style>

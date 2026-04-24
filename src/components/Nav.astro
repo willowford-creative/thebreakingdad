@@ -1,0 +1,240 @@
+---
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Separated parents', href: '/separated-parents/' },
+  { label: 'Reviews', href: '/reviews/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Work with us', href: '/work-with-us/' },
+];
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string) {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="/" class="site-header__logo" aria-label="The Breaking Dad — home">
+      <span class="site-header__logo-text">The Breaking Dad</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="site-nav site-nav--desktop" aria-label="Primary navigation">
+      <ul class="site-nav__list">
+        {navLinks.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class={`site-nav__link ${isActive(link.href) ? 'site-nav__link--active' : ''}`}
+              aria-current={isActive(link.href) ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Mobile nav — no JS, uses <details> -->
+    <details class="site-nav site-nav--mobile">
+      <summary class="site-nav__toggle" aria-label="Open navigation menu">
+        <span class="site-nav__hamburger" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span class="site-nav__toggle-label">Menu</span>
+      </summary>
+      <nav aria-label="Primary navigation">
+        <ul class="site-nav__mobile-list">
+          {navLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class={`site-nav__mobile-link ${isActive(link.href) ? 'site-nav__mobile-link--active' : ''}`}
+                aria-current={isActive(link.href) ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--color-background);
+    border-bottom: 1px solid var(--color-border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+  }
+
+  /* Logo */
+  .site-header__logo {
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .site-header__logo-text {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+
+  /* Desktop nav */
+  .site-nav--desktop {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .site-nav--desktop {
+      display: block;
+    }
+    .site-nav--mobile {
+      display: none;
+    }
+  }
+
+  .site-nav__list {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .site-nav__link {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    padding: 0.375rem 0.625rem;
+    border-radius: 0.375rem;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .site-nav__link:hover {
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .site-nav__link--active {
+    color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  }
+
+  .site-nav__link--active:hover {
+    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  }
+
+  /* Mobile nav */
+  .site-nav--mobile {
+    position: relative;
+  }
+
+  .site-nav__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    list-style: none;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text);
+    user-select: none;
+  }
+
+  .site-nav__toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .site-nav__toggle:hover {
+    background: var(--color-surface);
+  }
+
+  .site-nav__hamburger {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 18px;
+  }
+
+  .site-nav__hamburger span {
+    display: block;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
+    transition: transform 0.2s;
+  }
+
+  details[open] .site-nav__hamburger span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  details[open] .site-nav__hamburger span:nth-child(2) {
+    opacity: 0;
+  }
+
+  details[open] .site-nav__hamburger span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .site-nav__mobile-list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.5rem);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 16px rgba(26, 31, 46, 0.1);
+    padding: 0.5rem;
+    list-style: none;
+    margin: 0;
+    min-width: 200px;
+    z-index: 200;
+  }
+
+  .site-nav__mobile-link {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-text);
+    text-decoration: none;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.375rem;
+    transition: background 0.15s;
+  }
+
+  .site-nav__mobile-link:hover {
+    background: var(--color-surface);
+    text-decoration: none;
+  }
+
+  .site-nav__mobile-link--active {
+    color: var(--color-accent);
+    background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  }
+</style>

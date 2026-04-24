@@ -1,0 +1,166 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About Dan Betts — The Breaking Dad"
+  description="Dan Betts is a UK dad based in Hampshire. Eight years into co-parenting his daughter Evie, six years into blended family life. He writes about separated parenting, family life, and the products he actually uses."
+>
+  <div class="about-page">
+    <div class="container--narrow">
+
+      <nav class="about-page__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">About</span>
+      </nav>
+
+      <div class="about-page__photo-header">
+        <img
+          src="/images/dan-betts.jpg"
+          alt="Dan Betts — The Breaking Dad"
+          width="120"
+          height="120"
+          loading="eager"
+          class="about-page__photo"
+        />
+        <div>
+          <h1 class="about-page__name">Dan Betts</h1>
+          <p class="about-page__location">Hampshire, UK</p>
+        </div>
+      </div>
+
+      <div class="prose">
+
+        <h2>The short version</h2>
+        <p>
+          I'm Dan. Dad to three daughters, step-dad to two more. I separated from Evie's mum in
+          2016 when Evie was two years old. Since then I've been co-parenting her on a shared
+          arrangement — eight years and counting — while also navigating the complexities of
+          blended family life with my partner Rosie, her two daughters, and our youngest, Millie.
+        </p>
+        <p>
+          I started The Breaking Dad because I couldn't find the writing I needed when
+          I needed it most. Everything I found about separated parenting was either clinical,
+          legal, or soaked in judgment. None of it sounded like a real person. None of it
+          acknowledged how hard the early days actually are, or how messy the emotions get
+          even when you're trying your best.
+        </p>
+
+        <h2>Why I write what I write</h2>
+        <p>
+          The Separated parents section is built from experience. I've navigated the CMS.
+          I've been through mediation. I've introduced Rosie to Evie — not overnight, and not
+          without anxiety. I've had to learn about child arrangements, benefits, and the
+          financial side of separation the hard way. I write about what I've actually lived,
+          and I signpost to proper resources when something is genuinely outside my lane.
+        </p>
+        <p>
+          The reviews are honest in the old-fashioned sense — I buy things, I use them for
+          months or years, and then I write about whether they were worth it. I've got affiliate
+          links on some of them, but I don't let that change what I say.
+          <a href="/affiliate-disclosure/">Full disclosure here</a>.
+        </p>
+        <p>
+          The Diary section is where I write without a brief. No SEO targets, no keyword
+          strategy. Just personal pieces about what it actually feels like to be a dad in the
+          middle of all this.
+        </p>
+
+        <h2>The family</h2>
+        <p>
+          Rosie and I have been together since 2018 and moved in together in 2020 — which,
+          in retrospect, was either brave or slightly mad, given that we did it in a pandemic
+          with three girls under ten. Millie, our youngest, arrived in 2021. So we went from
+          zero to a household of six fairly quickly.
+        </p>
+        <p>
+          Evie is twelve now. She's funny and fierce and reads more books than anyone I know.
+          Rosie's girls are at secondary school. Millie has just started school and is absolutely
+          convinced she runs the house. She might be right.
+        </p>
+        <p>
+          We live in Hampshire. I work from home. I drink a lot of strong tea. I run in
+          Vivobarefoot shoes. I am occasionally found building cardboard structures with small
+          children on weekend afternoons.
+        </p>
+
+        <h2>Work with me</h2>
+        <p>
+          If you're a brand that wants to work with me, please read the
+          <a href="/work-with-us/">Work with us</a> page first. I only work with brands
+          whose products I'd genuinely consider using myself, and I don't take payments to
+          change my editorial position.
+        </p>
+
+        <h2>Get in touch</h2>
+        <p>
+          The best way to reach me is via the <a href="/contact/">contact page</a>.
+          I do read everything, though I can't always reply as quickly as I'd like.
+        </p>
+
+        <p>
+          You can also find me on Instagram:
+          <a href="https://www.instagram.com/thebreakingdad" target="_blank" rel="noopener">
+            @thebreakingdad
+          </a>.
+          I'm most active there and usually respond to DMs faster than email.
+        </p>
+
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-page {
+    padding-block: 2rem 5rem;
+  }
+
+  .about-page__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 2rem;
+  }
+
+  .about-page__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .about-page__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .about-page__photo-header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .about-page__photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--color-highlight);
+    flex-shrink: 0;
+  }
+
+  .about-page__name {
+    font-family: var(--font-sans);
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem;
+  }
+
+  .about-page__location {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+</style>

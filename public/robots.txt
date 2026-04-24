@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://thebreakingdad.co.uk/sitemap-index.xml

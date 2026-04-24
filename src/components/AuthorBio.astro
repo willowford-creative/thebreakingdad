@@ -1,0 +1,93 @@
+---
+export interface Props {
+  variant?: 'default' | 'review';
+}
+
+const { variant = 'default' } = Astro.props;
+---
+
+<div class={`author-bio author-bio--${variant}`}>
+  <div class="author-bio__photo">
+    <img
+      src="/images/dan-betts.jpg"
+      alt="Dan Betts — The Breaking Dad"
+      width="64"
+      height="64"
+      loading="lazy"
+    />
+  </div>
+  <div class="author-bio__content">
+    <div class="author-bio__name">
+      Written by <a href="/about/">Dan Betts</a>
+    </div>
+    {variant === 'default' ? (
+      <p class="author-bio__bio">
+        Dan is a dad based in Hampshire, eight years into co-parenting his daughter Evie,
+        and six years into blended family life with his partner Rosie, two stepdaughters,
+        and their youngest, Millie. He writes from lived experience — no platitudes,
+        no perfect-parenting nonsense. Just the real stuff.
+      </p>
+    ) : (
+      <p class="author-bio__bio">
+        Dan tests and reviews products he actually uses in day-to-day family life —
+        from barefoot shoes to screen-free tech for kids. He's not paid to like things.
+        If something isn't good enough, he says so.
+      </p>
+    )}
+  </div>
+</div>
+
+<style>
+  .author-bio {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .author-bio__photo {
+    flex-shrink: 0;
+  }
+
+  .author-bio__photo img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-highlight);
+    margin: 0;
+  }
+
+  .author-bio--review .author-bio__photo img {
+    border-color: var(--color-accent);
+  }
+
+  .author-bio__content {
+    flex: 1;
+  }
+
+  .author-bio__name {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.375rem;
+    color: var(--color-text);
+  }
+
+  .author-bio__name a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .author-bio__name a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .author-bio__bio {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: var(--color-muted);
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Contact — The Breaking Dad"
+  description="Get in touch with Dan Betts at The Breaking Dad. For general enquiries, reader questions, or brand collaboration."
+>
+  <div class="static-page">
+    <div class="container--narrow">
+
+      <nav class="static-page__breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span aria-hidden="true"> / </span>
+        <span aria-current="page">Contact</span>
+      </nav>
+
+      <h1 class="static-page__title">Contact</h1>
+
+      <div class="prose">
+        <p>
+          The best way to get in touch is via Instagram DM:
+          <a href="https://www.instagram.com/thebreakingdad" target="_blank" rel="noopener">@thebreakingdad</a>.
+          I check it most days and tend to respond faster there than by email.
+        </p>
+
+        <p>
+          For brand and PR enquiries, please read the
+          <a href="/work-with-us/">Work with us</a> page before getting in touch —
+          it'll save us both time.
+        </p>
+
+        <p>
+          For everything else — questions about a post, sharing your own experience,
+          or just saying hello — Instagram DMs or the email below work equally well.
+        </p>
+
+        <p>
+          Email: <a href="mailto:dan@thebreakingdad.co.uk">dan@thebreakingdad.co.uk</a>
+        </p>
+
+        <p>
+          I read everything. I can't always reply quickly, but I do read it.
+        </p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .static-page {
+    padding-block: 2rem 5rem;
+  }
+
+  .static-page__breadcrumb {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    color: var(--color-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .static-page__breadcrumb a {
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .static-page__breadcrumb a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .static-page__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.875rem, 5vw, 2.5rem);
+    font-weight: 700;
+    margin: 0 0 2rem;
+  }
+</style>

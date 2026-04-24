@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from 'astro:content';
+import DiaryLayout from '~/layouts/DiaryLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('diary', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id.replace(/\.(md|mdx)$/, '') },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const slug = entry.id.replace(/\.(md|mdx)$/, '');
+---
+
+<DiaryLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  publishDate={entry.data.publishDate}
+  updatedDate={entry.data.updatedDate}
+  heroImage={entry.data.heroImage}
+  heroAlt={entry.data.heroAlt}
+  slug={slug}
+  tags={entry.data.tags}
+>
+  <Content />
+</DiaryLayout>

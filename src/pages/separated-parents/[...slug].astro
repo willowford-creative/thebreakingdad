@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '~/layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+
+  // Exclude slugs that match subhub names (would clash with [subhub]/index.astro)
+  const subhubSlugs = new Set([
+    'co-parenting',
+    'blended-family',
+    'money-and-benefits',
+    'rights-and-law',
+    'starting-over',
+  ]);
+
+  return posts
+    .filter((post) => {
+      const slug = post.id.replace(/\.(md|mdx)$/, '');
+      return !subhubSlugs.has(slug);
+    })
+    .map((post) => ({
+      params: { slug: post.id.replace(/\.(md|mdx)$/, '') },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const slug = post.id.replace(/\.(md|mdx)$/, '');
+---
+
+<PostLayout
+  title={post.data.title}
+  description={post.data.description}
+  publishDate={post.data.publishDate}
+  updatedDate={post.data.updatedDate}
+  heroImage={post.data.heroImage}
+  heroAlt={post.data.heroAlt}
+  experienceNote={post.data.experienceNote}
+  ymylDisclaimer={post.data.ymylDisclaimer}
+  subhub={post.data.subhub}
+  slug={slug}
+  tags={post.data.tags}
+>
+  <Content />
+</PostLayout>

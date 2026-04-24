@@ -1,0 +1,314 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PostCard from '~/components/PostCard.astro';
+
+// Fetch all non-draft content
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const allReviews = await getCollection('reviews', ({ data }) => !data.draft);
+const allDiary = await getCollection('diary', ({ data }) => !data.draft);
+
+// Sort by date
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+const sortedReviews = allReviews.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+// Featured sections — first 4 of each
+const featuredPosts = sortedPosts.slice(0, 4);
+const featuredReviews = sortedReviews.slice(0, 4);
+
+// Latest — 6 most recent across posts + diary (not reviews — they have their own section)
+const combinedLatest = [
+  ...allPosts.map((p) => ({ ...p, _type: 'post' as const })),
+  ...allDiary.map((d) => ({ ...d, _type: 'diary' as const })),
+]
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 6);
+
+const subhubLabels: Record<string, string> = {
+  'co-parenting': 'Co-parenting',
+  'blended-family': 'Blended family',
+  'money-and-benefits': 'Money and benefits',
+  'rights-and-law': 'Rights and law',
+  'starting-over': 'Starting over',
+};
+
+const categoryLabels: Record<string, string> = {
+  'family-tech': 'Family tech',
+  'parenting-kit': 'Parenting kit',
+  'shoes-and-fitness': 'Shoes & fitness',
+  'home-and-lifestyle': 'Home & lifestyle',
+  'days-out': 'Days out',
+};
+---
+
+<BaseLayout
+  title="The Breaking Dad — co-parenting, blended family life, and honest reviews"
+  description="A UK dad writing honestly about co-parenting, blended family life, and the products that actually work. From Hampshire, with a cup of strong tea."
+>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <h1 class="hero__headline">
+          Real talk about co-parenting, blended families,<br class="hero__break" />
+          and the stuff that actually works.
+        </h1>
+        <p class="hero__sub">
+          I'm Dan. UK dad, eight years co-parenting, six years into blended family life
+          in Hampshire. No perfect-parenting nonsense here — just honest, lived experience.
+        </p>
+        <a href="/about/" class="hero__cta">Read my story →</a>
+      </div>
+      <div class="hero__photo">
+        <img
+          src="/images/dan-betts-hero.jpg"
+          alt="Dan Betts — The Breaking Dad"
+          width="340"
+          height="400"
+          loading="eager"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured: Separated parents -->
+  {featuredPosts.length > 0 && (
+    <section class="home-section">
+      <div class="container">
+        <div class="home-section__header">
+          <h2 class="home-section__title">Separated parents</h2>
+          <a href="/separated-parents/" class="home-section__more">
+            More in separated parents →
+          </a>
+        </div>
+        <div class="home-section__grid">
+          {featuredPosts.map((post) => {
+            const slugId = post.id.replace(/\.(md|mdx)$/, '');
+            return (
+              <PostCard
+                title={post.data.title}
+                description={post.data.description}
+                href={`/separated-parents/${slugId}/`}
+                image={post.data.heroImage}
+                imageAlt={post.data.heroAlt}
+                categoryLabel={subhubLabels[post.data.subhub] ?? post.data.subhub}
+                categoryHref={`/separated-parents/${post.data.subhub}/`}
+                date={post.data.publishDate}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Featured: Reviews -->
+  {featuredReviews.length > 0 && (
+    <section class="home-section home-section--tinted">
+      <div class="container">
+        <div class="home-section__header">
+          <h2 class="home-section__title">Honest reviews</h2>
+          <a href="/reviews/" class="home-section__more">More reviews →</a>
+        </div>
+        <div class="home-section__grid">
+          {featuredReviews.map((review) => {
+            const slugId = review.id.replace(/\.(md|mdx)$/, '');
+            return (
+              <PostCard
+                title={review.data.title}
+                description={review.data.description}
+                href={`/reviews/${slugId}/`}
+                image={review.data.heroImage}
+                imageAlt={review.data.heroAlt}
+                categoryLabel={categoryLabels[review.data.productCategory] ?? review.data.productCategory}
+                categoryHref="/reviews/"
+                date={review.data.publishDate}
+                rating={review.data.rating}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Latest posts -->
+  {combinedLatest.length > 0 && (
+    <section class="home-section">
+      <div class="container">
+        <h2 class="home-section__title">Latest</h2>
+        <div class="home-section__grid home-section__grid--3">
+          {combinedLatest.map((item) => {
+            const slugId = item.id.replace(/\.(md|mdx)$/, '');
+            const href = item._type === 'post'
+              ? `/separated-parents/${slugId}/`
+              : `/diary/${slugId}/`;
+
+            const postItem = item._type === 'post' ? item : null;
+            const diaryItem = item._type === 'diary' ? item : null;
+
+            return (
+              <PostCard
+                title={item.data.title}
+                description={item.data.description}
+                href={href}
+                image={item.data.heroImage}
+                imageAlt={item.data.heroAlt}
+                categoryLabel={
+                  postItem
+                    ? (subhubLabels[postItem.data.subhub] ?? postItem.data.subhub)
+                    : 'Diary'
+                }
+                categoryHref={
+                  postItem
+                    ? `/separated-parents/${postItem.data.subhub}/`
+                    : '/diary/'
+                }
+                date={item.data.publishDate}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .hero {
+    padding-block: 3rem 4rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .hero__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  @media (min-width: 768px) {
+    .hero__inner {
+      grid-template-columns: 1fr auto;
+    }
+  }
+
+  .hero__headline {
+    font-family: var(--font-serif);
+    font-size: clamp(1.875rem, 5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.25;
+    margin: 0 0 1rem;
+    color: var(--color-text);
+  }
+
+  .hero__break {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .hero__break {
+      display: inline;
+    }
+  }
+
+  .hero__sub {
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    margin: 0 0 1.5rem;
+    max-width: 520px;
+  }
+
+  .hero__cta {
+    display: inline-block;
+    background: var(--color-accent);
+    color: white;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: background 0.15s;
+  }
+
+  .hero__cta:hover {
+    background: color-mix(in srgb, var(--color-accent) 85%, black);
+    text-decoration: none;
+  }
+
+  .hero__photo {
+    flex-shrink: 0;
+  }
+
+  .hero__photo img {
+    width: 240px;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 1rem;
+    border: 3px solid var(--color-highlight);
+  }
+
+  @media (min-width: 768px) {
+    .hero__photo img {
+      width: 300px;
+      height: 360px;
+    }
+  }
+
+  /* Sections */
+  .home-section {
+    padding-block: 3.5rem;
+  }
+
+  .home-section--tinted {
+    background: var(--color-surface);
+  }
+
+  .home-section__header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .home-section__title {
+    font-family: var(--font-sans);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-text);
+  }
+
+  .home-section__more {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .home-section__more:hover {
+    text-decoration: underline;
+  }
+
+  .home-section__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .home-section__grid--3 {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+</style>

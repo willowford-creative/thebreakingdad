@@ -1,0 +1,190 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  href: string;
+  image?: string;
+  imageAlt?: string;
+  categoryLabel?: string;
+  categoryHref?: string;
+  date?: Date;
+  rating?: number; // for reviews
+}
+
+const {
+  title,
+  description,
+  href,
+  image,
+  imageAlt,
+  categoryLabel,
+  categoryHref,
+  date,
+  rating,
+} = Astro.props;
+
+const formattedDate = date
+  ? new Intl.DateTimeFormat('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(date)
+  : null;
+
+const filledStars = rating ? Math.round(rating) : 0;
+---
+
+<article class="post-card">
+  {image && (
+    <a href={href} class="post-card__image-link" tabindex="-1" aria-hidden="true">
+      <div class="post-card__image-wrap">
+        <img
+          src={image}
+          alt={imageAlt ?? title}
+          width="400"
+          height="225"
+          loading="lazy"
+        />
+      </div>
+    </a>
+  )}
+  <div class="post-card__body">
+    {(categoryLabel || rating) && (
+      <div class="post-card__meta">
+        {categoryLabel && categoryHref ? (
+          <a href={categoryHref} class="post-card__tag">{categoryLabel}</a>
+        ) : categoryLabel ? (
+          <span class="post-card__tag">{categoryLabel}</span>
+        ) : null}
+        {rating && (
+          <span class="post-card__stars" aria-label={`${rating} out of 5 stars`}>
+            {'★'.repeat(filledStars)}{'☆'.repeat(5 - filledStars)}
+          </span>
+        )}
+      </div>
+    )}
+    <h3 class="post-card__title">
+      <a href={href} class="post-card__title-link">{title}</a>
+    </h3>
+    <p class="post-card__description">{description}</p>
+    {formattedDate && (
+      <time class="post-card__date" datetime={date?.toISOString()}>
+        {formattedDate}
+      </time>
+    )}
+  </div>
+</article>
+
+<style>
+  .post-card {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: box-shadow 0.2s, border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-card:hover {
+    box-shadow: 0 4px 20px rgba(26, 31, 46, 0.08);
+    border-color: color-mix(in srgb, var(--color-highlight) 60%, var(--color-border));
+  }
+
+  .post-card__image-link {
+    display: block;
+    overflow: hidden;
+  }
+
+  .post-card__image-wrap {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+
+  .post-card__image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+    margin: 0;
+  }
+
+  .post-card:hover .post-card__image-wrap img {
+    transform: scale(1.03);
+  }
+
+  .post-card__body {
+    padding: 1.125rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .post-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.625rem;
+    flex-wrap: wrap;
+  }
+
+  .post-card__tag {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    text-decoration: none;
+    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-background));
+    padding: 0.15rem 0.5rem;
+    border-radius: 2rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+
+  .post-card__tag:hover {
+    text-decoration: none;
+    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-background));
+  }
+
+  .post-card__stars {
+    font-size: 0.875rem;
+    color: var(--color-highlight);
+    letter-spacing: 0.05em;
+  }
+
+  .post-card__title {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin: 0 0 0.5rem;
+    flex: 1;
+  }
+
+  .post-card__title-link {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  .post-card__title-link:hover {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  .post-card__description {
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0 0 0.75rem;
+  }
+
+  .post-card__date {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--color-muted) 70%, transparent);
+    margin-top: auto;
+  }
+</style>
