@@ -1,166 +1,264 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
 ---
 
 <BaseLayout
   title="About Dan Betts — The Breaking Dad"
   description="Dan Betts is a UK dad based in Hampshire. Eight years into co-parenting his daughter Evie, six years into blended family life. He writes about separated parenting, family life, and the products he actually uses."
 >
-  <div class="about-page">
-    <div class="container--narrow">
-
-      <nav class="about-page__breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a>
-        <span aria-hidden="true"> / </span>
-        <span aria-current="page">About</span>
-      </nav>
-
-      <div class="about-page__photo-header">
-        <img
-          src="/images/dan-betts.jpg"
-          alt="Dan Betts — The Breaking Dad"
-          width="120"
-          height="120"
-          loading="eager"
-          class="about-page__photo"
-        />
-        <div>
-          <h1 class="about-page__name">Dan Betts</h1>
-          <p class="about-page__location">Hampshire, UK</p>
-        </div>
-      </div>
-
-      <div class="prose">
-
-        <h2>The short version</h2>
-        <p>
-          I'm Dan. Dad to three daughters, step-dad to two more. I separated from Evie's mum in
-          2016 when Evie was two years old. Since then I've been co-parenting her on a shared
-          arrangement — eight years and counting — while also navigating the complexities of
-          blended family life with my partner Rosie, her two daughters, and our youngest, Millie.
-        </p>
-        <p>
-          I started The Breaking Dad because I couldn't find the writing I needed when
-          I needed it most. Everything I found about separated parenting was either clinical,
-          legal, or soaked in judgment. None of it sounded like a real person. None of it
-          acknowledged how hard the early days actually are, or how messy the emotions get
-          even when you're trying your best.
-        </p>
-
-        <h2>Why I write what I write</h2>
-        <p>
-          The Separated parents section is built from experience. I've navigated the CMS.
-          I've been through mediation. I've introduced Rosie to Evie — not overnight, and not
-          without anxiety. I've had to learn about child arrangements, benefits, and the
-          financial side of separation the hard way. I write about what I've actually lived,
-          and I signpost to proper resources when something is genuinely outside my lane.
-        </p>
-        <p>
-          The reviews are honest in the old-fashioned sense — I buy things, I use them for
-          months or years, and then I write about whether they were worth it. I've got affiliate
-          links on some of them, but I don't let that change what I say.
-          <a href="/affiliate-disclosure/">Full disclosure here</a>.
-        </p>
-        <p>
-          The Diary section is where I write without a brief. No SEO targets, no keyword
-          strategy. Just personal pieces about what it actually feels like to be a dad in the
-          middle of all this.
-        </p>
-
-        <h2>The family</h2>
-        <p>
-          Rosie and I have been together since 2018 and moved in together in 2020 — which,
-          in retrospect, was either brave or slightly mad, given that we did it in a pandemic
-          with three girls under ten. Millie, our youngest, arrived in 2021. So we went from
-          zero to a household of six fairly quickly.
-        </p>
-        <p>
-          Evie is twelve now. She's funny and fierce and reads more books than anyone I know.
-          Rosie's girls are at secondary school. Millie has just started school and is absolutely
-          convinced she runs the house. She might be right.
-        </p>
-        <p>
-          We live in Hampshire. I work from home. I drink a lot of strong tea. I run in
-          Vivobarefoot shoes. I am occasionally found building cardboard structures with small
-          children on weekend afternoons.
-        </p>
-
-        <h2>Work with me</h2>
-        <p>
-          If you're a brand that wants to work with me, please read the
-          <a href="/work-with-us/">Work with us</a> page first. I only work with brands
-          whose products I'd genuinely consider using myself, and I don't take payments to
-          change my editorial position.
-        </p>
-
-        <h2>Get in touch</h2>
-        <p>
-          The best way to reach me is via the <a href="/contact/">contact page</a>.
-          I do read everything, though I can't always reply as quickly as I'd like.
-        </p>
-
-        <p>
-          You can also find me on Instagram:
-          <a href="https://www.instagram.com/thebreakingdad" target="_blank" rel="noopener">
-            @thebreakingdad
-          </a>.
-          I'm most active there and usually respond to DMs faster than email.
-        </p>
-
+  <article class="about-page">
+    <div class="about-page__crumb-row">
+      <div class="container">
+        <Breadcrumbs trail={[{ label: 'Home', href: '/' }, { label: 'About', href: '/about/' }]} />
       </div>
     </div>
-  </div>
+
+    <header class="about-page__head">
+      <div class="container--narrow">
+        <span class="eyebrow eyebrow-accent">The byline</span>
+        <h1 class="display-2 about-page__title">A dad behind the keyboard.</h1>
+        <p class="lede about-page__lede">
+          I'm Dan. UK father, Hampshire-based. Eight years co-parenting my eldest, six into blended family life
+          with my partner Rosie and our girls. The Breaking Dad is the writing I needed when I was figuring it
+          all out, and didn't find anywhere else.
+        </p>
+      </div>
+
+      <div class="container">
+        <div class="about-page__hero" aria-hidden="true">
+          <div class="about-page__hero-illus illus illus--kids"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="about-page__body">
+      <div class="container">
+        <div class="about-page__grid">
+          <div class="about-page__main">
+            <div class="prose">
+              <h2>The short version</h2>
+              <p>
+                Three daughters, two stepdaughters. Separated from my eldest's mum in 2016 when she was two.
+                Since then I've been co-parenting her on a shared arrangement — eight years and counting —
+                while also navigating the complexities of blended family life with my partner Rosie, her two
+                daughters, and our youngest, Millie.
+              </p>
+              <p>
+                I started The Breaking Dad because I couldn't find the writing I needed when I needed it most.
+                Everything I found about separated parenting was either clinical, legal, or soaked in judgment.
+                None of it sounded like a real person. None of it acknowledged how hard the early days actually
+                are, or how messy the emotions get even when you're trying your best.
+              </p>
+
+              <h2>Why I write what I write</h2>
+              <p>
+                The Separated parents section is built from experience. I've navigated the CMS. I've been
+                through mediation. I've introduced Rosie to my eldest, not overnight and not without anxiety.
+                I've had to learn about child arrangements, benefits, and the financial side of separation the
+                hard way. I write about what I've actually lived, and I signpost to proper resources when
+                something is genuinely outside my lane.
+              </p>
+              <p>
+                The Reviews are honest in the old-fashioned sense. I buy things, I use them for months or
+                years, and then I write about whether they were worth it. There are affiliate links on some,
+                but they don't change what I say. <a href="/affiliate-disclosure/">Full disclosure here</a>.
+              </p>
+              <p>
+                The Diary is where I write without a brief. No SEO targets, no keyword strategy. Just personal
+                pieces about what it actually feels like to be a dad in the middle of all this.
+              </p>
+
+              <h2>The family</h2>
+              <p>
+                Rosie and I have been together since 2018 and moved in together in 2020. Brave or slightly mad,
+                depending on the day — we did it in a pandemic with three girls under ten. Millie arrived in
+                2021. So we went from zero to a household of six fairly quickly.
+              </p>
+              <p>
+                We live in Hampshire. I work from home, drink a lot of strong tea, run in Vivobarefoot shoes.
+                I'm occasionally found building cardboard structures with small children on weekend afternoons.
+              </p>
+
+              <h2>Work with me</h2>
+              <p>
+                If you're a brand that wants to work with me, please read the
+                <a href="/work-with-us/">Work with us</a> page first. I only work with brands whose products
+                I'd genuinely consider using myself, and I don't take payments to change my editorial position.
+              </p>
+
+              <h2>Get in touch</h2>
+              <p>
+                The best way to reach me is via the <a href="/contact/">contact page</a>. I read everything,
+                though I can't always reply as quickly as I'd like.
+              </p>
+              <p>
+                Or find me on Instagram:
+                <a href="https://www.instagram.com/thebreakingdad" target="_blank" rel="noopener">@thebreakingdad</a>.
+                I'm most active there and usually respond to DMs faster than email.
+              </p>
+            </div>
+          </div>
+
+          <aside class="about-page__byline">
+            <div class="about-page__byline-card">
+              <div class="about-page__byline-avatar" aria-hidden="true">D</div>
+              <div class="about-page__byline-name">Dan Betts</div>
+              <div class="about-page__byline-loc">Hampshire, UK</div>
+              <ul class="about-page__byline-stats">
+                <li><strong>2016</strong><span>Separated</span></li>
+                <li><strong>2020</strong><span>Blended household</span></li>
+                <li><strong>5</strong><span>Daughters &amp; stepdaughters</span></li>
+              </ul>
+              <a href="/contact/" class="btn ghost about-page__byline-cta">Get in touch</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </article>
 </BaseLayout>
 
 <style>
-  .about-page {
-    padding-block: 2rem 5rem;
+  .about-page { background: var(--color-paper); }
+
+  .about-page__crumb-row {
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 14px;
   }
 
-  .about-page__breadcrumb {
-    font-family: var(--font-sans);
-    font-size: 0.8125rem;
-    color: var(--color-muted);
-    margin-bottom: 2rem;
+  .about-page__head {
+    padding-block: 44px 0;
   }
 
-  .about-page__breadcrumb a {
-    color: var(--color-muted);
-    text-decoration: none;
+  .about-page__title {
+    margin: 12px 0 18px;
+    text-wrap: balance;
   }
 
-  .about-page__breadcrumb a:hover {
-    color: var(--color-accent);
-    text-decoration: underline;
+  .about-page__lede {
+    margin-bottom: 32px;
   }
 
-  .about-page__photo-header {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    margin-bottom: 2.5rem;
+  .about-page__hero {
+    margin: 0 0 8px;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16/7;
   }
 
-  .about-page__photo {
-    width: 100px;
-    height: 100px;
+  .about-page__hero-illus {
+    width: 100%;
+    height: 100%;
+  }
+
+  .about-page__body {
+    padding-block: 48px 64px;
+  }
+
+  .about-page__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  @media (min-width: 1100px) {
+    .about-page__grid {
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 56px;
+      align-items: start;
+    }
+  }
+
+  .about-page__main {
+    max-width: 680px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .about-page__main .prose { max-width: 680px; }
+
+  /* Byline card (right column) */
+  .about-page__byline {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+  }
+
+  @media (max-width: 1099px) {
+    .about-page__byline { display: none; }
+  }
+
+  .about-page__byline-card {
+    background: var(--color-paper-tinted-2);
+    border: 1px solid var(--color-accent-soft);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .about-page__byline-avatar {
+    width: 56px; height: 56px;
     border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--color-highlight);
-    flex-shrink: 0;
-  }
-
-  .about-page__name {
-    font-family: var(--font-sans);
-    font-size: 1.875rem;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-deep));
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
     font-weight: 700;
-    margin: 0 0 0.25rem;
+    font-size: 22px;
+    margin-bottom: 14px;
   }
 
-  .about-page__location {
+  .about-page__byline-name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
+  }
+
+  .about-page__byline-loc {
     font-family: var(--font-sans);
-    font-size: 0.9375rem;
-    color: var(--color-muted);
-    margin: 0;
+    font-size: 12px;
+    color: var(--color-ink-3);
+    margin-bottom: 18px;
+  }
+
+  .about-page__byline-stats {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 18px 0 4px;
+    border-top: 1px solid var(--color-accent-soft);
+    display: grid;
+    gap: 14px;
+  }
+
+  .about-page__byline-stats li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .about-page__byline-stats strong {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--color-accent);
+    letter-spacing: -0.012em;
+  }
+
+  .about-page__byline-stats span {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .about-page__byline-cta {
+    width: 100%;
+    justify-content: center;
   }
 </style>

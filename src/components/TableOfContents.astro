@@ -1,0 +1,148 @@
+---
+export interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+export interface Props {
+  headings: Heading[];
+  totalMinutes?: number;
+}
+
+const { headings, totalMinutes } = Astro.props;
+const h2s = headings.filter((h) => h.depth === 2);
+---
+
+{h2s.length > 0 && (
+  <aside class="toc" aria-label="Table of contents">
+    <span class="eyebrow">In this piece</span>
+    <ol class="toc__list">
+      {h2s.map((h, i) => (
+        <li class="toc__item">
+          <a href={`#${h.slug}`} class="toc__link" data-toc-link={h.slug}>
+            <span class="toc__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="toc__text">{h.text}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+    {totalMinutes && (
+      <div class="toc__footer" data-total-min={totalMinutes}>
+        Reading: <strong><span class="toc__current-min">1</span> of {totalMinutes} min</strong>
+      </div>
+    )}
+  </aside>
+)}
+
+<script is:inline>
+  function initToc() {
+    const links = document.querySelectorAll('[data-toc-link]');
+    if (!links.length) return;
+    const headings = Array.from(document.querySelectorAll('.prose h2[id]'));
+    if (!headings.length) return;
+
+    function setActive(slug) {
+      links.forEach((l) => {
+        l.classList.toggle('is-active', l.getAttribute('data-toc-link') === slug);
+      });
+    }
+
+    function updateActive() {
+      let current = headings[0].id;
+      const threshold = 140;
+      for (const h of headings) {
+        const rect = h.getBoundingClientRect();
+        if (rect.top <= threshold) current = h.id;
+        else break;
+      }
+      setActive(current);
+    }
+
+    updateActive();
+    window.addEventListener('scroll', updateActive, { passive: true });
+    window.addEventListener('resize', updateActive);
+
+    // Reading-minute counter
+    const footer = document.querySelector('.toc__footer');
+    const article = document.getElementById('post-content');
+    const currentMinEl = document.querySelector('.toc__current-min');
+    if (footer && article && currentMinEl) {
+      const total = parseInt(footer.getAttribute('data-total-min') || '0', 10);
+      function updateMin() {
+        const rect = article.getBoundingClientRect();
+        const totalH = rect.height - window.innerHeight;
+        const scrolled = -rect.top;
+        const pct = Math.max(0, Math.min(1, scrolled / Math.max(1, totalH)));
+        currentMinEl.textContent = String(Math.max(1, Math.ceil(pct * total) || 1));
+      }
+      updateMin();
+      window.addEventListener('scroll', updateMin, { passive: true });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initToc);
+  } else {
+    initToc();
+  }
+</script>
+
+<style>
+  .toc {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+  }
+
+  .toc .eyebrow {
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .toc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc__item {
+    border-bottom: 1px solid var(--color-rule-soft);
+  }
+
+  .toc__link {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 6px;
+    padding: 10px 0;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-ink-2);
+    text-decoration: none;
+    transition: color 0.15s;
+    align-items: baseline;
+  }
+
+  .toc__link:hover { color: var(--color-accent); }
+  .toc__link.is-active { color: var(--color-accent); }
+  .toc__link.is-active .toc__num { color: var(--color-accent); }
+
+  .toc__num {
+    color: var(--color-ink-4);
+    font-feature-settings: "tnum";
+    font-weight: 500;
+  }
+
+  .toc__footer {
+    margin-top: 16px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--color-ink-3);
+  }
+
+  .toc__footer strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+</style>

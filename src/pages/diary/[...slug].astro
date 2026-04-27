@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import DiaryLayout from '~/layouts/DiaryLayout.astro';
+import { readingTimeFromBody } from '~/utils/readingTime';
 
 export async function getStaticPaths() {
   const entries = await getCollection('diary', ({ data }) => !data.draft);
@@ -11,9 +12,10 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 
 const slug = entry.id.replace(/\.(md|mdx)$/, '');
+const readingMinutes = readingTimeFromBody(entry.body);
 ---
 
 <DiaryLayout
@@ -25,6 +27,8 @@ const slug = entry.id.replace(/\.(md|mdx)$/, '');
   heroAlt={entry.data.heroAlt}
   slug={slug}
   tags={entry.data.tags}
+  readingMinutes={readingMinutes}
+  headings={headings}
 >
   <Content />
 </DiaryLayout>

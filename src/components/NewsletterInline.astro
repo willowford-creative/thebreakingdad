@@ -1,0 +1,21 @@
+---
+export interface Props {
+  title?: string;
+  body?: string;
+  cta?: string;
+}
+
+const {
+  title = 'If this is helping, the newsletter goes out monthly.',
+  body = 'One field note from me, plus what’s worth reading. No filler. Unsubscribe whenever.',
+  cta = 'Subscribe →',
+} = Astro.props;
+---
+
+<aside class="newsletter-inline" aria-label="Subscribe to the newsletter">
+  <div>
+    <div class="title">{title}</div>
+    <div class="small">{body}</div>
+  </div>
+  <button class="btn" disabled title="Sign-up wired in phase 2">{cta}</button>
+</aside>

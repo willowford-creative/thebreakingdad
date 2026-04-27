@@ -8,7 +8,8 @@ export interface Props {
   categoryLabel?: string;
   categoryHref?: string;
   date?: Date;
-  rating?: number; // for reviews
+  rating?: number;
+  variant?: 'default' | 'compact' | 'text';
 }
 
 const {
@@ -21,6 +22,7 @@ const {
   categoryHref,
   date,
   rating,
+  variant = 'default',
 } = Astro.props;
 
 const formattedDate = date
@@ -32,159 +34,151 @@ const formattedDate = date
   : null;
 
 const filledStars = rating ? Math.round(rating) : 0;
+const showImage = variant !== 'text' && image;
+
+// Random illustration class for missing images (reproducible by slug)
+const illusClasses = ['kids', 'review', 'frame', 'toys', 'travel', 'notes', 'window', 'sofa', 'car', 'book'];
+function illusFor(seed: string): string {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+  return `illus--${illusClasses[Math.abs(h) % illusClasses.length]}`;
+}
 ---
 
-<article class="post-card">
-  {image && (
-    <a href={href} class="post-card__image-link" tabindex="-1" aria-hidden="true">
-      <div class="post-card__image-wrap">
-        <img
-          src={image}
-          alt={imageAlt ?? title}
-          width="400"
-          height="225"
-          loading="lazy"
-        />
-      </div>
-    </a>
-  )}
-  <div class="post-card__body">
+<a href={href} class={`card post-card post-card--${variant}`}>
+  <div class="card__img-wrap">
+    {showImage ? (
+      <img
+        src={image}
+        alt={imageAlt ?? title}
+        class="card__img"
+        loading="lazy"
+      />
+    ) : (
+      <div class={`card__img card__img--placeholder illus ${illusFor(href)}`} aria-hidden="true"></div>
+    )}
+  </div>
+  <div class="card__body">
     {(categoryLabel || rating) && (
-      <div class="post-card__meta">
+      <div class="card__meta-row">
         {categoryLabel && categoryHref ? (
-          <a href={categoryHref} class="post-card__tag">{categoryLabel}</a>
+          <a href={categoryHref} class="eyebrow eyebrow-accent" onclick="event.stopPropagation();">
+            {categoryLabel}
+          </a>
         ) : categoryLabel ? (
-          <span class="post-card__tag">{categoryLabel}</span>
+          <span class="eyebrow eyebrow-accent">{categoryLabel}</span>
         ) : null}
         {rating && (
-          <span class="post-card__stars" aria-label={`${rating} out of 5 stars`}>
-            {'★'.repeat(filledStars)}{'☆'.repeat(5 - filledStars)}
+          <span class="card__rating" aria-label={`${rating} out of 5`}>
+            <span class="card__stars" aria-hidden="true">{'★'.repeat(filledStars)}{'☆'.repeat(5 - filledStars)}</span>
+            <span class="card__score">{rating}/5</span>
           </span>
         )}
       </div>
     )}
-    <h3 class="post-card__title">
-      <a href={href} class="post-card__title-link">{title}</a>
-    </h3>
-    <p class="post-card__description">{description}</p>
+    <h3 class="card-title">{title}</h3>
+    {variant !== 'compact' && <p class="card-dek">{description}</p>}
     {formattedDate && (
-      <time class="post-card__date" datetime={date?.toISOString()}>
-        {formattedDate}
-      </time>
+      <span class="meta card__date">
+        <time datetime={date?.toISOString()}>{formattedDate}</time>
+      </span>
     )}
   </div>
-</article>
+</a>
 
 <style>
   .post-card {
-    background: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
-    overflow: hidden;
-    transition: box-shadow 0.2s, border-color 0.2s;
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
   }
 
-  .post-card:hover {
-    box-shadow: 0 4px 20px rgba(26, 31, 46, 0.08);
-    border-color: color-mix(in srgb, var(--color-highlight) 60%, var(--color-border));
-  }
-
-  .post-card__image-link {
-    display: block;
+  .card__img-wrap {
+    aspect-ratio: 16/10;
+    border-radius: 8px;
     overflow: hidden;
+    background: var(--color-paper-2);
   }
 
-  .post-card__image-wrap {
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    background: var(--color-surface);
-  }
-
-  .post-card__image-wrap img {
-    width: 100%;
-    height: 100%;
+  .card__img {
+    width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.3s;
-    margin: 0;
+    display: block;
+    transition: transform .5s var(--ease-soft);
   }
 
-  .post-card:hover .post-card__image-wrap img {
-    transform: scale(1.03);
+  .post-card:hover .card__img { transform: scale(1.04); }
+
+  .card__img--placeholder {
+    width: 100%; height: 100%;
   }
 
-  .post-card__body {
-    padding: 1.125rem;
-    flex: 1;
+  .card__body {
     display: flex;
     flex-direction: column;
+    gap: 6px;
+    flex: 1;
   }
 
-  .post-card__meta {
+  .card__meta-row {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.625rem;
+    gap: 10px;
     flex-wrap: wrap;
   }
 
-  .post-card__tag {
+  .card-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
+    margin: 0;
+    text-wrap: balance;
+    transition: color .15s;
+    font-feature-settings: "ss01", "kern", "liga";
+  }
+
+  .post-card:hover .card-title { color: var(--color-accent); }
+
+  .card-dek {
     font-family: var(--font-sans);
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    margin: 0;
+  }
+
+  .card__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-sans);
+  }
+
+  .card__stars {
     color: var(--color-accent);
-    text-decoration: none;
-    background: color-mix(in srgb, var(--color-accent) 10%, var(--color-background));
-    padding: 0.15rem 0.5rem;
-    border-radius: 2rem;
-    border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+    font-size: 13px;
+    letter-spacing: 0.02em;
   }
 
-  .post-card__tag:hover {
-    text-decoration: none;
-    background: color-mix(in srgb, var(--color-accent) 18%, var(--color-background));
+  .card__score {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-ink);
   }
 
-  .post-card__stars {
-    font-size: 0.875rem;
-    color: var(--color-highlight);
-    letter-spacing: 0.05em;
+  .card__date {
+    font-size: 12.5px;
+    margin-top: 2px;
   }
 
-  .post-card__title {
-    font-family: var(--font-sans);
-    font-size: 1rem;
-    font-weight: 600;
-    line-height: 1.35;
-    margin: 0 0 0.5rem;
-    flex: 1;
+  /* Hover: subtle lift on whole card */
+  .post-card {
+    transition: transform .25s var(--ease-soft);
   }
-
-  .post-card__title-link {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-
-  .post-card__title-link:hover {
-    color: var(--color-accent);
-    text-decoration: none;
-  }
-
-  .post-card__description {
-    font-family: var(--font-sans);
-    font-size: 0.8125rem;
-    line-height: 1.6;
-    color: var(--color-muted);
-    margin: 0 0 0.75rem;
-  }
-
-  .post-card__date {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    color: color-mix(in srgb, var(--color-muted) 70%, transparent);
-    margin-top: auto;
-  }
+  .post-card:hover { transform: translateY(-2px); }
 </style>

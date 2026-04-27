@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import PostLayout from '~/layouts/PostLayout.astro';
+import { readingTimeFromBody } from '~/utils/readingTime';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -26,9 +27,10 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 
 const slug = post.id.replace(/\.(md|mdx)$/, '');
+const readingMinutes = readingTimeFromBody(post.body);
 ---
 
 <PostLayout
@@ -43,6 +45,9 @@ const slug = post.id.replace(/\.(md|mdx)$/, '');
   subhub={post.data.subhub}
   slug={slug}
   tags={post.data.tags}
+  readingMinutes={readingMinutes}
+  headings={headings}
+  issueNumber={post.data.issueNumber}
 >
   <Content />
 </PostLayout>

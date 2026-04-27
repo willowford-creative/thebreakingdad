@@ -1,295 +1,277 @@
-# The Breaking Dad — Cloudflare Pages redirect map
-# Generated 23 April 2026 from WP export + GSC data + audit decisions
-# Format: <from>  <to>  <status>
-#
-# Total explicit redirects: 231
-# Traffic preserved: 19,621 clicks over 16 months
-#
+# WordPress → Astro redirects
+# Merged from redirect-decisions.csv (authoritative) + auto-generated fallbacks
+# Ordered by historic click volume (highest first)
+# Format: from  to  status
 
-# =============================================================
-# HIGH-TRAFFIC CANONICAL REDIRECTS (50+ clicks)
-# These preserve existing SEO equity by pointing old duplicate
-# URLs to their new canonical home.
-# =============================================================
 /smol-review-are-they-as-good-as-they-sound/  /reviews/smol-review-are-they-as-good-as-they-sound/  301
 /parenthood/reviews/smol-review-are-they-as-good-as-they-sound/  /reviews/smol-review-are-they-as-good-as-they-sound/  301
 /separated-parents/single-parent-benefits-guide/  /separated-parents/universal-credit-for-single-parents-a-complete-uk-guide-2025/  301
 /parenthood/hoppstar-artist-camera-review/  /reviews/hoppstar-artist-camera-review/  301
+/separated-parents/parenting-time-calculator/  /separated-parents/  301
+/introduction-to-single-parent-benefits/  /separated-parents/  301
 /effects-of-parental-separation-on-a-child/  /separated-parents/effects-of-parental-separation-on-a-child/  301
-/raising-stong-daughters/  /parenthood/raising-stong-daughters/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /raising-stong-daughters/  /parenthood/raising-stong-daughters/  301
 /honest-mobile-review/  /reviews/honest-mobile-review/  301
+/separated-parents/introduction-to-single-parent-benefits/  /separated-parents/  301
+/how-a-parenting-plan-can-help-in-2024/  /separated-parents/  301
 /parenthood/pact-coffee-review/  /reviews/pact-coffee-review/  301
 /parenthood/reviews/honest-mobile-review/  /reviews/honest-mobile-review/  301
 /uncategorised/grants-for-single-parents-uk/  /separated-parents/grants-for-single-parents-uk/  301
 /parenthood/toniebox-review-a-parents-honest-take-on-this-screen-free-audio-player/  /reviews/toniebox-review-a-parents-honest-take-on-this-screen-free-audio-player/  301
 /separated-parents/single-parent-benefits-uk/  /separated-parents/  301
-/parenthood/uk-paternity-leave-not-enough/  /separated-parents/uk-paternity-leave-not-enough/  301
-/parenting-hacks-and-tips/home-activities-for-kids/  /home-activities-for-kids/  301
+# ORPHAN (target '/separated-parents/uk-paternity-leave-not-enough/' has no matching page): /parenthood/uk-paternity-leave-not-enough/  /separated-parents/uk-paternity-leave-not-enough/  301
+# ORPHAN (target '/home-activities-for-kids/' has no matching page): /parenting-hacks-and-tips/home-activities-for-kids/  /home-activities-for-kids/  301
 /parenthood/kidkraft-majestic-mansion-dollhouse/  /reviews/kidkraft-majestic-mansion-dollhouse/  301
 /kidkraft-majestic-mansion-dollhouse/  /reviews/kidkraft-majestic-mansion-dollhouse/  301
-/things-to-do/things-to-do-with-kids-hampshire/  /reviews/things-to-do-with-kids-hampshire/  301
+# ORPHAN (target '/reviews/things-to-do-with-kids-hampshire/' has no matching page): /things-to-do/things-to-do-with-kids-hampshire/  /reviews/things-to-do-with-kids-hampshire/  301
 /things-to-do/cardboard-crafts-fish-tank/  /diary/cardboard-crafts-fish-tank/  301
-/parenthood/reviews/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  /parenthood/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/reviews/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  /parenthood/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  301
 /arts-and-crafts/cardboard-crafts-cardboard-laptop/  /diary/cardboard-crafts-cardboard-laptop/  301
 /things-to-do/arts-and-crafts/cardboard-crafts-cardboard-laptop/  /diary/cardboard-crafts-cardboard-laptop/  301
 /cardboard-crafts-cardboard-laptop/  /diary/cardboard-crafts-cardboard-laptop/  301
 /cardboard-crafts-fish-tank/  /diary/cardboard-crafts-fish-tank/  301
+/separated-parents/how-a-parenting-plan-can-help-in-2024/  /separated-parents/  301
 /parenthood/reviews/toniebox-review-a-parents-honest-take-on-this-screen-free-audio-player/  /reviews/toniebox-review-a-parents-honest-take-on-this-screen-free-audio-player/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/best-toddler-travel-accessories/  /parenthood/  301
 /parenthood/reviews/pact-coffee-review/  /reviews/pact-coffee-review/  301
 /tom-life-insurance-review-2023/  /reviews/tom-life-insurance-review-2023/  301
-/parenthood/best-toddler-travel-accessories/  /parenthood/  301
-
-# =============================================================
-# MODERATE-TRAFFIC REDIRECTS (5-49 clicks)
-# =============================================================
-/sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  /parenthood/sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  /parenthood/sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  301
 /co-parenting/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  /separated-parents/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  301
-/parenthood/5-things-about-parenthood-that-nothing-can-prepare-you-for/  /parenthood/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/5-things-about-parenthood-that-nothing-can-prepare-you-for/  /parenthood/  301
 /parenthood/reviews/tom-life-insurance-review-2023/  /reviews/tom-life-insurance-review-2023/  301
-/separated-parents/child-maintenance/  /separated-parents/cms-changes-2025/  301
-/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  /separated-parents/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  301
-/parenthood/gentle-parenting-a-balanced-guide-for-uk-parents/  /parenthood/  301
-/things-to-do/west-green-house-gardens-hampshire/  /reviews/west-green-house-gardens-hampshire/  301
-/separated-parents/co-parenting/what-is-co-parenting-the-ultimate-guide-to-raising-happy-kids-after-separation/  /separated-parents/what-is-co-parenting-the-ultimate-guide-to-raising-happy-kids-after-separation/  301
-/parenthood/the-importance-of-taking-time-for-yourself/  /diary/the-importance-of-taking-time-for-yourself/  301
-/parenting-hacks-and-tips/common-parenting-mistakes/  /parenthood/  301
-/day-in-the-life/  /diary/day-in-the-life/  301
-/grow-your-parenting-instagram/  /about/  301
-/parenthood/universal-credit-budget-changes/  /separated-parents/universal-credit-for-single-parents-a-complete-uk-guide-2025/  301
-/parenthood/understanding-tax-free-childcare-a-guide-to-saving-on-childcare-costs/  /separated-parents/universal-credit-for-single-parents-a-complete-uk-guide-2025/  301
-/parenthood/day-in-the-life/  /diary/day-in-the-life/  301
-/a-letter-to-my-daughter-on-international-womens-day/  /diary/a-letter-to-my-daughter-on-international-womens-day/  301
-/common-parenting-mistakes/  /parenthood/  301
-
-# =============================================================
-# LOW-TRAFFIC REDIRECTS (<5 clicks)
-# =============================================================
-/the-importance-of-taking-time-for-yourself/  /diary/the-importance-of-taking-time-for-yourself/  301
-/things-to-do/home-activities-for-kids/  /home-activities-for-kids/  301
-/the-next-chapter-blended-family/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
-/5-things-about-parenthood-that-nothing-can-prepare-you-for/  /parenthood/  301
-/my-top-10-parenting-rules-to-live-by/  /parenthood/my-top-10-parenting-rules-to-live-by/  301
-/separated-parents/financial-planning-for-separated-parents/  /separated-parents/  301
-/parenthood/5-micro-mindfulness-practices-for-busy-parents/  /parenthood/  301
-/uncategorised/cardboard-crafts-fish-tank/  /diary/cardboard-crafts-fish-tank/  301
-/parenthood/reviews/kidkraft-majestic-mansion-dollhouse/  /reviews/kidkraft-majestic-mansion-dollhouse/  301
-/dole-mandarins-in-juice/  /  301
-/co-parenting/a-year-of-the-breaking-dad-on-instagram/  /diary/a-year-of-the-breaking-dad-on-instagram/  301
-/parenthood/when-a-temper-tantrum-isnt-a-temper-tantrum/  /diary/when-a-temper-tantrum-isnt-a-temper-tantrum/  301
-/parenthood/a-blended-family-all-the-ingredients/  /separated-parents/blended-family-challenge/  301
-/separated-parents/co-parenting/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  /separated-parents/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  301
-/uncategorized/the-next-chapter-blended-family/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
-/co-parenting/featured-4-tips-for-coping-with-separation/  /separated-parents/  301
-/parenting-guides/reviews/kidkraft-majestic-mansion-dollhouse/  /reviews/kidkraft-majestic-mansion-dollhouse/  301
-/uncategorized/follower-focus-the-windsors/  /  301
-/a-blended-family-all-the-ingredients/  /separated-parents/blended-family-challenge/  301
-/uncategorised/our-first-vlog-on-youtube/  /parenthood/  301
-/follower-focus-the-windsors/  /  301
-/10k-instagram-followers/  /about/  301
-/our-favourite-parent-bloggers/  /  301
-/uncategorised/the-next-chapter-blended-family/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
-/a-year-of-the-breaking-dad-on-instagram/  /diary/a-year-of-the-breaking-dad-on-instagram/  301
-/diary-doting-daddy/  /  301
-/parenthood/you-cant-pour-from-an-empty-cup/  /diary/you-cant-pour-from-an-empty-cup/  301
-/parenthood/our-favourite-parent-bloggers/  /  301
-/when-a-temper-tantrum-isnt-a-temper-tantrum/  /diary/when-a-temper-tantrum-isnt-a-temper-tantrum/  301
-/parenthood/facing-into-parental-self-doubt-after-separation/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
-/parenthood/grow-your-parenting-instagram/  /about/  301
-/co-parenting/we-moved-in-together/  /separated-parents/blended-family-challenge/  301
-/uncategorized/our-first-vlog-on-youtube/  /about/  301
-/our-first-vlog-on-youtube/  /about/  301
-/parenting-guides/5-effective-car-tips-to-ensure-a-safe-road-trip/  /  301
-/parenthood/10-things-you-should-start-doing-for-a-happier-life/  /  301
-/uncategorised/10k-instagram-followers/  /about/  301
-/featured-4-tips-for-coping-with-separation/  /separated-parents/  301
-/parenthood/a-letter-to-my-daughter-on-international-womens-day/  /diary/a-letter-to-my-daughter-on-international-womens-day/  301
-/uncategorised/follower-focus-the-windsors/  /  301
-/parenthood/this-is-fatherhood/  /diary/this-is-fatherhood/  301
-/uncategorized/10k-instagram-followers/  /parenthood/  301
-/co-parenting/two-years-of-coparenting/  /diary/two-years-of-coparenting/  301
-/parenthood/diary-doting-daddy/  /  301
-/separated-parents/co-parenting/two-years-of-coparenting/  /diary/two-years-of-coparenting/  301
-/5-effective-car-tips-to-ensure-a-safe-road-trip/  /  301
-/separated-parents/co-parenting/we-moved-in-together/  /separated-parents/blended-family-challenge/  301
-/this-is-fatherhood/  /diary/this-is-fatherhood/  301
-/separated-parents/co-parenting/a-year-of-the-breaking-dad-on-instagram/  /diary/a-year-of-the-breaking-dad-on-instagram/  301
-/you-cant-pour-from-an-empty-cup/  /diary/you-cant-pour-from-an-empty-cup/  301
-/10-things-you-should-start-doing-for-a-happier-life/  /  301
-/facing-into-parental-self-doubt-after-separation/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
-
-# =============================================================
-# LEGACY DELETED POSTS (not in WXR but Google remembers them)
-# Routed via URL-keyword inference to the closest relevant section.
-# =============================================================
-/separated-parents/parenting-time-calculator/  /separated-parents/  301
-/introduction-to-single-parent-benefits/  /separated-parents/  301
-/separated-parents/introduction-to-single-parent-benefits/  /separated-parents/  301
-/how-a-parenting-plan-can-help-in-2024/  /separated-parents/  301
-/separated-parents/how-a-parenting-plan-can-help-in-2024/  /separated-parents/  301
-/separated-parents/co-parenting/how-a-parenting-plan-can-help-in-2024/  /separated-parents/  301
 /christmas-is-over-already/  /  301
+/separated-parents/child-maintenance/  /separated-parents/cms-changes-2025/  301
+/separated-parents/co-parenting/how-a-parenting-plan-can-help-in-2024/  /separated-parents/  301
+/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  /separated-parents/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/gentle-parenting-a-balanced-guide-for-uk-parents/  /parenthood/  301
+/separated-parents/co-parenting/what-is-co-parenting-the-ultimate-guide-to-raising-happy-kids-after-separation/  /separated-parents/what-is-co-parenting-the-ultimate-guide-to-raising-happy-kids-after-separation/  301
+# ORPHAN (target '/reviews/west-green-house-gardens-hampshire/' has no matching page): /things-to-do/west-green-house-gardens-hampshire/  /reviews/west-green-house-gardens-hampshire/  301
 /co-parenting-after-a-toxic-relationship-a-guide-to-positive-parenting/  /separated-parents/  301
-/co-parenting/  /separated-parents/  301
-/separated-parents/co-parenting/co-parenting-after-a-toxic-relationship-a-guide-to-positive-parenting/  /separated-parents/  301
-/guest-post-lockdown-baby-a-dads-perspective/  /parenthood/  301
-/is-narcissism-all-that-bad/  /  301
-/5-mindful-micro-moments-sprinkling-serenity-into-busy-parent-life/  /parenthood/  301
-/guest-post-bonding-ideas-for-dads-and-their-special-needs-children/  /parenthood/  301
-/buying-a-wheelchair/  /  301
-/stop-counting-the-minutes-and-start-seizing-the-days/  /  301
-/parenthood/5-mindful-micro-moments-sprinkling-serenity-into-busy-parent-life/  /parenthood/  301
-/guest-post-the-ultimate-guide-to-driving-safely-with-kids/  /parenthood/  301
-/things-to-do/  /reviews/  301
-/2024/04/  /  301
-/divorce/  /separated-parents/  301
-/page/2/  /  301
-/cover-my-bubble/  /  301
-/uncategorised/guest-post-the-ultimate-guide-to-driving-safely-with-kids/  /parenthood/  301
-/separated-parents/co-parenting-after-a-toxic-relationship-a-guide-to-positive-parenting/  /separated-parents/  301
-/the-breaking-da/  /  301
-/privacy-policy/  /privacy/  301
-/separated-parents/is-narcissism-all-that-bad/  /separated-parents/  301
-/parenting-guides/  /parenthood/  301
-/2020/03/  /  301
-/your-questions-answered/  /  301
-/uncategorised/is-narcissism-all-that-bad/  /  301
-/blog/  /  301
-/parenthood/reviews/  /reviews/  301
-/featured-on-gingerbread/  /  301
-/blog-standard/  /  301
-/2022/02/  /  301
-/featured-in-the-sunday-telegraphs-stella-magazine/  /  301
-/parenthood/featured-on-gingerbread/  /parenthood/  301
-/featured-post/  /  301
-/podcasts/  /  301
-/parenthood/guest-post-the-ultimate-guide-to-driving-safely-with-kids/  /parenthood/  301
-/page/3/  /  301
-/uncategorized/guest-post-an-unofficial-guide-to-new-baby-essentials/  /parenthood/  301
-/lateral/  /  301
-/2022/01/  /  301
-/uncategorised/buying-a-wheelchair/  /  301
-/2020/12/  /  301
-/guest-post-an-unofficial-guide-to-new-baby-essentials/  /parenthood/  301
-/separated-parents/co-parenting/featured-in-the-sunday-telegraphs-stella-magazine/  /separated-parents/  301
-/page/6/  /  301
-/the-breaking-dad/  /  301
-/2021/03/  /  301
-/uncategorised/christmas-is-over-already/  /  301
-/uncategorized/  /  301
-/2021/01/  /  301
-/2021/11/  /  301
-/2021/10/  /  301
-/parenthood/do-you-believe-in-yourself/  /parenthood/  301
-/page/7/  /  301
-/uncategorised/  /  301
-/2021/02/  /  301
-/uncategorised/evie-pencil/  /  301
-/title-bottom-aligned/  /  301
-/2020/11/  /  301
-/parenting-hacks-and-tips/  /parenthood/  301
-/a-world-full-of-opportunity/  /  301
-/parenting-thoughts/  /parenthood/  301
-/tatsu_gsections/blog-footer/  /  301
-/blog/page/3/  /  301
-/2021/12/  /  301
-/separated-parents/universal-credit-for-single-parents-a-complete-guide-2025/  /separated-parents/  301
-/2021/06/  /  301
-/elementor-8609/  /  301
-/uncategorized/christmas-is-over-already/  /  301
-/blogpagetest/  /  301
-/classic-blog/  /  301
-/lateral/page/8/  /  301
-/uncategorised/stop-counting-the-minutes-and-start-seizing-the-days/  /  301
-/elementor-8484/  /  301
-/payment-confirmation/  /  301
-/2023/05/  /  301
-/tatsu_footer/exponent-life-coach-footer/  /  301
-/lateral/page/4/  /  301
-/collaborations/  /  301
-/page/5/  /  301
-/tatsu_footer/exponent-blog-footer/  /  301
-/uncategorised/guest-post-an-unofficial-guide-to-new-baby-essentials/  /parenthood/  301
-/page/4/  /  301
-/parenthood/featured-on-family-action-this-week/  /parenthood/  301
-/tatsu_header/exponent-blog-header/  /  301
-/reviews/are-they-as-good-as-they-sound/  /reviews/  301
-/separated-parents/single-parent-benefits-guide-2025/  /separated-parents/  301
-/elementor-6871/  /  301
-/2021/09/  /  301
-/2024/02/  /  301
-/lateral/page/7/  /  301
-/2023/06/  /  301
-/lateral/page/9/  /  301
-/sample-page/  /  301
-/arts-and-crafts/  /reviews/  301
-/lifestyle-and-adventures/  /  301
-/blog/page/4/  /  301
-/parenthood/a-world-full-of-opportunity/  /parenthood/  301
-
-# =============================================================
-# TAG PAGE CLEANUP
-# =============================================================
 /tag/raising-strong-daughters/  /separated-parents/  301
+/co-parenting/  /separated-parents/  301
+/day-in-the-life/  /diary/day-in-the-life/  301
+# ORPHAN (target '/diary/the-importance-of-taking-time-for-yourself/' has no matching page): /parenthood/the-importance-of-taking-time-for-yourself/  /diary/the-importance-of-taking-time-for-yourself/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenting-hacks-and-tips/common-parenting-mistakes/  /parenthood/  301
+/grow-your-parenting-instagram/  /about/  301
+/separated-parents/co-parenting/co-parenting-after-a-toxic-relationship-a-guide-to-positive-parenting/  /separated-parents/  301
+/guest-post-lockdown-baby-a-dads-perspective/  /about/  301
+/parenthood/universal-credit-budget-changes/  /separated-parents/universal-credit-for-single-parents-a-complete-uk-guide-2025/  301
+/parenthood/day-in-the-life/  /diary/day-in-the-life/  301
+/parenthood/understanding-tax-free-childcare-a-guide-to-saving-on-childcare-costs/  /separated-parents/universal-credit-for-single-parents-a-complete-uk-guide-2025/  301
+/a-letter-to-my-daughter-on-international-womens-day/  /diary/a-letter-to-my-daughter-on-international-womens-day/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /5-mindful-micro-moments-sprinkling-serenity-into-busy-parent-life/  /parenthood/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /common-parenting-mistakes/  /parenthood/  301
+/is-narcissism-all-that-bad/  /  301
+# ORPHAN (target under /parenthood/ — not in generated content): /5-things-about-parenthood-that-nothing-can-prepare-you-for/  /parenthood/  301
+/guest-post-bonding-ideas-for-dads-and-their-special-needs-children/  /about/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /my-top-10-parenting-rules-to-live-by/  /parenthood/my-top-10-parenting-rules-to-live-by/  301
+# ORPHAN (target '/diary/the-importance-of-taking-time-for-yourself/' has no matching page): /the-importance-of-taking-time-for-yourself/  /diary/the-importance-of-taking-time-for-yourself/  301
+/the-next-chapter-blended-family/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
+# ORPHAN (target '/home-activities-for-kids/' has no matching page): /things-to-do/home-activities-for-kids/  /home-activities-for-kids/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/5-micro-mindfulness-practices-for-busy-parents/  /parenthood/  301
+/separated-parents/financial-planning-for-separated-parents/  /separated-parents/  301
 /tag/parenthood/  /separated-parents/  301
 /tag/separation/  /separated-parents/  301
-/tag/smol/  /  301
-/tag/kids-activities-blog/  /  301
+/uncategorised/cardboard-crafts-fish-tank/  /diary/cardboard-crafts-fish-tank/  301
+/buying-a-wheelchair/  /  301
+# ORPHAN (target '/diary/a-year-of-the-breaking-dad-on-instagram/' has no matching page): /co-parenting/a-year-of-the-breaking-dad-on-instagram/  /diary/a-year-of-the-breaking-dad-on-instagram/  301
+/dole-mandarins-in-juice/  /  301
+/guest-post-the-ultimate-guide-to-driving-safely-with-kids/  /about/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/5-mindful-micro-moments-sprinkling-serenity-into-busy-parent-life/  /parenthood/  301
+/parenthood/a-blended-family-all-the-ingredients/  /separated-parents/blended-family-challenge/  301
+/parenthood/reviews/kidkraft-majestic-mansion-dollhouse/  /reviews/kidkraft-majestic-mansion-dollhouse/  301
+/parenthood/when-a-temper-tantrum-isnt-a-temper-tantrum/  /diary/when-a-temper-tantrum-isnt-a-temper-tantrum/  301
+/stop-counting-the-minutes-and-start-seizing-the-days/  /  301
+/2020/03/  /  301
+/2024/04/  /  301
+/a-blended-family-all-the-ingredients/  /separated-parents/blended-family-challenge/  301
+/co-parenting/featured-4-tips-for-coping-with-separation/  /separated-parents/  301
+/cover-my-bubble/  /  301
+/divorce/  /separated-parents/  301
+/follower-focus-the-windsors/  /  301
+/page/2/  /  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenting-guides/  /parenthood/  301
+/parenting-guides/reviews/kidkraft-majestic-mansion-dollhouse/  /reviews/kidkraft-majestic-mansion-dollhouse/  301
+/privacy-policy/  /  301
+/separated-parents/co-parenting-after-a-toxic-relationship-a-guide-to-positive-parenting/  /separated-parents/  301
+/separated-parents/co-parenting/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  /separated-parents/the-role-of-mediation-in-co-parenting-after-a-toxic-relationship-a-comprehensive-guide/  301
+/separated-parents/is-narcissism-all-that-bad/  /separated-parents/  301
 /tag/grow-instagram/  /  301
-/tag/preparing-for-parenthood/  /  301
-/tag/raising-daughters/  /separated-parents/  301
+/tag/kids-activities-blog/  /  301
+/tag/smol/  /  301
+/the-breaking-da/  /  301
+/things-to-do/  /reviews/  301
+/uncategorised/guest-post-the-ultimate-guide-to-driving-safely-with-kids/  /about/  301
+/uncategorised/is-narcissism-all-that-bad/  /  301
+/uncategorised/our-first-vlog-on-youtube/  /about/  301
+/uncategorized/follower-focus-the-windsors/  /  301
+/uncategorized/the-next-chapter-blended-family/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
+/your-questions-answered/  /  301
+/10-things-you-should-start-doing-for-a-happier-life/  /  301
+/10k-instagram-followers/  /about/  301
+/20*/*/*/  /  301
+/2020/11/  /  301
+/2020/12/  /  301
+/2021/01/  /  301
+/2021/02/  /  301
+/2021/03/  /  301
+/2021/06/  /  301
+/2021/09/  /  301
+/2021/10/  /  301
+/2021/11/  /  301
+/2021/12/  /  301
+/2022/01/  /  301
+/2022/02/  /  301
+/2023/05/  /  301
+/2023/06/  /  301
+/2024/02/  /  301
+/5-effective-car-tips-to-ensure-a-safe-road-trip/  /  301
+/a-world-full-of-opportunity/  /  301
+# ORPHAN (target '/diary/a-year-of-the-breaking-dad-on-instagram/' has no matching page): /a-year-of-the-breaking-dad-on-instagram/  /diary/a-year-of-the-breaking-dad-on-instagram/  301
+/arts-and-crafts/  /reviews/  301
+/blog-standard/  /  301
+/blog/  /  301
+/blog/page/3/  /  301
+/blog/page/4/  /  301
+/blogpagetest/  /  301
+/category/arts-and-crafts/  /diary/  301
+/category/co-parenting/  /separated-parents/co-parenting/  301
+/category/divorce/  /separated-parents/rights-and-law/  301
+/category/featured-post/  /  301
+/category/parenthood/  /diary/  301
+/category/parenting-guides/  /diary/  301
+/category/parenting-hacks-and-tips/  /diary/  301
+/category/reviews/  /reviews/  301
+/category/separated-parents/  /separated-parents/  301
+/category/things-to-do/  /diary/  301
+/category/uncategorized/  /diary/  301
+/classic-blog/  /  301
+# ORPHAN (target '/diary/two-years-of-coparenting/' has no matching page): /co-parenting/two-years-of-coparenting/  /diary/two-years-of-coparenting/  301
+/co-parenting/we-moved-in-together/  /separated-parents/blended-family-challenge/  301
+/collaborations/  /  301
+# ORPHAN (target '/rss.xml' has no matching page): /comments/feed/  /rss.xml  301
+/diary-doting-daddy/  /  301
+/elementor-6871/  /  301
+/elementor-8484/  /  301
+/elementor-8609/  /  301
+/facing-into-parental-self-doubt-after-separation/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
+/featured-4-tips-for-coping-with-separation/  /separated-parents/  301
+/featured-in-the-sunday-telegraphs-stella-magazine/  /  301
+/featured-on-gingerbread/  /  301
+/featured-post/  /  301
+# ORPHAN (target '/rss.xml' has no matching page): /feed/  /rss.xml  301
+/guest-post-an-unofficial-guide-to-new-baby-essentials/  /about/  301
+/lateral/  /  301
+/lateral/page/4/  /  301
+/lateral/page/7/  /  301
+/lateral/page/8/  /  301
+/lateral/page/9/  /  301
+/lifestyle-and-adventures/  /  301
+/our-favourite-parent-bloggers/  /  301
+/our-first-vlog-on-youtube/  /about/  301
+/page/3/  /  301
+/page/4/  /  301
+/page/5/  /  301
+/page/6/  /  301
+/page/7/  /  301
+/parenthood/10-things-you-should-start-doing-for-a-happier-life/  /  301
+/parenthood/a-letter-to-my-daughter-on-international-womens-day/  /diary/a-letter-to-my-daughter-on-international-womens-day/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/a-world-full-of-opportunity/  /parenthood/  301
+/parenthood/ai-for-parents/  /diary/ai-for-parents/  301
+/parenthood/best-parenting-books-uk/  /diary/best-parenting-books-uk/  301
+/parenthood/best-toys-for-10-year-olds-2025-guide/  /diary/best-toys-for-10-year-olds-2025-guide/  301
+/parenthood/best-uk-coffee-subscriptions/  /diary/best-uk-coffee-subscriptions/  301
+/parenthood/diary-doting-daddy/  /  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/do-you-believe-in-yourself/  /parenthood/  301
+/parenthood/facing-into-parental-self-doubt-after-separation/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/featured-on-family-action-this-week/  /parenthood/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenthood/featured-on-gingerbread/  /parenthood/  301
+/parenthood/grow-your-parenting-instagram/  /about/  301
+/parenthood/guest-post-the-ultimate-guide-to-driving-safely-with-kids/  /about/  301
+/parenthood/must-haves-for-newborn-ultimate-checklist/  /diary/must-haves-for-newborn-ultimate-checklist/  301
+/parenthood/my-top-10-parenting-rules-to-live-by/  /diary/my-top-10-parenting-rules-to-live-by/  301
+/parenthood/newbie-windsor-store-launch/  /diary/newbie-windsor-store-launch/  301
+/parenthood/our-favourite-parent-bloggers/  /  301
+/parenthood/raising-stong-daughters/  /diary/  301
+/parenthood/reviews/  /reviews/  301
+/parenthood/sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  /diary/sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  301
+/parenthood/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  /diary/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  301
+/parenthood/this-is-fatherhood/  /diary/this-is-fatherhood/  301
+/parenthood/you-cant-pour-from-an-empty-cup/  /diary/you-cant-pour-from-an-empty-cup/  301
+/parenting-guides/5-effective-car-tips-to-ensure-a-safe-road-trip/  /  301
+/parenting-guides/dole-mandarins-in-juice/  /diary/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenting-hacks-and-tips/  /parenthood/  301
+# ORPHAN (target under /parenthood/ — not in generated content): /parenting-thoughts/  /parenthood/  301
+/payment-confirmation/  /  301
+/podcasts/  /  301
+/reviews/are-they-as-good-as-they-sound/  /reviews/  301
+/sample-page/  /  301
+# ORPHAN (target '/diary/a-year-of-the-breaking-dad-on-instagram/' has no matching page): /separated-parents/co-parenting/a-year-of-the-breaking-dad-on-instagram/  /diary/a-year-of-the-breaking-dad-on-instagram/  301
+/separated-parents/co-parenting/featured-in-the-sunday-telegraphs-stella-magazine/  /separated-parents/  301
+# ORPHAN (target '/diary/two-years-of-coparenting/' has no matching page): /separated-parents/co-parenting/two-years-of-coparenting/  /diary/two-years-of-coparenting/  301
+/separated-parents/co-parenting/we-moved-in-together/  /separated-parents/blended-family-challenge/  301
+/separated-parents/single-parent-benefits-guide-2025/  /separated-parents/  301
+/separated-parents/universal-credit-for-single-parents-a-complete-guide-2025/  /separated-parents/  301
+/tag/*  /  301
+/tag/activity-for-kids/  /  301
+/tag/blendedfamily/  /separated-parents/  301
+/tag/children-activities/  /  301
+/tag/dadblogger/  /  301
+/tag/divorce/  /  301
+/tag/ethical/  /  301
+/tag/follower-focus/  /  301
+/tag/fun-kids-activities/  /  301
 /tag/kidkraft-majestic-mansion/  /  301
 /tag/kidkraft/  /  301
 /tag/kids-blog/  /  301
-/tag/woodendollhouse/  /  301
-/tag/toy-review/  /reviews/  301
-/tag/children-activities/  /  301
-/tag/review/  /reviews/  301
-/tag/blendedfamily/  /separated-parents/  301
-/tag/activity-for-kids/  /  301
-/tag/sustainable/  /  301
-/tag/parenting/  /  301
-/tag/parentblog/  /  301
-/tag/parent-stories/  /  301
-/tag/ethical/  /  301
-/tag/questions-and-answers/  /  301
-/tag/follower-focus/  /  301
-/tag/fun-kids-activities/  /  301
-/tag/divorce/  /  301
-/tag/parentvlog/  /  301
-/tag/putting-children-first/  /  301
 /tag/narcissism/  /  301
-/tag/dadblogger/  /  301
-/tag/*  /  301
+/tag/parent-stories/  /  301
+/tag/parentblog/  /  301
+/tag/parenting/  /  301
+/tag/parentvlog/  /  301
+/tag/preparing-for-parenthood/  /  301
+/tag/putting-children-first/  /  301
+/tag/questions-and-answers/  /  301
+/tag/raising-daughters/  /separated-parents/  301
+/tag/review/  /reviews/  301
+/tag/sustainable/  /  301
+/tag/toy-review/  /reviews/  301
+/tag/woodendollhouse/  /  301
+/tatsu_footer/exponent-blog-footer/  /  301
+/tatsu_footer/exponent-life-coach-footer/  /  301
+/tatsu_gsections/blog-footer/  /  301
+/tatsu_header/exponent-blog-header/  /  301
+/the-breaking-dad/  /  301
+/this-is-fatherhood/  /diary/this-is-fatherhood/  301
+/title-bottom-aligned/  /  301
+/uncategorised/  /  301
+/uncategorised/10k-instagram-followers/  /about/  301
+/uncategorised/buying-a-wheelchair/  /  301
+/uncategorised/christmas-is-over-already/  /  301
+/uncategorised/evie-pencil/  /  301
+/uncategorised/follower-focus-the-windsors/  /  301
+/uncategorised/guest-post-an-unofficial-guide-to-new-baby-essentials/  /about/  301
+/uncategorised/stop-counting-the-minutes-and-start-seizing-the-days/  /  301
+/uncategorised/the-next-chapter-blended-family/  /separated-parents/introducing-a-new-partner-to-your-child-a-separated-parents-guide/  301
+/uncategorized/  /  301
+/uncategorized/10k-instagram-followers/  /about/  301
+/uncategorized/christmas-is-over-already/  /  301
+/uncategorized/guest-post-an-unofficial-guide-to-new-baby-essentials/  /about/  301
+/uncategorized/our-first-vlog-on-youtube/  /about/  301
+/when-a-temper-tantrum-isnt-a-temper-tantrum/  /diary/when-a-temper-tantrum-isnt-a-temper-tantrum/  301
+/wp-*  /  301
+/you-cant-pour-from-an-empty-cup/  /diary/you-cant-pour-from-an-empty-cup/  301
 
-# =============================================================
-# CATEGORY PACEWILDCARD RULES
-# =============================================================
-/category/separated-parents/*  /separated-parents/  301
-/category/reviews/*  /reviews/  301
-/category/parenthood/*  /parenthood/  301
-/category/co-parenting/*  /separated-parents/  301
-/category/coparenting/*  /separated-parents/  301
-/category/divorce/*  /separated-parents/  301
-/category/things-to-do/*  /reviews/  301
-/category/arts-and-crafts/*  /diary/  301
-/category/featured-post/*  /  301
-/category/parenting-guides/*  /parenthood/  301
-/category/parenting-hacks-and-tips/*  /parenthood/  301
-/category/uncategorized/*  /  301
-/category/uncategorised/*  /  301
-/category/*  /  301
-
-# =============================================================
-# AUTHOR PAGE CLEANUP
-# =============================================================
-/author/*  /about/  301
-
-# =============================================================
-# WORDPRESS ARTIFACTS
-# =============================================================
-/wp-admin/*  /  301
-/wp-admin  /  301
-/wp-login.php  /  301
-/feed/  /rss.xml  301
-/feed  /rss.xml  301
-/comments/feed/  /rss.xml  301
+# diary → parenting moves (IA shift to parenting pillar)
+/diary/ai-for-parents/  /parenting/ai-for-parents/  301
+/diary/best-parenting-books-uk/  /parenting/best-parenting-books-uk/  301
+/diary/best-toddler-travel-accessories/  /parenting/best-toddler-travel-accessories/  301
+/diary/best-toys-for-10-year-olds-2025-guide/  /parenting/best-toys-for-10-year-olds-2025-guide/  301
+/diary/my-top-10-parenting-rules-to-live-by/  /parenting/my-top-10-parenting-rules-to-live-by/  301
+/diary/must-haves-for-newborn-ultimate-checklist/  /parenting/must-haves-for-newborn-ultimate-checklist/  301
+/diary/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  /parenting/the-best-travel-friendly-toys-for-toddlers-ultimate-guide-2025/  301
+/diary/when-a-temper-tantrum-isnt-a-temper-tantrum/  /parenting/when-a-temper-tantrum-isnt-a-temper-tantrum/  301
+/diary/sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  /parenting/sustainable-family-the-start-of-a-sustainable-lifestyle-journey/  301
+/diary/cardboard-crafts-cardboard-laptop/  /parenting/cardboard-crafts-cardboard-laptop/  301
+/diary/cardboard-crafts-fish-tank/  /parenting/cardboard-crafts-fish-tank/  301
+/diary/things-to-do-with-kids-hampshire/  /parenting/things-to-do-with-kids-hampshire/  301

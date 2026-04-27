@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import PillarHeader from '~/components/PillarHeader.astro';
+import SectionTitle from '~/components/SectionTitle.astro';
 import PostCard from '~/components/PostCard.astro';
 
 export async function getStaticPaths() {
@@ -9,7 +11,7 @@ export async function getStaticPaths() {
       slug: 'co-parenting',
       label: 'Co-parenting',
       description: 'Practical guides to the mechanics of co-parenting in the UK — parenting plans, schedules, mediation, parallel parenting, and navigating conflict.',
-      intro: `Co-parenting is the arrangement most separated parents end up in, and it's harder than anyone tells you upfront. There's no script. There's no manual. There's just two people who used to be together, now trying to do right by a child they both love. I've been co-parenting Evie since 2016. I've made mistakes. I've had breakthroughs. And I've written about both.`,
+      intro: `Co-parenting is the arrangement most separated parents end up in, and it's harder than anyone tells you upfront. There's no script, no manual — just two people who used to be together, trying to do right by a child they both love. I've been co-parenting Evie since 2016. I've made mistakes, I've had breakthroughs, and I've written about both.`,
     },
     {
       slug: 'blended-family',
@@ -60,30 +62,26 @@ const subhubLabels: Record<string, string> = {
 ---
 
 <BaseLayout title={`${label} — The Breaking Dad`} description={description}>
-  <div class="subhub-page">
+  <PillarHeader
+    kicker="Separated parents"
+    title={label}
+    dek={intro}
+    breadcrumb={[
+      { label: 'Home', href: '/' },
+      { label: 'Separated parents', href: '/separated-parents/' },
+      { label, href: `/separated-parents/${slug}/` },
+    ]}
+  />
+
+  <section class="home-section" aria-label={`${label} posts`}>
     <div class="container">
-
-      <nav class="subhub-page__breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a>
-        <span aria-hidden="true"> / </span>
-        <a href="/separated-parents/">Separated parents</a>
-        <span aria-hidden="true"> / </span>
-        <span aria-current="page">{label}</span>
-      </nav>
-
-      <header class="subhub-page__header">
-        <h1 class="subhub-page__title">{label}</h1>
-        <div class="prose">
-          <p>{intro}</p>
-        </div>
-      </header>
-
       {sortedPosts.length > 0 ? (
-        <section>
-          <h2 class="subhub-page__posts-heading">
-            {sortedPosts.length} post{sortedPosts.length !== 1 ? 's' : ''} in {label.toLowerCase()}
-          </h2>
-          <div class="subhub-page__grid">
+        <>
+          <SectionTitle
+            kicker={`${sortedPosts.length} ${sortedPosts.length === 1 ? 'piece' : 'pieces'}`}
+            title={`Everything in ${label.toLowerCase()}`}
+          />
+          <div class="card-grid card-grid--3">
             {sortedPosts.map((post) => {
               const slugId = post.id.replace(/\.(md|mdx)$/, '');
               return (
@@ -100,70 +98,27 @@ const subhubLabels: Record<string, string> = {
               );
             })}
           </div>
-        </section>
+        </>
       ) : (
-        <p class="subhub-page__empty">
+        <p class="subhub-empty">
           Content for this topic is on its way. <a href="/separated-parents/">Browse all separated parents posts →</a>
         </p>
       )}
-
     </div>
-  </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .subhub-page {
-    padding-block: 2rem 5rem;
+  .home-section {
+    padding-block: 3.5rem 5rem;
   }
 
-  .subhub-page__breadcrumb {
+  .subhub-empty {
     font-family: var(--font-sans);
-    font-size: 0.8125rem;
     color: var(--color-muted);
-    margin-bottom: 1.25rem;
   }
 
-  .subhub-page__breadcrumb a {
-    color: var(--color-muted);
-    text-decoration: none;
-  }
-
-  .subhub-page__breadcrumb a:hover {
+  .subhub-empty a {
     color: var(--color-accent);
-    text-decoration: underline;
-  }
-
-  .subhub-page__title {
-    font-family: var(--font-sans);
-    font-size: clamp(2rem, 6vw, 2.75rem);
-    font-weight: 700;
-    margin: 0 0 1.25rem;
-  }
-
-  .subhub-page__header {
-    max-width: 680px;
-    margin-bottom: 3rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--color-border);
-  }
-
-  .subhub-page__posts-heading {
-    font-family: var(--font-sans);
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-muted);
-    margin-bottom: 1.5rem;
-  }
-
-  .subhub-page__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
-  }
-
-  .subhub-page__empty {
-    font-family: var(--font-sans);
-    color: var(--color-muted);
-    font-size: 1rem;
   }
 </style>

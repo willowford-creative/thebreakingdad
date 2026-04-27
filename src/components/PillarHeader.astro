@@ -1,0 +1,53 @@
+---
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+
+export interface Props {
+  kicker: string;
+  title: string;
+  dek?: string;
+  breadcrumb: { label: string; href: string }[];
+}
+
+const { kicker, title, dek, breadcrumb } = Astro.props;
+---
+
+<section class="pillar-header">
+  <div class="container--narrow">
+    <Breadcrumbs trail={breadcrumb} />
+    <span class="kicker">{kicker}</span>
+    <h1 class="pillar-header__title">{title}</h1>
+    {dek && <p class="pillar-header__dek"><slot name="dek">{dek}</slot></p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .pillar-header {
+    padding-block: 2.5rem 1.5rem;
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .pillar-header__title {
+    font-family: var(--font-display);
+    font-size: var(--fs-display-xl);
+    font-weight: 500;
+    line-height: var(--lh-display);
+    letter-spacing: -0.015em;
+    margin: 0.5rem 0 0.875rem;
+    color: var(--color-text);
+    max-width: 18ch;
+  }
+
+  .pillar-header__dek {
+    font-family: var(--font-display);
+    font-size: 1.1875rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+    margin: 0;
+    max-width: 54ch;
+  }
+
+  .pillar-header__dek :global(a) {
+    color: var(--color-accent);
+  }
+</style>

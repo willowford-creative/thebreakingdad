@@ -1,32 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import PostCard from '~/components/PostCard.astro';
 
-// Fetch all non-draft content
+type AnyEntry = Awaited<ReturnType<typeof getCollection>>[number];
+
 const allPosts = await getCollection('posts', ({ data }) => !data.draft);
 const allReviews = await getCollection('reviews', ({ data }) => !data.draft);
+const allParenting = await getCollection('parenting', ({ data }) => !data.draft);
 const allDiary = await getCollection('diary', ({ data }) => !data.draft);
 
-// Sort by date
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
-);
-const sortedReviews = allReviews.sort(
-  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
-);
-
-// Featured sections — first 4 of each
-const featuredPosts = sortedPosts.slice(0, 4);
-const featuredReviews = sortedReviews.slice(0, 4);
-
-// Latest — 6 most recent across posts + diary (not reviews — they have their own section)
-const combinedLatest = [
-  ...allPosts.map((p) => ({ ...p, _type: 'post' as const })),
-  ...allDiary.map((d) => ({ ...d, _type: 'diary' as const })),
-]
-  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
-  .slice(0, 6);
+const sortedPosts = allPosts.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+const sortedReviews = allReviews.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+const sortedParenting = allParenting.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+const sortedDiary = allDiary.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
 
 const subhubLabels: Record<string, string> = {
   'co-parenting': 'Co-parenting',
@@ -39,276 +25,709 @@ const subhubLabels: Record<string, string> = {
 const categoryLabels: Record<string, string> = {
   'family-tech': 'Family tech',
   'parenting-kit': 'Parenting kit',
-  'shoes-and-fitness': 'Shoes & fitness',
-  'home-and-lifestyle': 'Home & lifestyle',
+  'shoes-and-fitness': 'Shoes and fitness',
+  'home-and-lifestyle': 'Home and lifestyle',
   'days-out': 'Days out',
 };
+
+const topicLabels: Record<string, string> = {
+  'raising-kids': 'Raising kids',
+  'kit-and-gear': 'Kit and gear',
+  'family-life': 'Family life',
+  'days-out': 'Days out',
+  'digital-parenting': 'Digital parenting',
+};
+
+function slugOf(entry: AnyEntry): string {
+  return entry.id.replace(/\.(md|mdx)$/, '');
+}
+
+type FeatureItem = {
+  title: string;
+  description: string;
+  href: string;
+  image?: string;
+  imageAlt?: string;
+  kind: string;
+  date: Date;
+  byline?: string;
+};
+
+function asPost(p: typeof sortedPosts[number]): FeatureItem {
+  return {
+    title: p.data.title,
+    description: p.data.description,
+    href: `/separated-parents/${slugOf(p)}/`,
+    image: p.data.heroImage,
+    imageAlt: p.data.heroAlt,
+    kind: subhubLabels[p.data.subhub] ?? p.data.subhub,
+    date: p.data.publishDate,
+    byline: 'Dan Betts',
+  };
+}
+
+function asReview(r: typeof sortedReviews[number]): FeatureItem {
+  return {
+    title: r.data.title,
+    description: r.data.description,
+    href: `/reviews/${slugOf(r)}/`,
+    image: r.data.heroImage,
+    imageAlt: r.data.heroAlt,
+    kind: 'Reviews',
+    date: r.data.publishDate,
+    byline: 'Dan Betts',
+  };
+}
+
+function asParenting(p: typeof sortedParenting[number]): FeatureItem {
+  return {
+    title: p.data.title,
+    description: p.data.description,
+    href: `/parenting/${slugOf(p)}/`,
+    image: p.data.heroImage,
+    imageAlt: p.data.heroAlt,
+    kind: topicLabels[p.data.topic] ?? p.data.topic,
+    date: p.data.publishDate,
+    byline: 'Dan Betts',
+  };
+}
+
+const editorsPick: FeatureItem | null =
+  sortedPosts[0] ? asPost(sortedPosts[0]) :
+  sortedParenting[0] ? asParenting(sortedParenting[0]) :
+  sortedReviews[0] ? asReview(sortedReviews[0]) :
+  null;
+
+// Side list — 5 categorised items, mixed across collections, top recent
+const sideList: FeatureItem[] = [
+  ...sortedReviews.slice(0, 2).map(asReview),
+  ...sortedPosts.slice(1, 3).map(asPost),
+  ...sortedParenting.slice(0, 2).map(asParenting),
+]
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .slice(0, 5);
+
+// Article rows — next set of features
+const articleRows: FeatureItem[] = [
+  ...sortedReviews.slice(2, 4).map(asReview),
+  ...sortedParenting.slice(2, 5).map(asParenting),
+  ...sortedPosts.slice(3, 5).map(asPost),
+]
+  .sort((a, b) => b.date.getTime() - a.date.getTime())
+  .slice(0, 4);
+
+// Pink popular tiles — 6 items, mostly evergreen
+const popular: FeatureItem[] = [
+  ...sortedPosts.slice(0, 2).map(asPost),
+  ...sortedParenting.slice(0, 2).map(asParenting),
+  ...sortedReviews.slice(0, 2).map(asReview),
+].slice(0, 6);
+
+// Section shelves
+const separatedShelf = sortedPosts.slice(0, 3).map(asPost);
+const reviewsShelf = sortedReviews.slice(0, 3).map(asReview);
+
+// Strap line — "Issue 47 · April 2026" pattern based on month (months since Jan 2021 launch)
+const issueNumber = (() => {
+  const launch = new Date(2021, 0, 1);
+  const now = new Date();
+  return (now.getFullYear() - launch.getFullYear()) * 12 + (now.getMonth() - launch.getMonth());
+})();
+const issueLabel = new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(new Date());
+
+// Random illus class for placeholder visual variety
+const illusClasses = ['kids', 'review', 'frame', 'toys', 'travel', 'notes', 'window', 'sofa', 'car', 'book'];
+function illusForIndex(i: number): string {
+  return `illus--${illusClasses[i % illusClasses.length]}`;
+}
+
+const formatLong = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+const formatShort = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(d);
 ---
 
 <BaseLayout
-  title="The Breaking Dad — co-parenting, blended family life, and honest reviews"
-  description="A UK dad writing honestly about co-parenting, blended family life, and the products that actually work. From Hampshire, with a cup of strong tea."
+  title="The Breaking Dad — parenting, separated parenting, and honest reviews"
+  description="Honest writing for UK parents, especially the ones doing it after separation. Parenting guides, co-parenting and blended family advice, and long-term product reviews. From Hampshire."
 >
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container hero__inner">
-      <div class="hero__text">
-        <h1 class="hero__headline">
-          Real talk about co-parenting, blended families,<br class="hero__break" />
-          and the stuff that actually works.
-        </h1>
-        <p class="hero__sub">
-          I'm Dan. UK dad, eight years co-parenting, six years into blended family life
-          in Hampshire. No perfect-parenting nonsense here — just honest, lived experience.
-        </p>
-        <a href="/about/" class="hero__cta">Read my story →</a>
+  <!-- Strap line -->
+  <div class="strap">
+    <div class="container">
+      <span class="strap__text">
+        Honest writing from a UK dad — co-parenting, blended family, starting again.
+        <span class="strap__sep" aria-hidden="true">·</span>
+        Issue {issueNumber} · {issueLabel}
+      </span>
+    </div>
+  </div>
+
+  {/* ─── Lead row: hero card + side-list ─── */}
+  {editorsPick && (
+    <section class="lead-row">
+      <div class="container">
+        <div class="lead-row__grid">
+          <a href={editorsPick.href} class="hero-card">
+            {editorsPick.image ? (
+              <img src={editorsPick.image} alt={editorsPick.imageAlt ?? editorsPick.title} class="hero-card__img" loading="eager" />
+            ) : (
+              <div class="hero-card__img illus illus--review" aria-hidden="true"></div>
+            )}
+            <div class="hero-card__overlay"></div>
+            <div class="hero-card__text">
+              <span class="eyebrow">{editorsPick.kind}</span>
+              <h1 class="hero-card__title">{editorsPick.title}</h1>
+              <span class="hero-card__meta">{formatLong(editorsPick.date)}</span>
+            </div>
+          </a>
+
+          <div class="side-list">
+            {sideList.map((item) => (
+              <a href={item.href} class="item">
+                <span class="eyebrow eyebrow-accent">{item.kind}</span>
+                <span class="title">{item.title}</span>
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
-      <div class="hero__photo">
-        <img
-          src="/images/dan-betts-hero.jpg"
-          alt="Dan Betts — The Breaking Dad"
-          width="340"
-          height="400"
-          loading="eager"
-        />
+    </section>
+  )}
+
+  {/* ─── Article rows + sidebar ─── */}
+  {articleRows.length > 0 && (
+    <section class="rows-band">
+      <div class="container">
+        <div class="rows-band__grid">
+          <div class="rows-band__main">
+            {articleRows.map((row, i) => (
+              <a href={row.href} class="article-row">
+                <div class="article-row__img-wrap">
+                  {row.image ? (
+                    <img src={row.image} alt={row.imageAlt ?? row.title} class="article-row__img" loading="lazy" />
+                  ) : (
+                    <div class={`img illus ${illusForIndex(i)}`} aria-hidden="true"></div>
+                  )}
+                </div>
+                <div>
+                  <span class="eyebrow eyebrow-accent">{row.kind}</span>
+                  <h3 class="article-row__title">{row.title}</h3>
+                  <p class="article-row__dek">{row.description}</p>
+                  <span class="meta">{formatLong(row.date)}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <aside class="rows-band__aside">
+            <div class="newsletter">
+              <span class="newsletter__icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">
+                  <rect x="2" y="3" width="12" height="10" rx="1.5"/>
+                  <path d="m2.5 4.5 5.5 4 5.5-4"/>
+                </svg>
+              </span>
+              <h3 class="newsletter__title">The newsletter</h3>
+              <p class="newsletter__body">
+                One field note from me each month. Plus what's worth reading. No filler. Unsubscribe anytime.
+              </p>
+              <form class="newsletter__form" onsubmit="event.preventDefault();">
+                <input class="input" type="email" placeholder="Email address" disabled aria-label="Email address (sign-up coming soon)" />
+                <button class="btn" disabled style="width: 100%;">Subscribe</button>
+              </form>
+              <span class="newsletter__note">Sign-up wired in phase 2.</span>
+            </div>
+
+            <div class="connect">
+              <h3 class="connect__title">Stay connected</h3>
+              <a href="https://www.instagram.com/thebreakingdad" target="_blank" rel="noopener noreferrer" class="connect__row">
+                <span class="connect__ico" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+                    <rect x="2" y="2" width="12" height="12" rx="3"/><circle cx="8" cy="8" r="2.5"/><circle cx="11.5" cy="4.5" r="0.6" fill="currentColor"/>
+                  </svg>
+                </span>
+                <span class="connect__label">@thebreakingdad</span>
+              </a>
+              <a href="https://www.facebook.com/thebreakingdad" target="_blank" rel="noopener noreferrer" class="connect__row">
+                <span class="connect__ico" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M9.5 14V8.5h1.8l.3-2.2H9.5V4.9c0-.6.2-1 1.1-1h1.2V1.9c-.2 0-.9-.1-1.7-.1-1.7 0-2.9 1-2.9 2.9v1.6H5.4v2.2h1.8V14h2.3z"/>
+                  </svg>
+                </span>
+                <span class="connect__label">The Breaking Dad</span>
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ─── Pink "popular content" band ─── */}
+  {popular.length > 0 && (
+    <section class="section-pink">
+      <div class="container">
+        <h2>Popular right now…</h2>
+        <div class="popular-grid">
+          {popular.map((item, i) => (
+            <a href={item.href} class="tile">
+              {item.image ? (
+                <img src={item.image} alt={item.imageAlt ?? item.title} class="tile__img" loading="lazy" />
+              ) : (
+                <div class={`tile__img illus ${illusForIndex(i + 3)}`} aria-hidden="true"></div>
+              )}
+              <div class="ov"></div>
+              <div class="t">{item.title}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ─── Separated parents shelf ─── */}
+  {separatedShelf.length > 0 && (
+    <section class="shelf">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-head__title">Separated parents</h2>
+          <a href="/separated-parents/" class="more">More in separated parents →</a>
+        </div>
+        <div class="shelf__grid">
+          {separatedShelf.map((item, i) => (
+            <a href={item.href} class="card">
+              <div class="card__img-wrap">
+                {item.image ? (
+                  <img src={item.image} alt={item.imageAlt ?? item.title} class="card__img" loading="lazy" />
+                ) : (
+                  <div class={`img wide illus ${illusForIndex(i + 6)}`} aria-hidden="true"></div>
+                )}
+              </div>
+              <span class="eyebrow eyebrow-accent">{item.kind}</span>
+              <h3 class="card-title">{item.title}</h3>
+              <span class="meta">{item.byline} · {formatShort(item.date)}</span>
+              <p class="card-dek">{item.description}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ─── Reviews shelf ─── */}
+  {reviewsShelf.length > 0 && (
+    <section class="shelf shelf--last">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-head__title">Reviews</h2>
+          <a href="/reviews/" class="more">More reviews →</a>
+        </div>
+        <div class="shelf__grid">
+          {reviewsShelf.map((item, i) => (
+            <a href={item.href} class="card">
+              <div class="card__img-wrap">
+                {item.image ? (
+                  <img src={item.image} alt={item.imageAlt ?? item.title} class="card__img" loading="lazy" />
+                ) : (
+                  <div class={`img wide illus ${illusForIndex(i + 9)}`} aria-hidden="true"></div>
+                )}
+              </div>
+              <span class="eyebrow eyebrow-accent">{item.kind}</span>
+              <h3 class="card-title">{item.title}</h3>
+              <span class="meta">{item.byline} · {formatShort(item.date)}</span>
+              <p class="card-dek">{item.description}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* ─── About panel ─── */}
+  <section class="about-panel">
+    <div class="container">
+      <div class="about-panel__grid">
+        <div class="about-panel__text">
+          <h2 class="about-panel__title">About The Breaking Dad</h2>
+          <p>
+            I'm Dan, the dad behind The Breaking Dad — a UK blog about modern family life,
+            written from Hampshire. I co-parent my eldest daughter Evie and live in a blended family
+            with my partner Rosie, our two stepdaughters, and our youngest Millie.
+          </p>
+          <p>
+            This is the writing I needed when I was figuring it all out — separated parenting, blended
+            family life, the kit that genuinely helps. Honest. Useful. No filler.
+          </p>
+          <a href="/about/" class="btn ghost">More about Dan →</a>
+        </div>
+        <div class="about-panel__media">
+          <div class="about-panel__placeholder" aria-hidden="true">
+            <span class="about-panel__placeholder-text">A photo of Dan goes here</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
-
-  <!-- Featured: Separated parents -->
-  {featuredPosts.length > 0 && (
-    <section class="home-section">
-      <div class="container">
-        <div class="home-section__header">
-          <h2 class="home-section__title">Separated parents</h2>
-          <a href="/separated-parents/" class="home-section__more">
-            More in separated parents →
-          </a>
-        </div>
-        <div class="home-section__grid">
-          {featuredPosts.map((post) => {
-            const slugId = post.id.replace(/\.(md|mdx)$/, '');
-            return (
-              <PostCard
-                title={post.data.title}
-                description={post.data.description}
-                href={`/separated-parents/${slugId}/`}
-                image={post.data.heroImage}
-                imageAlt={post.data.heroAlt}
-                categoryLabel={subhubLabels[post.data.subhub] ?? post.data.subhub}
-                categoryHref={`/separated-parents/${post.data.subhub}/`}
-                date={post.data.publishDate}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <!-- Featured: Reviews -->
-  {featuredReviews.length > 0 && (
-    <section class="home-section home-section--tinted">
-      <div class="container">
-        <div class="home-section__header">
-          <h2 class="home-section__title">Honest reviews</h2>
-          <a href="/reviews/" class="home-section__more">More reviews →</a>
-        </div>
-        <div class="home-section__grid">
-          {featuredReviews.map((review) => {
-            const slugId = review.id.replace(/\.(md|mdx)$/, '');
-            return (
-              <PostCard
-                title={review.data.title}
-                description={review.data.description}
-                href={`/reviews/${slugId}/`}
-                image={review.data.heroImage}
-                imageAlt={review.data.heroAlt}
-                categoryLabel={categoryLabels[review.data.productCategory] ?? review.data.productCategory}
-                categoryHref="/reviews/"
-                date={review.data.publishDate}
-                rating={review.data.rating}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <!-- Latest posts -->
-  {combinedLatest.length > 0 && (
-    <section class="home-section">
-      <div class="container">
-        <h2 class="home-section__title">Latest</h2>
-        <div class="home-section__grid home-section__grid--3">
-          {combinedLatest.map((item) => {
-            const slugId = item.id.replace(/\.(md|mdx)$/, '');
-            const href = item._type === 'post'
-              ? `/separated-parents/${slugId}/`
-              : `/diary/${slugId}/`;
-
-            const postItem = item._type === 'post' ? item : null;
-            const diaryItem = item._type === 'diary' ? item : null;
-
-            return (
-              <PostCard
-                title={item.data.title}
-                description={item.data.description}
-                href={href}
-                image={item.data.heroImage}
-                imageAlt={item.data.heroAlt}
-                categoryLabel={
-                  postItem
-                    ? (subhubLabels[postItem.data.subhub] ?? postItem.data.subhub)
-                    : 'Diary'
-                }
-                categoryHref={
-                  postItem
-                    ? `/separated-parents/${postItem.data.subhub}/`
-                    : '/diary/'
-                }
-                date={item.data.publishDate}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  )}
 </BaseLayout>
 
 <style>
-  /* Hero */
-  .hero {
-    padding-block: 3rem 4rem;
-    border-bottom: 1px solid var(--color-border);
+  /* ─── Strap line ─── */
+  .strap {
+    background: var(--color-paper);
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 10px;
+    text-align: center;
+  }
+  .strap__text {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--color-ink-3);
+    letter-spacing: 0.02em;
+  }
+  .strap__sep {
+    color: var(--color-accent);
+    margin-inline: 6px;
   }
 
-  .hero__inner {
+  /* ─── Lead row ─── */
+  .lead-row {
+    background: var(--color-paper);
+    padding-block: 48px 32px;
+  }
+
+  .lead-row__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+    gap: 28px;
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .lead-row__grid {
+      grid-template-columns: 1.55fr 1fr;
+      gap: 36px;
+    }
+  }
+
+  /* Hero card override (4:3 + overlay + white text bottom-left) */
+  .hero-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background: var(--color-paper-2);
+    display: block;
+    transition: box-shadow .3s ease;
+  }
+  .hero-card:hover { box-shadow: 0 24px 50px -18px rgba(0,0,0,0.30); }
+  .hero-card__img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s var(--ease-soft);
+  }
+  .hero-card:hover .hero-card__img { transform: scale(1.04); }
+  .hero-card__overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 25%, rgba(0,0,0,0.7) 100%);
+  }
+  .hero-card__text {
+    position: absolute;
+    left: 28px; right: 28px; bottom: 28px;
+    color: #fff;
+  }
+  .hero-card__text .eyebrow {
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .hero-card__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(22px, 3.2vw, 30px);
+    line-height: 1.18;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+    max-width: 580px;
+    color: #fff;
+    margin: 0;
+  }
+  .hero-card__meta {
+    color: rgba(255,255,255,0.78);
+    margin-top: 10px;
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+  }
+
+  /* Side list */
+  .side-list { display: block; }
+  .side-list .item {
+    display: block;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--color-rule);
+    text-decoration: none;
+    position: relative;
+    padding-left: 0;
+    transition: padding-left .25s var(--ease-soft);
+  }
+  .side-list .item:first-child { padding-top: 0; }
+  .side-list .item:last-child { border-bottom: none; }
+  .side-list .item .eyebrow { display: block; margin-bottom: 6px; }
+  .side-list .item .title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 1.35;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
+    display: block;
+  }
+  .side-list .item:hover .title { color: var(--color-accent); }
+  .side-list .item::before {
+    content: "";
+    position: absolute;
+    left: -14px; top: 50%;
+    transform: translateY(-50%);
+    width: 0; height: 1.5px;
+    background: var(--color-accent);
+    transition: width .25s var(--ease-soft);
+  }
+  .side-list .item:hover { padding-left: 14px; }
+  .side-list .item:hover::before { width: 10px; }
+
+  /* ─── Article rows + sidebar ─── */
+  .rows-band {
+    background: var(--color-paper);
+    padding-block: 16px 80px;
+  }
+
+  .rows-band__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .rows-band__grid {
+      grid-template-columns: 1.55fr 1fr;
+      gap: 36px;
+    }
+  }
+
+  .rows-band__main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .article-row {
+    text-decoration: none;
+    color: inherit;
+  }
+  .article-row__img-wrap {
+    aspect-ratio: 4/3;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .article-row__img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s var(--ease-soft);
+  }
+  .article-row:hover .article-row__img { transform: scale(1.04); }
+  .article-row .img { width: 100%; height: 100%; }
+
+  /* Sidebar */
+  .rows-band__aside {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .newsletter__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.014em;
+    margin: 0 0 8px;
+    color: var(--color-ink);
+  }
+  .newsletter__body {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    margin: 0 0 14px;
+  }
+  .newsletter__form {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .newsletter__note {
+    font-family: var(--font-sans);
+    font-size: 11px;
+    color: var(--color-ink-3);
+    font-style: italic;
+  }
+
+  .connect {
+    padding-inline: 4px;
+  }
+  .connect__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.012em;
+    margin: 0 0 14px;
+    color: var(--color-ink);
+  }
+  .connect__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    text-decoration: none;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+  .connect__row:hover { color: var(--color-accent); }
+  .connect__ico {
+    width: 32px; height: 32px;
+    background: var(--color-accent);
+    color: #fff;
+    border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  /* ─── Pink popular band overrides ─── */
+  .popular-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 720px) {
+    .popular-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+  }
+
+  .tile__img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s var(--ease-soft);
+  }
+  .tile:hover .tile__img { transform: scale(1.04); }
+
+  /* ─── Section shelves ─── */
+  .shelf {
+    background: var(--color-paper);
+    padding-block: 80px 0;
+  }
+  .shelf--last { padding-block: 80px 80px; }
+
+  .shelf__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  @media (min-width: 720px) {
+    .shelf__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .card {
+    text-decoration: none;
+    color: inherit;
+  }
+  .card__img-wrap {
+    aspect-ratio: 16/10;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .card__img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s var(--ease-soft);
+  }
+  .card:hover .card__img { transform: scale(1.04); }
+  .card .img { width: 100%; height: 100%; }
+  .card .eyebrow { display: block; margin-bottom: 6px; }
+  .card .meta { display: block; margin: 4px 0 8px; }
+  .card .card-dek { margin-top: 0; }
+
+  /* ─── About panel ─── */
+  .about-panel {
+    background: var(--color-paper-2);
+    padding-block: 88px;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .about-panel__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
     align-items: center;
   }
 
-  @media (min-width: 768px) {
-    .hero__inner {
-      grid-template-columns: 1fr auto;
+  @media (min-width: 900px) {
+    .about-panel__grid {
+      grid-template-columns: 1fr 1.2fr;
+      gap: 56px;
     }
   }
 
-  .hero__headline {
-    font-family: var(--font-serif);
-    font-size: clamp(1.875rem, 5vw, 3rem);
-    font-weight: 400;
-    line-height: 1.25;
-    margin: 0 0 1rem;
-    color: var(--color-text);
-  }
-
-  .hero__break {
-    display: none;
-  }
-
-  @media (min-width: 768px) {
-    .hero__break {
-      display: inline;
-    }
-  }
-
-  .hero__sub {
-    font-family: var(--font-sans);
-    font-size: 1.0625rem;
-    line-height: 1.7;
-    color: var(--color-muted);
-    margin: 0 0 1.5rem;
-    max-width: 520px;
-  }
-
-  .hero__cta {
-    display: inline-block;
-    background: var(--color-accent);
-    color: white;
-    font-family: var(--font-sans);
-    font-size: 0.9375rem;
-    font-weight: 600;
-    text-decoration: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.5rem;
-    transition: background 0.15s;
-  }
-
-  .hero__cta:hover {
-    background: color-mix(in srgb, var(--color-accent) 85%, black);
-    text-decoration: none;
-  }
-
-  .hero__photo {
-    flex-shrink: 0;
-  }
-
-  .hero__photo img {
-    width: 240px;
-    height: 280px;
-    object-fit: cover;
-    border-radius: 1rem;
-    border: 3px solid var(--color-highlight);
-  }
-
-  @media (min-width: 768px) {
-    .hero__photo img {
-      width: 300px;
-      height: 360px;
-    }
-  }
-
-  /* Sections */
-  .home-section {
-    padding-block: 3.5rem;
-  }
-
-  .home-section--tinted {
-    background: var(--color-surface);
-  }
-
-  .home-section__header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-
-  .home-section__title {
-    font-family: var(--font-sans);
-    font-size: 1.5rem;
+  .about-panel__title {
+    font-family: var(--font-display);
     font-weight: 700;
-    margin: 0;
-    color: var(--color-text);
+    font-size: 32px;
+    letter-spacing: -0.018em;
+    line-height: 1.15;
+    margin: 0 0 18px;
+    color: var(--color-ink);
   }
 
-  .home-section__more {
+  .about-panel__text p {
     font-family: var(--font-sans);
-    font-size: 0.875rem;
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-ink-2);
+    margin: 0 0 14px;
+  }
+
+  .about-panel__media {
+    aspect-ratio: 5/4;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .about-panel__placeholder {
+    width: 100%; height: 100%;
+    background:
+      linear-gradient(135deg,
+        color-mix(in srgb, var(--color-ink) 4%, var(--color-paper-2)),
+        color-mix(in srgb, var(--color-ink) 12%, var(--color-paper-2))
+      );
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-sans);
+    font-size: 12px;
     font-weight: 500;
-    color: var(--color-accent);
-    text-decoration: none;
-    white-space: nowrap;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
   }
 
-  .home-section__more:hover {
-    text-decoration: underline;
-  }
-
-  .home-section__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.25rem;
-  }
-
-  .home-section__grid--3 {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  /* Mobile: shelves go single column */
+  @media (max-width: 720px) {
+    .shelf { padding-block: 48px 0; }
+    .shelf--last { padding-block: 48px 48px; }
+    .section-pink { padding-block: 48px; }
+    .lead-row { padding-block: 32px 24px; }
+    .rows-band { padding-block: 8px 48px; }
+    .about-panel { padding-block: 56px; }
   }
 </style>

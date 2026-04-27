@@ -1,0 +1,65 @@
+---
+export interface Item {
+  title: string;
+  href: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+export interface Props {
+  title?: string;
+  items: Item[];
+}
+
+const { title = 'Keep reading', items } = Astro.props;
+
+const illusClasses = ['kids', 'review', 'frame', 'toys', 'travel', 'notes', 'window', 'sofa', 'car', 'book'];
+function illusForIndex(i: number): string {
+  return `illus--${illusClasses[i % illusClasses.length]}`;
+}
+---
+
+{items.length > 0 && (
+  <section class="keep-reading section-pink">
+    <div class="container">
+      <h2>{title}</h2>
+      <div class="keep-reading__grid">
+        {items.slice(0, 3).map((item, i) => (
+          <a href={item.href} class="tile">
+            {item.image ? (
+              <img src={item.image} alt={item.imageAlt ?? item.title} class="tile__img" loading="lazy" />
+            ) : (
+              <div class={`tile__img illus ${illusForIndex(i)}`} aria-hidden="true"></div>
+            )}
+            <div class="ov"></div>
+            <div class="t">{item.title}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .keep-reading {
+    margin-top: 56px;
+  }
+  .keep-reading__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  @media (min-width: 720px) {
+    .keep-reading__grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+  }
+  .tile__img {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s var(--ease-soft);
+  }
+  .tile:hover .tile__img { transform: scale(1.04); }
+</style>

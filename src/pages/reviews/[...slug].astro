@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import ReviewLayout from '~/layouts/ReviewLayout.astro';
+import { readingTimeFromBody } from '~/utils/readingTime';
 
 export async function getStaticPaths() {
   const reviews = await getCollection('reviews', ({ data }) => !data.draft);
@@ -11,9 +12,10 @@ export async function getStaticPaths() {
 }
 
 const { review } = Astro.props;
-const { Content } = await render(review);
+const { Content, headings } = await render(review);
 
 const slug = review.id.replace(/\.(md|mdx)$/, '');
+const readingMinutes = readingTimeFromBody(review.body);
 ---
 
 <ReviewLayout
@@ -33,6 +35,9 @@ const slug = review.id.replace(/\.(md|mdx)$/, '');
   affiliateDisclaimer={review.data.affiliateDisclaimer}
   slug={slug}
   tags={review.data.tags}
+  readingMinutes={readingMinutes}
+  headings={headings}
+  issueNumber={review.data.issueNumber}
 >
   <Content />
 </ReviewLayout>

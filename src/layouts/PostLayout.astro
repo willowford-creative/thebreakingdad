@@ -1,8 +1,21 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
-import AuthorBio from '~/components/AuthorBio.astro';
-import RelatedPosts from '~/components/RelatedPosts.astro';
+import FieldNoteTag from '~/components/FieldNoteTag.astro';
+import AuthorChip from '~/components/AuthorChip.astro';
+import ExperienceNote from '~/components/ExperienceNote.astro';
+import KeepReading from '~/components/KeepReading.astro';
+import ReadingProgress from '~/components/ReadingProgress.astro';
+import TableOfContents from '~/components/TableOfContents.astro';
+import RelatedRail from '~/components/RelatedRail.astro';
+import NewsletterInline from '~/components/NewsletterInline.astro';
+
+export interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
 
 export interface Props {
   title: string;
@@ -17,6 +30,9 @@ export interface Props {
   slug: string;
   tags?: string[];
   relatedSlugs?: string[];
+  readingMinutes?: number;
+  headings?: Heading[];
+  issueNumber?: number;
 }
 
 const {
@@ -32,6 +48,9 @@ const {
   slug,
   tags = [],
   relatedSlugs = [],
+  readingMinutes,
+  headings = [],
+  issueNumber,
 } = Astro.props;
 
 const siteUrl = 'https://thebreakingdad.co.uk';
@@ -61,29 +80,18 @@ const articleSchema = {
   url: canonicalUrl,
   datePublished: publishDate.toISOString(),
   dateModified: (updatedDate ?? publishDate).toISOString(),
-  author: {
-    '@type': 'Person',
-    name: 'Dan Betts',
-    url: `${siteUrl}/about/`,
-  },
+  author: { '@type': 'Person', name: 'Dan Betts', url: `${siteUrl}/about/` },
   publisher: {
     '@type': 'Organization',
     name: 'The Breaking Dad',
     url: siteUrl,
-    logo: {
-      '@type': 'ImageObject',
-      url: `${siteUrl}/images/logo.png`,
-    },
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/images/logo.png` },
   },
   ...(heroImage ? { image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}` } : {}),
   keywords: tags.join(', '),
-  mainEntityOfPage: {
-    '@type': 'WebPage',
-    '@id': canonicalUrl,
-  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
 };
 
-// BreadcrumbList JSON-LD
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -95,19 +103,19 @@ const breadcrumbSchema = {
   })),
 };
 
-const formattedDate = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-}).format(publishDate);
-
-const formattedUpdatedDate = updatedDate
-  ? new Intl.DateTimeFormat('en-GB', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(updatedDate)
-  : null;
+// Related items — most-recent posts in same subhub, excluding current
+const allPosts = await getCollection('posts', ({ data, id }) => !data.draft);
+const relatedItems = allPosts
+  .filter((p) => p.data.subhub === subhub && p.id.replace(/\.(md|mdx)$/, '') !== slug)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3)
+  .map((p) => ({
+    title: p.data.title,
+    href: `/separated-parents/${p.id.replace(/\.(md|mdx)$/, '')}/`,
+    image: p.data.heroImage,
+    imageAlt: p.data.heroAlt,
+    kind: subhubLabels[p.data.subhub] ?? p.data.subhub,
+  }));
 ---
 
 <BaseLayout
@@ -124,150 +132,168 @@ const formattedUpdatedDate = updatedDate
     <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
   </Fragment>
 
-  <article class="post-layout">
-    <div class="container--narrow">
-      <Breadcrumbs trail={breadcrumbTrail} />
+  <ReadingProgress />
 
-      {heroImage && (
-        <div class="post-layout__hero">
-          <img src={heroImage} alt={heroAlt ?? title} width="720" height="405" loading="eager" />
-        </div>
-      )}
-
-      <header class="post-layout__header">
-        <div class="post-layout__meta">
-          <a href={`/separated-parents/${subhub}/`} class="post-layout__subhub-tag">
-            {subhubLabels[subhub] ?? subhub}
-          </a>
-          <time datetime={publishDate.toISOString()}>
-            {formattedDate}
-          </time>
-          {formattedUpdatedDate && formattedUpdatedDate !== formattedDate && (
-            <span class="post-layout__updated">
-              Updated {formattedUpdatedDate}
-            </span>
-          )}
-        </div>
-        <h1 class="post-layout__title">{title}</h1>
-        <p class="post-layout__description">{description}</p>
-      </header>
-
-      {ymylDisclaimer && (
-        <div class="ymyl-disclaimer" role="note">
-          <strong>Important:</strong> This article covers benefits, legal rights, or financial information.
-          While I've done my best to keep it accurate, rules change and situations vary.
-          Always check with an official source — <a href="https://www.gov.uk" target="_blank" rel="noopener">GOV.UK</a>,
-          Citizens Advice, or a qualified professional — before making any decisions.
-        </div>
-      )}
-
-      <div class="experience-note" role="note">
-        {experienceNote}
-      </div>
-
-      <div class="prose">
-        <slot />
-      </div>
-
-      <div class="post-layout__author-section">
-        <AuthorBio variant="default" />
+  <article class="post-layout" id="post-content">
+    <div class="post-layout__crumb-row">
+      <div class="container">
+        <Breadcrumbs trail={breadcrumbTrail} />
       </div>
     </div>
 
-    {relatedSlugs.length > 0 && (
-      <div class="post-layout__related">
+    <header class="post-layout__head">
+      <div class="container--narrow">
+        <FieldNoteTag number={issueNumber} />
+        <span class="eyebrow eyebrow-accent post-layout__kicker">
+          {subhubLabels[subhub] ?? subhub}
+        </span>
+        <h1 class="display-2 post-layout__title">{title}</h1>
+        <p class="lede post-layout__lede">{description}</p>
+        <AuthorChip date={publishDate} readingMinutes={readingMinutes} />
+      </div>
+
+      {heroImage && (
         <div class="container">
-          <RelatedPosts slugs={relatedSlugs} />
+          <figure class="post-layout__hero">
+            <img src={heroImage} alt={heroAlt ?? title} width="1200" height="525" loading="eager" />
+            {heroAlt && <figcaption class="meta text-c">{heroAlt}</figcaption>}
+          </figure>
+        </div>
+      )}
+    </header>
+
+    <div class="post-layout__body">
+      <div class="container">
+        <div class="post-layout__grid">
+          <TableOfContents headings={headings} totalMinutes={readingMinutes} />
+
+          <div class="post-layout__main">
+            {ymylDisclaimer && (
+              <div class="ymyl">
+                <div class="ymyl__icon" aria-hidden="true">!</div>
+                <div>
+                  <strong>This is one parent's experience, not legal or financial advice.</strong>
+                  Rules change. Always check on <a href="https://www.gov.uk" target="_blank" rel="noopener">GOV.UK</a>
+                  or talk to a qualified professional before making decisions.
+                </div>
+              </div>
+            )}
+
+            <div class="prose">
+              <slot />
+            </div>
+
+            <NewsletterInline />
+
+            <ExperienceNote body={experienceNote} />
+
+            <div class="post-layout__filed">
+              <span class="meta">Filed under: <a href={`/separated-parents/${subhub}/`}>{subhubLabels[subhub] ?? subhub}</a></span>
+            </div>
+          </div>
+
+          <RelatedRail items={relatedItems} title="More on this" />
         </div>
       </div>
-    )}
+    </div>
+
+    <KeepReading items={relatedItems} title="Keep reading" />
   </article>
 </BaseLayout>
 
 <style>
   .post-layout {
-    padding-block: 2rem 4rem;
+    background: var(--color-paper);
   }
 
-  .post-layout__hero {
-    margin-bottom: 2rem;
-    border-radius: 0.75rem;
-    overflow: hidden;
-    aspect-ratio: 16 / 9;
+  .post-layout__crumb-row {
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 14px;
   }
 
-  .post-layout__hero img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    margin: 0;
+  .post-layout__head {
+    padding-block: 44px 0;
   }
 
-  .post-layout__header {
-    margin-bottom: 2rem;
-  }
-
-  .post-layout__meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    font-family: var(--font-sans);
-    font-size: 0.8125rem;
-    color: var(--color-muted);
-    margin-bottom: 1rem;
-  }
-
-  .post-layout__subhub-tag {
-    display: inline-block;
-    background: color-mix(in srgb, var(--color-accent) 12%, var(--color-background));
-    color: var(--color-accent);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
-    padding: 0.2rem 0.6rem;
-    border-radius: 2rem;
-    font-weight: 500;
-    text-decoration: none;
-    font-size: 0.75rem;
-    letter-spacing: 0.02em;
-  }
-
-  .post-layout__subhub-tag:hover {
-    background: color-mix(in srgb, var(--color-accent) 20%, var(--color-background));
-    text-decoration: none;
-  }
-
-  .post-layout__updated {
-    font-style: italic;
+  .post-layout__kicker {
+    display: block;
+    margin-bottom: 16px;
   }
 
   .post-layout__title {
-    font-family: var(--font-sans);
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    font-weight: 700;
-    line-height: 1.2;
-    margin: 0 0 0.75rem;
-    color: var(--color-text);
+    margin: 0 0 20px;
+    text-wrap: balance;
   }
 
-  .post-layout__description {
-    font-family: var(--font-serif);
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: var(--color-muted);
+  .post-layout__lede {
+    margin-bottom: 22px;
+  }
+
+  .post-layout__hero {
+    margin: 36px 0 0;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16/7;
+  }
+
+  .post-layout__hero img {
+    width: 100%; height: 100%;
+    object-fit: cover;
     margin: 0;
+    border-radius: 0;
   }
 
-  .post-layout__author-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--color-border);
+  .post-layout__hero figcaption {
+    margin-top: 12px;
+    text-align: center;
   }
 
-  .post-layout__related {
-    margin-top: 4rem;
-    padding-top: 3rem;
-    border-top: 2px solid var(--color-border);
-    background: var(--color-surface);
-    padding-bottom: 3rem;
+  .post-layout__body {
+    padding-block: 48px 0;
+  }
+
+  .post-layout__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  @media (min-width: 1100px) {
+    .post-layout__grid {
+      grid-template-columns: 200px minmax(0, 1fr) 260px;
+      gap: 40px;
+      align-items: start;
+    }
+  }
+
+  .post-layout__main {
+    max-width: 680px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .post-layout__main .prose { max-width: 680px; }
+
+  /* Hide TOC + related-rail on tablet/mobile (related still shows as Keep-reading band) */
+  @media (max-width: 1099px) {
+    .post-layout__grid > .toc,
+    .post-layout__grid > .related-rail {
+      display: none;
+    }
+  }
+
+  .post-layout__filed {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .post-layout__filed a {
+    color: var(--color-accent);
+  }
+
+  /* FieldNoteTag spacing */
+  .post-layout__head .field-note-tag {
+    margin-bottom: 18px;
   }
 </style>

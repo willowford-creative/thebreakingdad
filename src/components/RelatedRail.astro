@@ -1,0 +1,111 @@
+---
+export interface Item {
+  title: string;
+  href: string;
+  image?: string;
+  imageAlt?: string;
+  kind?: string;
+}
+
+export interface Props {
+  title?: string;
+  items: Item[];
+}
+
+const { title = 'More on this', items } = Astro.props;
+
+const illusClasses = ['kids', 'review', 'frame', 'toys', 'travel', 'notes', 'window', 'sofa', 'car', 'book'];
+function illusFor(seed: string): string {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) | 0;
+  return `illus--${illusClasses[Math.abs(h) % illusClasses.length]}`;
+}
+---
+
+{items.length > 0 && (
+  <aside class="related-rail" aria-label={title}>
+    <span class="eyebrow">{title}</span>
+    <div class="related-rail__list">
+      {items.map((item) => (
+        <a href={item.href} class="related-rail__card">
+          <div class="related-rail__img-wrap">
+            {item.image ? (
+              <img src={item.image} alt={item.imageAlt ?? item.title} loading="lazy" />
+            ) : (
+              <div class={`related-rail__placeholder illus ${illusFor(item.href)}`} aria-hidden="true"></div>
+            )}
+          </div>
+          {item.kind && <span class="eyebrow eyebrow-accent related-rail__kind">{item.kind}</span>}
+          <h3 class="related-rail__title">{item.title}</h3>
+        </a>
+      ))}
+    </div>
+  </aside>
+)}
+
+<style>
+  .related-rail {
+    position: sticky;
+    top: 90px;
+    align-self: start;
+  }
+
+  .related-rail .eyebrow {
+    display: block;
+    margin-bottom: 14px;
+  }
+
+  .related-rail__list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .related-rail__card {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .related-rail__img-wrap {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: var(--color-paper-2);
+  }
+
+  .related-rail__img-wrap img,
+  .related-rail__placeholder {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .5s var(--ease-soft);
+  }
+
+  .related-rail__card:hover .related-rail__img-wrap img,
+  .related-rail__card:hover .related-rail__placeholder {
+    transform: scale(1.04);
+  }
+
+  .related-rail__kind {
+    font-size: 10px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .related-rail__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.3;
+    letter-spacing: -0.008em;
+    color: var(--color-ink);
+    margin: 0;
+    text-wrap: balance;
+    transition: color 0.15s;
+  }
+
+  .related-rail__card:hover .related-rail__title { color: var(--color-accent); }
+</style>

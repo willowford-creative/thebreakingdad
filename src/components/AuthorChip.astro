@@ -1,0 +1,70 @@
+---
+export interface Props {
+  name?: string;
+  initial?: string;
+  date: Date;
+  readingMinutes?: number;
+}
+
+const { name = 'Dan Betts', initial = 'D', date, readingMinutes } = Astro.props;
+
+const formatted = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(date);
+---
+
+<div class="author-chip">
+  <span class="author-chip__avatar" aria-hidden="true">{initial}</span>
+  <span class="author-chip__meta">
+    By <strong>{name}</strong>
+    {readingMinutes && (
+      <>
+        <span class="author-chip__sep" aria-hidden="true">·</span>
+        <span>{readingMinutes} min read</span>
+      </>
+    )}
+    <span class="author-chip__sep" aria-hidden="true">·</span>
+    <time datetime={date.toISOString()}>{formatted}</time>
+  </span>
+</div>
+
+<style>
+  .author-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-block: 12px 28px;
+  }
+
+  .author-chip__avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-deep));
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .author-chip__meta {
+    font-family: var(--font-sans);
+    font-size: 12.5px;
+    color: var(--color-ink-3);
+  }
+
+  .author-chip__meta strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+
+  .author-chip__sep {
+    margin-inline: 6px;
+    color: var(--color-ink-4);
+  }
+</style>

@@ -1,0 +1,37 @@
+---
+export interface Props {
+  targetId?: string;
+}
+
+const { targetId = 'post-content' } = Astro.props;
+---
+
+<div class="read-progress" data-target={targetId} role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Reading progress"></div>
+
+<script is:inline define:vars={{ targetId }}>
+  function initReadingProgress() {
+    const bar = document.querySelector('.read-progress[data-target="' + targetId + '"]');
+    if (!bar) return;
+    const target = document.getElementById(targetId);
+    if (!target) return;
+
+    function onScroll() {
+      const rect = target.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const scrolled = -rect.top;
+      const pct = Math.max(0, Math.min(1, scrolled / Math.max(1, total)));
+      bar.style.width = (pct * 100) + '%';
+      bar.setAttribute('aria-valuenow', String(Math.round(pct * 100)));
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initReadingProgress);
+  } else {
+    initReadingProgress();
+  }
+</script>

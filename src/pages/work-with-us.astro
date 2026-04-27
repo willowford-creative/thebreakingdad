@@ -1,96 +1,577 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const brands = [
+  { name: 'Huel', logo: '/images/brands/huel.svg' },
+  { name: 'Tonies', logo: '/images/brands/tonies.svg' },
+  { name: 'Invisalign', logo: '/images/brands/invisalign.svg' },
+  { name: 'Disney', logo: '/images/brands/disney.svg' },
+  { name: 'Amazon', logo: '/images/brands/amazon.svg' },
+  { name: 'ASDA', logo: '/images/brands/asda.svg' },
+];
+
+const services = [
+  'User Generated Content (UGC)',
+  'Social Collabs',
+  'Reviews',
+  'Podcast Appearances',
+];
 ---
 
 <BaseLayout
   title="Work with us — The Breaking Dad"
-  description="Brand and PR collaboration enquiries for The Breaking Dad. Based in Hampshire, writing about family life, co-parenting, and product reviews for an engaged UK parent audience."
+  description="Brand partnerships, UGC, and social collabs with The Breaking Dad. 75k+ followers, 100+ brand partnerships, honest content that speaks to real parents."
 >
-  <div class="static-page">
-    <div class="container--narrow">
+  <!-- Hero -->
+  <section class="wwu-hero">
+    <div class="container">
+      <h1 class="wwu-hero__title">
+        Real stories.<br />
+        Powerful collaborations.
+      </h1>
 
-      <nav class="static-page__breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a>
-        <span aria-hidden="true"> / </span>
-        <span aria-current="page">Work with us</span>
-      </nav>
+      <ul class="wwu-stats">
+        <li>
+          <span class="wwu-stats__value">75k+</span>
+          <span class="wwu-stats__label">Followers</span>
+        </li>
+        <li>
+          <span class="wwu-stats__value">100+</span>
+          <span class="wwu-stats__label">Brand Partnerships</span>
+        </li>
+        <li>
+          <span class="wwu-stats__value">1</span>
+          <span class="wwu-stats__label">Crazy Life</span>
+        </li>
+      </ul>
+    </div>
+  </section>
 
-      <h1 class="static-page__title">Work with us</h1>
-
-      <div class="prose">
-
-        <p>
-          The Breaking Dad reaches an engaged audience of UK parents — primarily separated
-          or co-parenting mums and dads who are actively looking for practical information,
-          honest product recommendations, and content that reflects their actual lives.
-          The readership skews heavily mobile, and most of the traffic comes from
-          organic search on high-intent queries.
-        </p>
-
-        <h2>What I'm open to</h2>
-        <p>
-          I work with brands on a selective basis. The non-negotiables:
-        </p>
-        <ul>
-          <li>The product or service has to be something I'd genuinely consider for my own family.</li>
-          <li>Editorial independence is not up for negotiation. I write what I actually think.</li>
-          <li>Paid coverage is disclosed clearly and honestly. Always.</li>
-          <li>I don't do link insertions into existing content for SEO purposes.</li>
-        </ul>
-
-        <p>Things I'm interested in:</p>
-        <ul>
-          <li><strong>Product reviews</strong> — long-form, honest, based on real-world use over weeks or months. Not a weekend test and a listicle.</li>
-          <li><strong>Sponsored content</strong> — written in my voice, clearly disclosed, genuinely useful to my readers.</li>
-          <li><strong>Brand partnerships</strong> — where there's a genuine fit with co-parenting, family tech, sustainable home products, or fitness.</li>
-        </ul>
-
-        <h2>Audience</h2>
-        <p>
-          The majority of readers are UK-based parents aged 28–45. Core topics with the
-          highest engagement are separated parenting (co-parenting, benefits, legal rights)
-          and product reviews in family tech, footwear, and days out. Traffic is
-          predominantly organic and mobile.
-        </p>
-
-        <h2>Get in touch</h2>
-        <p>
-          Drop me a note via the <a href="/contact/">contact page</a> with a brief
-          overview of what you have in mind. If there's a fit, I'll come back to you quickly.
-          If there isn't, I'll say so — no point wasting either of our time.
-        </p>
-
+  <!-- Intro -->
+  <section class="wwu-intro">
+    <div class="container">
+      <div class="wwu-intro__inner">
+        <div class="wwu-intro__text">
+          <h2>Hey, I'm Dan.<br />Otherwise known as The Breaking Dad.</h2>
+          <p>
+            I'm the face behind The Breaking Dad. Alongside my experience in senior
+            marketing roles for national brands, I've collaborated with some of the
+            world's biggest companies to create engaging partnership content and
+            authentic UGC that speaks to real parents.
+          </p>
+          <p>
+            If you're a brand that values creativity, connection, and credibility,
+            let's talk.
+          </p>
+          <a href="/contact/" class="wwu-cta">Let's talk!</a>
+        </div>
+        <div class="wwu-intro__photo">
+          <img
+            src="/images/dan-betts-work.jpg"
+            alt="Dan Betts with his daughter"
+            width="320"
+            height="320"
+            loading="lazy"
+          />
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- Services -->
+  <section class="wwu-services">
+    <div class="container">
+      <h2 class="wwu-services__title">How we can help...</h2>
+      <ul class="wwu-services__list">
+        {services.map((service) => <li>{service}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Brands -->
+  <section class="wwu-brands">
+    <div class="container">
+      <h2 class="wwu-brands__title">Some brands we've worked with...</h2>
+      <ul class="wwu-brands__list">
+        {brands.map((brand) => (
+          <li>
+            <img
+              src={brand.logo}
+              alt={brand.name}
+              height="40"
+              loading="lazy"
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Social links -->
+  <section class="wwu-social">
+    <div class="container">
+      <ul class="wwu-social__list">
+        <li>
+          <a href="https://www.instagram.com/thebreakingdad" target="_blank" rel="noopener">
+            <span class="wwu-social__icon" aria-hidden="true">IG</span>
+            <span class="wwu-social__label">Instagram</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.facebook.com/thebreakingdad" target="_blank" rel="noopener">
+            <span class="wwu-social__icon" aria-hidden="true">FB</span>
+            <span class="wwu-social__label">Facebook</span>
+          </a>
+        </li>
+        <li>
+          <a href="https://www.linkedin.com/in/danielbetts/" target="_blank" rel="noopener">
+            <span class="wwu-social__icon" aria-hidden="true">in</span>
+            <span class="wwu-social__label">LinkedIn</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Testimonial -->
+  <section class="wwu-testimonial">
+    <div class="container">
+      <figure>
+        <blockquote>
+          <p>
+            Dan's ability to translate complex social strategies into understandable
+            insights is fascinating and his understanding of our business/target
+            audience helps him provide bespoke strategy for our social platforms,
+            WAY more than any agency would.
+          </p>
+          <p>
+            He's an incredible asset but I wouldn't recommend him to anyone because
+            then we would get less of his precious time.
+          </p>
+        </blockquote>
+        <figcaption>
+          <img
+            src="/images/testimonials/harrison-chapman.jpg"
+            alt=""
+            width="48"
+            height="48"
+            loading="lazy"
+          />
+          <div>
+            <strong>Harrison Chapman</strong>
+            <span>Founder</span>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Case study: Huel -->
+  <section class="wwu-case">
+    <div class="container">
+      <h2 class="wwu-case__title">Case Study: Huel</h2>
+      <p class="wwu-case__lead">
+        I worked with <strong>Consciously Creative</strong>, Huel's appointed agency, to
+        deliver a range of User Generated Content (UGC) that delivered big results. Aside
+        from <strong>reducing their cost per acquisition by 90%</strong>, the campaign achieved:
+      </p>
+      <ul class="wwu-case__stats">
+        <li>
+          <span class="wwu-case__stat">+70%</span>
+          <span class="wwu-case__stat-label">uplift in purchase value</span>
+        </li>
+        <li>
+          <span class="wwu-case__stat">+35%</span>
+          <span class="wwu-case__stat-label">higher thumb stop</span>
+        </li>
+        <li>
+          <span class="wwu-case__stat">+79%</span>
+          <span class="wwu-case__stat-label">uplift in CTR</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="wwu-final-cta">
+    <div class="container">
+      <h2>Got a project in mind? Let's talk</h2>
+      <a href="/contact/" class="wwu-cta">Drop me an email</a>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .static-page {
-    padding-block: 2rem 5rem;
+  /* Hero */
+  .wwu-hero {
+    padding-block: 3rem 2rem;
+    text-align: center;
   }
 
-  .static-page__breadcrumb {
+  .wwu-hero__title {
+    font-family: var(--font-sans);
+    font-size: clamp(1.875rem, 5vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 2rem;
+    color: var(--color-text);
+  }
+
+  .wwu-stats {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .wwu-stats li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wwu-stats__value {
+    font-family: var(--font-sans);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1;
+  }
+
+  .wwu-stats__label {
     font-family: var(--font-sans);
     font-size: 0.8125rem;
     color: var(--color-muted);
-    margin-bottom: 1.5rem;
+    margin-top: 0.375rem;
   }
 
-  .static-page__breadcrumb a {
+  /* Intro */
+  .wwu-intro {
+    background: var(--color-surface);
+    padding-block: 3.5rem;
+  }
+
+  .wwu-intro__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  @media (min-width: 768px) {
+    .wwu-intro__inner {
+      grid-template-columns: 1fr auto;
+      gap: 3rem;
+    }
+  }
+
+  .wwu-intro__text h2 {
+    font-family: var(--font-sans);
+    font-size: 1.375rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0 0 1rem;
+  }
+
+  .wwu-intro__text p {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.7;
     color: var(--color-muted);
+    margin: 0 0 1rem;
+  }
+
+  .wwu-intro__photo img {
+    width: 260px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    display: block;
+  }
+
+  /* Reusable CTA button */
+  .wwu-cta {
+    display: inline-block;
+    background: var(--color-accent);
+    color: white;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.375rem;
+    margin-top: 0.5rem;
+    transition: background 0.15s;
+  }
+
+  .wwu-cta:hover {
+    background: color-mix(in srgb, var(--color-accent) 85%, black);
     text-decoration: none;
   }
 
-  .static-page__breadcrumb a:hover {
-    color: var(--color-accent);
-    text-decoration: underline;
+  /* Services */
+  .wwu-services {
+    padding-block: 3rem;
+    text-align: center;
   }
 
-  .static-page__title {
+  .wwu-services__title {
     font-family: var(--font-sans);
-    font-size: clamp(1.875rem, 5vw, 2.5rem);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem;
+  }
+
+  .wwu-services__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .wwu-services__list li + li::before {
+    content: '|';
+    color: var(--color-muted);
+    margin-right: 1.5rem;
+    font-weight: 400;
+  }
+
+  /* Brands */
+  .wwu-brands {
+    padding-block: 2rem 4rem;
+    text-align: center;
+  }
+
+  .wwu-brands__title {
+    font-family: var(--font-sans);
+    font-size: 1.125rem;
     font-weight: 700;
     margin: 0 0 2rem;
+  }
+
+  .wwu-brands__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+  }
+
+  .wwu-brands__list img {
+    max-height: 40px;
+    width: auto;
+    opacity: 0.85;
+    filter: grayscale(100%);
+    transition: opacity 0.15s, filter 0.15s;
+  }
+
+  .wwu-brands__list img:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+
+  /* Social */
+  .wwu-social {
+    padding-block: 1rem 4rem;
+  }
+
+  .wwu-social__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .wwu-social__list a {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    border: 1px solid var(--color-border);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: white;
+    transition: border-color 0.15s;
+  }
+
+  .wwu-social__list a:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .wwu-social__icon {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: var(--color-accent);
+    color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Testimonial */
+  .wwu-testimonial {
+    padding-block: 3rem;
+    text-align: center;
+  }
+
+  .wwu-testimonial figure {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .wwu-testimonial blockquote {
+    margin: 0 0 1.25rem;
+    padding: 0;
+    position: relative;
+  }
+
+  .wwu-testimonial blockquote::before {
+    content: '\201C';
+    font-family: var(--font-display);
+    font-size: 3rem;
+    color: var(--color-muted);
+    line-height: 1;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .wwu-testimonial blockquote p {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-text);
+    margin: 0 0 0.75rem;
+    font-style: italic;
+  }
+
+  .wwu-testimonial figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+  }
+
+  .wwu-testimonial figcaption img {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  .wwu-testimonial figcaption div {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+  }
+
+  .wwu-testimonial figcaption strong {
+    color: var(--color-text);
+  }
+
+  .wwu-testimonial figcaption span {
+    color: var(--color-muted);
+  }
+
+  /* Case study */
+  .wwu-case {
+    padding-block: 3rem;
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .wwu-case__title {
+    font-family: var(--font-sans);
+    font-size: 1.375rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
+  }
+
+  .wwu-case__lead {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+    margin: 0 0 2rem;
+    padding-inline: 1rem;
+  }
+
+  .wwu-case__stats {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    max-width: 260px;
+    margin-inline: auto;
+  }
+
+  .wwu-case__stats li {
+    background: var(--color-accent);
+    color: white;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wwu-case__stat {
+    font-family: var(--font-sans);
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .wwu-case__stat-label {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    margin-top: 0.375rem;
+    opacity: 0.9;
+  }
+
+  /* Final CTA */
+  .wwu-final-cta {
+    padding-block: 3rem 4rem;
+    text-align: center;
+  }
+
+  .wwu-final-cta h2 {
+    font-family: var(--font-sans);
+    font-size: 1.375rem;
+    font-weight: 700;
+    margin: 0 0 1rem;
   }
 </style>

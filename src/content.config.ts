@@ -17,6 +17,9 @@ const baseSchema = z.object({
   heroAlt: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),
   draft: z.boolean().optional().default(false),
+  // Optional Field Note issue number (long-reads, manually curated).
+  // Defaults to auto-computed (months since Jan 2021 launch) if unset.
+  issueNumber: z.number().int().positive().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -68,6 +71,27 @@ const reviews = defineCollection({
 });
 
 // ---------------------------------------------------------------------------
+// Parenting collection — general parenting content (pillar 3)
+// Not separation-specific. Evergreen guides, how-tos, gift/product roundups,
+// philosophy pieces. Sits alongside /separated-parents/ as a parallel pillar.
+// ---------------------------------------------------------------------------
+
+const parenting = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/parenting' }),
+  schema: baseSchema.extend({
+    topic: z.enum([
+      'raising-kids',       // parenting skills, discipline, emotional
+      'kit-and-gear',       // gift guides, product roundups, newborn essentials
+      'family-life',        // lifestyle, sustainability, crafts, activities
+      'days-out',           // local + travel family activities
+      'digital-parenting',  // AI, tech, social, screens
+    ]),
+    // Optional first-person hook — recommended for guide-style posts
+    experienceNote: z.string().min(40).max(400).optional(),
+  }),
+});
+
+// ---------------------------------------------------------------------------
 // Diary collection — voice pieces, not SEO targets
 // ---------------------------------------------------------------------------
 
@@ -88,4 +112,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { posts, reviews, diary, pages };
+export const collections = { posts, reviews, parenting, diary, pages };

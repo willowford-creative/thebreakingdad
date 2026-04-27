@@ -1,10 +1,20 @@
 ---
-const footerLinks = [
+const sectionsLinks = [
+  { label: 'Parenting', href: '/parenting/' },
+  { label: 'Separated parents', href: '/separated-parents/' },
+  { label: 'Reviews', href: '/reviews/' },
+  { label: 'Diary', href: '/diary/' },
+];
+
+const siteLinks = [
   { label: 'About', href: '/about/' },
-  { label: 'Work with us', href: '/work-with-us/' },
   { label: 'Contact', href: '/contact/' },
-  { label: 'Privacy', href: '/privacy/' },
+  { label: 'Work with us', href: '/work-with-us/' },
+];
+
+const legalLinks = [
   { label: 'Affiliate disclosure', href: '/affiliate-disclosure/' },
+  { label: 'Privacy', href: '/privacy/' },
   { label: 'RSS', href: '/rss.xml' },
 ];
 
@@ -12,111 +22,145 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer">
-  <div class="container site-footer__inner">
-    <div class="site-footer__top">
-      <div class="site-footer__brand">
-        <a href="/" class="site-footer__logo">The Breaking Dad</a>
-        <p class="site-footer__tagline">
-          A UK dad writing about co-parenting, blended family life,
-          and honest product reviews from Hampshire.
+  <div class="site-footer__inner">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__brand">
+          <a href="/" class="wordmark wordmark--lg" aria-label="The Breaking Dad — home">The Breaking Dad</a>
+          <p class="site-footer__tagline">
+            Honest writing from a UK dad — for parents, especially the ones doing it after separation.
+            Co-parenting, blended family life, honest reviews. Written from Hampshire.
+          </p>
+          <div class="site-footer__socials">
+            <a href="https://www.instagram.com/thebreakingdad" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                <rect x="2" y="2" width="12" height="12" rx="3"/>
+                <circle cx="8" cy="8" r="2.5"/>
+                <circle cx="11.5" cy="4.5" r="0.6" fill="currentColor"/>
+              </svg>
+            </a>
+            <a href="https://www.facebook.com/thebreakingdad" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M9.5 14V8.5h1.8l.3-2.2H9.5V4.9c0-.6.2-1 1.1-1h1.2V1.9c-.2 0-.9-.1-1.7-.1-1.7 0-2.9 1-2.9 2.9v1.6H5.4v2.2h1.8V14h2.3z"/>
+              </svg>
+            </a>
+            <a href="/contact/" aria-label="Email">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+                <rect x="2" y="3" width="12" height="10" rx="1.5"/>
+                <path d="m2.5 4.5 5.5 4 5.5-4"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <div class="site-footer__col-h">Sections</div>
+          <ul class="site-footer__links">
+            {sectionsLinks.map((link) => (
+              <li><a href={link.href}>{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <div class="site-footer__col-h">The Site</div>
+          <ul class="site-footer__links">
+            {siteLinks.map((link) => (
+              <li><a href={link.href}>{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <div class="site-footer__col-h">Legal</div>
+          <ul class="site-footer__links">
+            {legalLinks.map((link) => (
+              <li><a href={link.href}>{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="site-footer__bottom">
+        <p class="site-footer__copy">
+          &copy; {year} The Breaking Dad. Written from Hampshire.
+        </p>
+        <p class="site-footer__disclaimer">
+          Some links are affiliate. Recommendations are honest.
         </p>
       </div>
-
-      <nav class="site-footer__nav" aria-label="Footer navigation">
-        <ul class="site-footer__links">
-          {footerLinks.map((link) => (
-            <li>
-              <a href={link.href} class="site-footer__link">{link.label}</a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      <div class="site-footer__social">
-        <p class="site-footer__social-label">Follow</p>
-        <a
-          href="https://www.instagram.com/thebreakingdad"
-          class="site-footer__instagram"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="The Breaking Dad on Instagram"
-        >
-          <!-- Instagram icon (inline SVG, no external request) -->
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-            <circle cx="12" cy="12" r="4"/>
-            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-          </svg>
-          @thebreakingdad
-        </a>
-      </div>
-    </div>
-
-    <div class="site-footer__bottom">
-      <p class="site-footer__copy">
-        &copy; {year} The Breaking Dad. All rights reserved.
-      </p>
-      <p class="site-footer__disclaimer">
-        Content on this site is for informational purposes only and does not constitute
-        legal, financial, or professional advice.
-      </p>
     </div>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    background: var(--color-text);
-    color: color-mix(in srgb, var(--color-background) 80%, transparent);
-    padding-top: 3rem;
-    padding-bottom: 2rem;
-    margin-top: 4rem;
+    background: var(--color-ink);
+    color: #E8DDD7;
+    margin-top: 64px;
   }
 
   .site-footer__inner {
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
+    padding-block: 56px 28px;
   }
 
-  .site-footer__top {
+  .site-footer__grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 32px;
   }
 
-  @media (min-width: 640px) {
-    .site-footer__top {
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 3rem;
+  @media (min-width: 720px) {
+    .site-footer__grid {
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
     }
   }
 
-  .site-footer__logo {
-    font-family: var(--font-serif);
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--color-background);
-    text-decoration: none;
-    display: block;
-    margin-bottom: 0.75rem;
-  }
+  /* Wordmark override for dark footer — handled in global.css */
 
-  .site-footer__logo:hover {
-    text-decoration: underline;
+  .site-footer__brand {
+    max-width: 360px;
   }
 
   .site-footer__tagline {
     font-family: var(--font-sans);
-    font-size: 0.8125rem;
+    font-size: 14px;
     line-height: 1.6;
-    color: color-mix(in srgb, var(--color-background) 60%, transparent);
-    margin: 0;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 14px 0 18px;
   }
 
-  .site-footer__nav {
+  .site-footer__socials {
     display: flex;
-    flex-direction: column;
+    gap: 10px;
+  }
+
+  .site-footer__socials a {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #E8DDD7;
+    transition: border-color .15s, background .15s, color .15s;
+  }
+
+  .site-footer__socials a:hover {
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+
+  .site-footer__col-h {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 14px;
   }
 
   .site-footer__links {
@@ -125,69 +169,41 @@ const year = new Date().getFullYear();
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 10px;
   }
 
-  .site-footer__link {
+  .site-footer__links a {
     font-family: var(--font-sans);
-    font-size: 0.875rem;
-    color: color-mix(in srgb, var(--color-background) 70%, transparent);
+    font-size: 14px;
+    color: #E8DDD7;
     text-decoration: none;
-    transition: color 0.15s;
+    transition: color .15s;
   }
 
-  .site-footer__link:hover {
-    color: var(--color-background);
-    text-decoration: underline;
-  }
-
-  .site-footer__social-label {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-background) 50%, transparent);
-    margin: 0 0 0.75rem;
-  }
-
-  .site-footer__instagram {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    color: color-mix(in srgb, var(--color-background) 70%, transparent);
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-
-  .site-footer__instagram:hover {
-    color: var(--color-background);
-    text-decoration: none;
-  }
+  .site-footer__links a:hover { color: #fff; }
 
   .site-footer__bottom {
-    border-top: 1px solid color-mix(in srgb, var(--color-background) 15%, transparent);
-    padding-top: 1.5rem;
+    margin-top: 36px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 720px) {
     .site-footer__bottom {
       flex-direction: row;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
     }
   }
 
   .site-footer__copy,
   .site-footer__disclaimer {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    color: color-mix(in srgb, var(--color-background) 45%, transparent);
     margin: 0;
     line-height: 1.6;
   }

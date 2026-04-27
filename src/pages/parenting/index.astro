@@ -1,0 +1,248 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PillarHeader from '~/components/PillarHeader.astro';
+import SectionTitle from '~/components/SectionTitle.astro';
+import PostCard from '~/components/PostCard.astro';
+
+const allParenting = await getCollection('parenting', ({ data }) => !data.draft);
+const sorted = allParenting.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+const topics = [
+  { slug: 'raising-kids', label: 'Raising kids', description: 'The skills, the philosophy, the bits nobody tells you.' },
+  { slug: 'kit-and-gear', label: 'Kit and gear', description: 'Gift guides, newborn essentials, honest picks from people who own kids.' },
+  { slug: 'family-life', label: 'Family life', description: 'Sustainability, crafts, rituals, and the weekend bits that hold it together.' },
+  { slug: 'days-out', label: 'Days out', description: 'Family activities — local, occasional, and genuinely worth the trip.' },
+  { slug: 'digital-parenting', label: 'Digital parenting', description: 'AI, screens, social, and the tech conversations modern parents can’t avoid.' },
+];
+
+const topicLabels: Record<string, string> = Object.fromEntries(
+  topics.map((t) => [t.slug, t.label])
+);
+
+const topicCounts: Record<string, number> = {};
+for (const p of sorted) {
+  topicCounts[p.data.topic] = (topicCounts[p.data.topic] ?? 0) + 1;
+}
+
+const cornerstone = sorted.slice(0, 3);
+const recent = sorted.slice(0, 8);
+---
+
+<BaseLayout
+  title="Parenting — The Breaking Dad"
+  description="Practical parenting writing from a UK dad. Guides, kit, family days out, and the honest reality of raising kids — for parents, especially the ones doing it after separation."
+>
+  <PillarHeader
+    kicker="The Pillar"
+    title="Parenting"
+    breadcrumb={[
+      { label: 'Home', href: '/' },
+      { label: 'Parenting', href: '/parenting/' },
+    ]}
+  >
+    <p slot="dek" class="pillar-header__dek">
+      Practical writing from a UK dad about raising kids, the kit that actually helps, and the bits of family life
+      that are hard to explain unless you’re in them too. If your parenting is happening after a separation,
+      there’s a section dedicated to that, <a href="/separated-parents/">over here</a>.
+    </p>
+  </PillarHeader>
+
+  {cornerstone.length > 0 && (
+    <section class="home-section" aria-label="Start here">
+      <div class="container">
+        <SectionTitle
+          kicker="Start here"
+          title="The ones to read first"
+          subtitle="A short starter set across the topics."
+        />
+        <div class="card-grid card-grid--3">
+          {cornerstone.map((entry) => {
+            const slug = entry.id.replace(/\.(md|mdx)$/, '');
+            return (
+              <PostCard
+                title={entry.data.title}
+                description={entry.data.description}
+                href={`/parenting/${slug}/`}
+                image={entry.data.heroImage}
+                imageAlt={entry.data.heroAlt}
+                categoryLabel={topicLabels[entry.data.topic] ?? entry.data.topic}
+                categoryHref="/parenting/"
+                date={entry.data.publishDate}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="home-section home-section--tinted" aria-label="Browse by topic">
+    <div class="container">
+      <SectionTitle kicker="Browse by topic" />
+      <ol class="subhub-list">
+        {topics.map((t, i) => (
+          <li class="subhub-item">
+            <a href={`/parenting/#${t.slug}`} class="subhub-item__link">
+              <span class="subhub-item__number">{String(i + 1).padStart(2, '0')}</span>
+              <div class="subhub-item__body">
+                <h3 class="subhub-item__title">{t.label}</h3>
+                <p class="subhub-item__description">{t.description}</p>
+              </div>
+              <span class="subhub-item__count">
+                {topicCounts[t.slug] ?? 0} {(topicCounts[t.slug] ?? 0) === 1 ? 'piece' : 'pieces'}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  {topics.map((t) => {
+    const entriesForTopic = sorted.filter((e) => e.data.topic === t.slug);
+    if (entriesForTopic.length === 0) return null;
+    return (
+      <section class="home-section" id={t.slug} aria-label={t.label}>
+        <div class="container">
+          <SectionTitle
+            kicker={t.label}
+            title={t.description}
+            moreHref={entriesForTopic.length > 4 ? '/parenting/' : undefined}
+            moreLabel={entriesForTopic.length > 4 ? 'View all' : undefined}
+          />
+          <div class="card-grid card-grid--4">
+            {entriesForTopic.slice(0, 4).map((entry) => {
+              const slug = entry.id.replace(/\.(md|mdx)$/, '');
+              return (
+                <PostCard
+                  title={entry.data.title}
+                  description={entry.data.description}
+                  href={`/parenting/${slug}/`}
+                  image={entry.data.heroImage}
+                  imageAlt={entry.data.heroAlt}
+                  categoryLabel={topicLabels[entry.data.topic] ?? entry.data.topic}
+                  categoryHref="/parenting/"
+                  date={entry.data.publishDate}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    );
+  })}
+
+  {sorted.length === 0 && (
+    <section class="home-section">
+      <div class="container--narrow">
+        <p class="pillar-hero__empty">Parenting posts are coming soon.</p>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .home-section {
+    padding-block: 2.75rem;
+  }
+
+  .home-section--tinted {
+    background: var(--color-surface);
+  }
+
+  .subhub-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--color-hairline);
+  }
+
+  .subhub-item {
+    border-bottom: 1px solid var(--color-hairline);
+  }
+
+  .subhub-item__link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.5rem;
+    align-items: baseline;
+    padding: 1.5rem 0;
+    text-decoration: none;
+    transition: padding 0.2s ease;
+  }
+
+  @media (max-width: 560px) {
+    .subhub-item__link {
+      grid-template-columns: auto 1fr;
+      gap: 1rem;
+    }
+    .subhub-item__count {
+      grid-column: 2;
+      justify-self: start;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .subhub-item__link:hover {
+    padding-left: 0.5rem;
+    background: color-mix(in srgb, var(--color-accent) 4%, transparent);
+  }
+
+  .subhub-item__number {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.08em;
+    font-feature-settings: "tnum";
+    padding-top: 0.375rem;
+  }
+
+  .subhub-item__body {
+    display: grid;
+    gap: 0.375rem;
+  }
+
+  .subhub-item__title {
+    font-family: var(--font-display);
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--color-text);
+    transition: color 0.15s;
+  }
+
+  .subhub-item__link:hover .subhub-item__title {
+    color: var(--color-accent);
+  }
+
+  .subhub-item__description {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-muted);
+    margin: 0;
+    max-width: 52ch;
+  }
+
+  .subhub-item__count {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-muted);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .pillar-hero__empty {
+    font-family: var(--font-sans);
+    color: var(--color-muted);
+  }
+</style>

@@ -1,6 +1,17 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import AuthorBio from '~/components/AuthorBio.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import TableOfContents from '~/components/TableOfContents.astro';
+import RelatedRail from '~/components/RelatedRail.astro';
+import KeepReading from '~/components/KeepReading.astro';
+import ReadingProgress from '~/components/ReadingProgress.astro';
+
+export interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
 
 export interface Props {
   title: string;
@@ -11,26 +22,40 @@ export interface Props {
   heroAlt?: string;
   slug: string;
   tags?: string[];
+  readingMinutes?: number;
+  headings?: Heading[];
 }
 
-const {
-  title,
-  description,
-  publishDate,
-  updatedDate,
-  heroImage,
-  heroAlt,
-  slug,
-} = Astro.props;
+const { title, description, publishDate, heroImage, heroAlt, slug, readingMinutes, headings = [] } = Astro.props;
 
 const siteUrl = 'https://thebreakingdad.co.uk';
 const canonicalUrl = `${siteUrl}/diary/${slug}/`;
+
+const breadcrumbTrail = [
+  { label: 'Home', href: '/' },
+  { label: 'Diary', href: '/diary/' },
+  { label: title, href: canonicalUrl },
+];
 
 const formattedDate = new Intl.DateTimeFormat('en-GB', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
 }).format(publishDate);
+
+// Related diary entries — most-recent excluding current
+const allDiary = await getCollection('diary', ({ data }) => !data.draft);
+const relatedItems = allDiary
+  .filter((d) => d.id.replace(/\.(md|mdx)$/, '') !== slug)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3)
+  .map((d) => ({
+    title: d.data.title,
+    href: `/diary/${d.id.replace(/\.(md|mdx)$/, '')}/`,
+    image: d.data.heroImage,
+    imageAlt: d.data.heroAlt,
+    kind: 'Diary',
+  }));
 ---
 
 <BaseLayout
@@ -40,104 +65,144 @@ const formattedDate = new Intl.DateTimeFormat('en-GB', {
   ogImage={heroImage}
   ogType="article"
   publishDate={publishDate}
-  updatedDate={updatedDate}
 >
-  <article class="diary-layout">
-    <div class="container--narrow">
-      <nav class="diary-layout__breadcrumb" aria-label="Breadcrumb">
-        <a href="/">Home</a>
-        <span aria-hidden="true"> / </span>
-        <a href="/diary/">Diary</a>
-        <span aria-hidden="true"> / </span>
-        <span aria-current="page">{title}</span>
-      </nav>
+  <ReadingProgress />
 
-      {heroImage && (
-        <div class="diary-layout__hero">
-          <img src={heroImage} alt={heroAlt ?? title} width="720" height="405" loading="eager" />
-        </div>
-      )}
-
-      <header class="diary-layout__header">
-        <time class="diary-layout__date" datetime={publishDate.toISOString()}>
-          {formattedDate}
-        </time>
-        <h1 class="diary-layout__title">{title}</h1>
-      </header>
-
-      <div class="prose">
-        <slot />
-      </div>
-
-      <div class="diary-layout__author-section">
-        <AuthorBio variant="default" />
+  <article class="post-layout" id="post-content">
+    <div class="post-layout__crumb-row">
+      <div class="container">
+        <Breadcrumbs trail={breadcrumbTrail} />
       </div>
     </div>
+
+    <header class="post-layout__head">
+      <div class="container--narrow">
+        <span class="eyebrow eyebrow-accent diary-layout__kicker">From the Diary</span>
+        <time class="diary-layout__date" datetime={publishDate.toISOString()}>{formattedDate}</time>
+        <h1 class="diary-layout__title">{title}</h1>
+      </div>
+
+      {heroImage && (
+        <div class="container">
+          <figure class="post-layout__hero">
+            <img src={heroImage} alt={heroAlt ?? title} width="1200" height="525" loading="eager" />
+            {heroAlt && <figcaption class="meta text-c">{heroAlt}</figcaption>}
+          </figure>
+        </div>
+      )}
+    </header>
+
+    <div class="post-layout__body">
+      <div class="container">
+        <div class="post-layout__grid">
+          <TableOfContents headings={headings} totalMinutes={readingMinutes} />
+
+          <div class="post-layout__main">
+            <div class="prose">
+              <slot />
+            </div>
+
+            <div class="post-layout__filed">
+              <span class="meta">Filed under: <a href="/diary/">Diary</a></span>
+            </div>
+          </div>
+
+          <RelatedRail items={relatedItems} title="More from the Diary" />
+        </div>
+      </div>
+    </div>
+
+    <KeepReading items={relatedItems} title="More from the Diary" />
   </article>
 </BaseLayout>
 
 <style>
-  .diary-layout {
-    padding-block: 2rem 4rem;
+  .post-layout { background: var(--color-paper); }
+
+  .post-layout__crumb-row {
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 14px;
   }
 
-  .diary-layout__breadcrumb {
-    font-family: var(--font-sans);
-    font-size: 0.8125rem;
-    color: var(--color-muted);
-    margin-bottom: 1.5rem;
-  }
+  .post-layout__head { padding-block: 44px 0; }
 
-  .diary-layout__breadcrumb a {
-    color: var(--color-muted);
-    text-decoration: none;
-  }
-
-  .diary-layout__breadcrumb a:hover {
-    color: var(--color-accent);
-    text-decoration: underline;
-  }
-
-  .diary-layout__hero {
-    margin-bottom: 2rem;
-    border-radius: 0.75rem;
-    overflow: hidden;
-  }
-
-  .diary-layout__hero img {
-    width: 100%;
-    height: auto;
+  .diary-layout__kicker {
     display: block;
-  }
-
-  .diary-layout__header {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 12px;
   }
 
   .diary-layout__date {
     display: block;
     font-family: var(--font-sans);
-    font-size: 0.8125rem;
-    color: var(--color-muted);
-    margin-bottom: 0.75rem;
+    font-size: 13px;
+    color: var(--color-ink-3);
+    margin-bottom: 16px;
     font-style: italic;
   }
 
   .diary-layout__title {
-    font-family: var(--font-serif);
-    font-size: clamp(1.75rem, 5vw, 2.25rem);
-    font-weight: 400;
-    font-style: italic;
-    line-height: 1.3;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.1;
+    letter-spacing: -0.022em;
+    color: var(--color-ink);
     margin: 0;
-    color: var(--color-text);
+    text-wrap: balance;
   }
 
-  .diary-layout__author-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--color-border);
+  .post-layout__hero {
+    margin: 36px 0 0;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16/7;
   }
+
+  .post-layout__hero img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .post-layout__hero figcaption { margin-top: 12px; text-align: center; }
+
+  .post-layout__body { padding-block: 48px 0; }
+
+  .post-layout__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  @media (min-width: 1100px) {
+    .post-layout__grid {
+      grid-template-columns: 200px minmax(0, 1fr) 260px;
+      gap: 40px;
+      align-items: start;
+    }
+  }
+
+  .post-layout__main {
+    max-width: 680px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .post-layout__main .prose { max-width: 680px; }
+
+  @media (max-width: 1099px) {
+    .post-layout__grid > .toc,
+    .post-layout__grid > .related-rail {
+      display: none;
+    }
+  }
+
+  .post-layout__filed {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .post-layout__filed a { color: var(--color-accent); }
 </style>

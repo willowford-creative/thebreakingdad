@@ -1,0 +1,247 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import FieldNoteTag from '~/components/FieldNoteTag.astro';
+import AuthorChip from '~/components/AuthorChip.astro';
+import ExperienceNote from '~/components/ExperienceNote.astro';
+import KeepReading from '~/components/KeepReading.astro';
+import ReadingProgress from '~/components/ReadingProgress.astro';
+import TableOfContents from '~/components/TableOfContents.astro';
+import RelatedRail from '~/components/RelatedRail.astro';
+import NewsletterInline from '~/components/NewsletterInline.astro';
+
+export interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+export interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  heroImage?: string;
+  heroAlt?: string;
+  topic: string;
+  slug: string;
+  tags?: string[];
+  relatedSlugs?: string[];
+  experienceNote?: string;
+  readingMinutes?: number;
+  headings?: Heading[];
+  issueNumber?: number;
+}
+
+const {
+  title,
+  description,
+  publishDate,
+  updatedDate,
+  heroImage,
+  heroAlt,
+  topic,
+  slug,
+  tags = [],
+  experienceNote,
+  readingMinutes,
+  headings = [],
+  issueNumber,
+} = Astro.props;
+
+const siteUrl = 'https://thebreakingdad.co.uk';
+const canonicalUrl = `${siteUrl}/parenting/${slug}/`;
+
+const topicLabels: Record<string, string> = {
+  'raising-kids': 'Raising kids',
+  'kit-and-gear': 'Kit and gear',
+  'family-life': 'Family life',
+  'days-out': 'Days out',
+  'digital-parenting': 'Digital parenting',
+};
+
+const breadcrumbTrail = [
+  { label: 'Home', href: '/' },
+  { label: 'Parenting', href: '/parenting/' },
+  { label: title, href: canonicalUrl },
+];
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  url: canonicalUrl,
+  datePublished: publishDate.toISOString(),
+  dateModified: (updatedDate ?? publishDate).toISOString(),
+  author: { '@type': 'Person', name: 'Dan Betts', url: `${siteUrl}/about/` },
+  publisher: {
+    '@type': 'Organization',
+    name: 'The Breaking Dad',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/images/logo.png` },
+  },
+  ...(heroImage ? { image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}` } : {}),
+  keywords: tags.join(', '),
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: breadcrumbTrail.map((item, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: item.label,
+    item: item.href.startsWith('http') ? item.href : `${siteUrl}${item.href}`,
+  })),
+};
+
+const allParenting = await getCollection('parenting', ({ data }) => !data.draft);
+const relatedItems = allParenting
+  .filter((p) => p.data.topic === topic && p.id.replace(/\.(md|mdx)$/, '') !== slug)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3)
+  .map((p) => ({
+    title: p.data.title,
+    href: `/parenting/${p.id.replace(/\.(md|mdx)$/, '')}/`,
+    image: p.data.heroImage,
+    imageAlt: p.data.heroAlt,
+    kind: topicLabels[p.data.topic] ?? p.data.topic,
+  }));
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  ogImage={heroImage}
+  ogType="article"
+  publishDate={publishDate}
+  updatedDate={updatedDate}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </Fragment>
+
+  <ReadingProgress />
+
+  <article class="post-layout" id="post-content">
+    <div class="post-layout__crumb-row">
+      <div class="container">
+        <Breadcrumbs trail={breadcrumbTrail} />
+      </div>
+    </div>
+
+    <header class="post-layout__head">
+      <div class="container--narrow">
+        <FieldNoteTag number={issueNumber} />
+        <span class="eyebrow eyebrow-accent post-layout__kicker">
+          {topicLabels[topic] ?? topic}
+        </span>
+        <h1 class="display-2 post-layout__title">{title}</h1>
+        <p class="lede post-layout__lede">{description}</p>
+        <AuthorChip date={publishDate} readingMinutes={readingMinutes} />
+      </div>
+
+      {heroImage && (
+        <div class="container">
+          <figure class="post-layout__hero">
+            <img src={heroImage} alt={heroAlt ?? title} width="1200" height="525" loading="eager" />
+            {heroAlt && <figcaption class="meta text-c">{heroAlt}</figcaption>}
+          </figure>
+        </div>
+      )}
+    </header>
+
+    <div class="post-layout__body">
+      <div class="container">
+        <div class="post-layout__grid">
+          <TableOfContents headings={headings} totalMinutes={readingMinutes} />
+
+          <div class="post-layout__main">
+            <div class="prose">
+              <slot />
+            </div>
+
+            <NewsletterInline />
+
+            {experienceNote && <ExperienceNote body={experienceNote} />}
+
+            <div class="post-layout__filed">
+              <span class="meta">Filed under: <a href="/parenting/">{topicLabels[topic] ?? topic}</a></span>
+            </div>
+          </div>
+
+          <RelatedRail items={relatedItems} title="More on this" />
+        </div>
+      </div>
+    </div>
+
+    <KeepReading items={relatedItems} title="Keep reading" />
+  </article>
+</BaseLayout>
+
+<style>
+  .post-layout { background: var(--color-paper); }
+  .post-layout__crumb-row {
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 14px;
+  }
+  .post-layout__head { padding-block: 44px 0; }
+  .post-layout__kicker { display: block; margin-bottom: 16px; }
+  .post-layout__title { margin: 0 0 20px; text-wrap: balance; }
+  .post-layout__lede { margin-bottom: 22px; }
+  .post-layout__hero {
+    margin: 36px 0 0;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16/7;
+  }
+  .post-layout__hero img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 0;
+  }
+  .post-layout__hero figcaption { margin-top: 12px; text-align: center; }
+  .post-layout__body { padding-block: 48px 0; }
+
+  .post-layout__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  @media (min-width: 1100px) {
+    .post-layout__grid {
+      grid-template-columns: 200px minmax(0, 1fr) 260px;
+      gap: 40px;
+      align-items: start;
+    }
+  }
+
+  .post-layout__main {
+    max-width: 680px;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .post-layout__main .prose { max-width: 680px; }
+
+  @media (max-width: 1099px) {
+    .post-layout__grid > .toc,
+    .post-layout__grid > .related-rail {
+      display: none;
+    }
+  }
+  .post-layout__filed {
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-rule);
+  }
+  .post-layout__filed a { color: var(--color-accent); }
+  .post-layout__head .field-note-tag { margin-bottom: 18px; }
+</style>

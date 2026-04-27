@@ -1,0 +1,52 @@
+---
+export interface Props {
+  title?: string;
+  body: string;
+  signoff?: string;
+  authorName?: string;
+  authorBio?: string;
+}
+
+const {
+  title = 'Why I wrote this',
+  body,
+  signoff = '— Dan',
+  authorName = 'Dan Betts',
+  authorBio = 'Hampshire dad. Eight years co-parenting. Six years into blended family life.',
+} = Astro.props;
+
+// Split into paragraphs on blank line for the rare multi-para case
+const paragraphs = body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+---
+
+<aside class="experience-note" role="note">
+  <div class="experience-note__head">
+    <span class="experience-note__label">Why I wrote this</span>
+    <svg class="leaf" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M5 19c0-7 5-13 14-14-1 9-7 14-14 14z" />
+      <path d="M5 19c3-3 6-5 10-7" />
+    </svg>
+  </div>
+  {paragraphs[0] && <h4 class="experience-note__title">{paragraphs[0]}</h4>}
+  {paragraphs.slice(1).map((p) => <p>{p}</p>)}
+  {paragraphs.length === 1 && <p>{paragraphs[0]}</p>}
+  <div class="experience-note__signoff">{signoff}</div>
+  <div class="experience-note__author-row">
+    <span class="experience-note__avatar" aria-hidden="true">D</span>
+    <div>
+      <div class="experience-note__name">{authorName}</div>
+      <div class="experience-note__bio">{authorBio}</div>
+    </div>
+    <a href="/about/" class="btn ghost" style="margin-left: auto; font-size: 11px; padding: 8px 14px;">More about Dan</a>
+  </div>
+</aside>
+
+<style>
+  .experience-note .leaf {
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+  .experience-note__head .experience-note__label {
+    margin-bottom: 0;
+  }
+</style>
