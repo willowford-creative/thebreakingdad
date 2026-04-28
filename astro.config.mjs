@@ -8,7 +8,7 @@ export default defineConfig({
   site: 'https://thebreakingdad.co.uk',
   output: 'static',
   trailingSlash: 'always',
-  adapter: cloudflare(),
+  adapter: cloudflare({ imageService: 'compile' }),
   integrations: [
     mdx(),
     sitemap(),

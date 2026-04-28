@@ -22,7 +22,7 @@ Migrated from WordPress to Astro 6 (static) + Cloudflare Workers.
 - **TypeScript strict mode** with `~/` import alias
 - **Node 22+**
 - **Minimal client-side JS** — only used for the reading-progress bar (article templates) and the mobile menu (CSS-only via `<details>`). Everything else stays static.
-- **Google Fonts**: Literata (serif) + Inter (sans), loaded via `<link>` in BaseLayout (switched from self-hosted during design polish)
+- **Google Fonts**: Newsreader (serif) + Geist (sans), loaded via `<link>` in BaseLayout (switched from self-hosted during design polish)
 - `import { z } from 'astro/zod'` -- NOT `astro:content` (deprecated in Astro 6)
 
 ---
@@ -79,8 +79,8 @@ Four collections in `src/content.config.ts`:
 |---|---|---|
 | `posts` | src/content/posts/ | /separated-parents/{slug}/ |
 | `reviews` | src/content/reviews/ | /reviews/{slug}/ |
+| `parenting` | src/content/parenting/ | /parenting/{slug}/ |
 | `diary` | src/content/diary/ | /diary/{slug}/ |
-| `pages` | src/content/pages/ | Static only |
 
 ---
 
@@ -109,7 +109,7 @@ title: "Title here"
 description: "60-200 chars"
 publishDate: 2024-06-01
 productName: Product name
-rating: 4                     # 1-5
+rating: 4                     # 1-5 in 0.5 steps; OMIT for roundups
 usageDuration: "Used for 2 years"
 productCategory: shoes-and-fitness  # family-tech | parenting-kit | shoes-and-fitness | home-and-lifestyle | days-out
 pros:
@@ -124,11 +124,18 @@ hasAffiliateLinks: true
 
 ```yaml
 ---
-title: "Title here"
-description: "60-200 chars"
+title: "Title here"           # 6-14 words (gate-enforced for non-drafts)
+description: "40-220 chars"
 publishDate: 2022-09-01
+heroImage: "/images/..."      # required for non-drafts
+heroAlt: "..."                # required for non-drafts
+heroCaption: "..."            # required for non-drafts (italic caption under hero)
+lede: |                       # required for non-drafts; 30+ words
+  First-paragraph hook for the entry hero and og:description.
 ---
 ```
+
+Diary entries are gated at build time by `src/utils/diaryGates.ts` — hard floors on word count (250) + lede + internal links + cadence. Drafts with `draft: true` skip the gates so legacy entries don't break the build.
 
 ---
 
@@ -140,8 +147,8 @@ publishDate: 2022-09-01
 | Text | `#1a1f2e` (deep warm navy) |
 | Accent | `#b44141` (muted deep-red) |
 | Highlight | `#f4c97c` (amber) |
-| Body font | Literata (serif, self-hosted) |
-| UI font | Inter (sans-serif, self-hosted) |
+| Body font | Newsreader (serif, Google Fonts) |
+| UI font | Geist (sans-serif, Google Fonts) |
 | Prose width | 680px max |
 | Line height | 1.65 body, 1.75 prose |
 
@@ -159,21 +166,20 @@ publishDate: 2022-09-01
 
 Loaded from Google Fonts via `<link>` in `src/layouts/BaseLayout.astro`:
 
-- Inter: 400, 500, 600, 700
-- Literata: 400, 400i, 500, 700
+- Geist: 400, 500, 600, 700, 800
+- Newsreader: 400, 400i, 500, 600, 700 (with optical sizing)
 
 No WOFF2 files or `public/fonts/` directory needed.
 
 ---
 
-## Images -- action needed
+## Images
 
-Placeholders referenced in the scaffold:
+In place at `public/images/`:
 
-- `public/images/dan-betts.jpg` -- author photo (used in AuthorBio + About page)
-- `public/images/dan-betts-hero.jpg` -- homepage hero photo
-- `public/images/logo.png` -- used in Organization schema
-- `public/images/og-default.jpg` -- fallback OG image (1200x630)
+- `dan-betts.jpg` -- author photo (used in AuthorBio + About page)
+- `dan-betts-avatar.jpg` -- recentered crop for small circular avatars
+- `og-default.jpg` -- fallback OG image (1200x630)
 
 ---
 
@@ -193,8 +199,7 @@ Placeholders referenced in the scaffold:
 
 WordPress export: `thebreakingdad.WordPress.2026-04-23.xml` (in Drive folder 14OTzscrVqGWxIvK7JgzmZkwZwx95YTEi)
 
-All content directories are currently empty (.gitkeep only).
-Migration of WordPress posts into MDX files is the next phase.
+WordPress posts have been migrated into MDX files across `posts/`, `reviews/`, `parenting/`, and `diary/`. Most legacy diary entries remain `draft: true` until brought up to the gate standard (lede, heroCaption, internal link).
 
 ---
 
