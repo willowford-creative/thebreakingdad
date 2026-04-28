@@ -32,7 +32,7 @@ const paragraphs = body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
   {paragraphs.length === 1 && <p>{paragraphs[0]}</p>}
   <div class="experience-note__signoff">{signoff}</div>
   <div class="experience-note__author-row">
-    <span class="experience-note__avatar" aria-hidden="true">D</span>
+    <img class="experience-note__avatar" src="/images/dan-betts-avatar.jpg" alt="" width="44" height="44" loading="lazy" />
     <div>
       <div class="experience-note__name">{authorName}</div>
       <div class="experience-note__bio">{authorBio}</div>

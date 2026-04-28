@@ -534,14 +534,12 @@ a:hover > .wordmark::after,
 }
 
 .experience-note__avatar {
-  width: 44px; height: 44px;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-deep));
-  color: #fff;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 17px;
+  object-fit: cover;
+  object-position: 50% 20%;
+  display: block;
   flex-shrink: 0;
 }
 

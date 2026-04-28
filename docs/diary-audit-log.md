@@ -1,6 +1,6 @@
 # Diary audit log
 
-Generated automatically by the Astro build. Last updated: 27 Apr 2026.
+Generated automatically by the Astro build. Last updated: 28 Apr 2026.
 
 This file lists the index/noindex state of every published diary entry, plus any gate warnings or errors. See `src/utils/diaryGates.ts` for the rules.
 

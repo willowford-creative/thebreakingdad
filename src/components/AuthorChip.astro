@@ -16,7 +16,7 @@ const formatted = new Intl.DateTimeFormat('en-GB', {
 ---
 
 <div class="author-chip">
-  <span class="author-chip__avatar" aria-hidden="true">{initial}</span>
+  <img class="author-chip__avatar" src="/images/dan-betts-avatar.jpg" alt="" width="40" height="40" loading="lazy" />
   <span class="author-chip__meta">
     By <strong>{name}</strong>
     {readingMinutes && (
@@ -39,16 +39,12 @@ const formatted = new Intl.DateTimeFormat('en-GB', {
   }
 
   .author-chip__avatar {
-    width: 40px; height: 40px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-deep));
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 16px;
+    object-fit: cover;
+    object-position: 50% 20%;
+    display: block;
     flex-shrink: 0;
   }
 

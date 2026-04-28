@@ -29,7 +29,7 @@ if (!quote) return null;
     <em>&ldquo;{quote}&rdquo;</em>
   </p>
   <div class="editor-note__author">
-    <span class="editor-note__avatar" aria-hidden="true">{authorInitial}</span>
+    <img class="editor-note__avatar" src="/images/dan-betts-avatar.jpg" alt="" width="32" height="32" loading="lazy" />
     <div>
       <div class="editor-note__name">{authorName}</div>
       <div class="editor-note__role meta">{authorRole}</div>
@@ -73,14 +73,9 @@ if (!quote) return null;
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-deep));
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 13px;
+    object-fit: cover;
+    object-position: 50% 20%;
+    display: block;
     flex-shrink: 0;
   }
 
