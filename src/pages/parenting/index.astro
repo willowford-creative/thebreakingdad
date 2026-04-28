@@ -1,248 +1,378 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import PillarHeader from '~/components/PillarHeader.astro';
-import SectionTitle from '~/components/SectionTitle.astro';
-import PostCard from '~/components/PostCard.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CategoryMasthead from '~/components/CategoryMasthead.astro';
+import EditorNoteCard from '~/components/EditorNoteCard.astro';
+import LeadPack from '~/components/LeadPack.astro';
+import PillarTOC from '~/components/PillarTOC.astro';
+import PillarGroup from '~/components/PillarGroup.astro';
+import CategoryNewsletterBand from '~/components/CategoryNewsletterBand.astro';
+import ArchiveFooter from '~/components/ArchiveFooter.astro';
+import TopicChipStrip from '~/components/TopicChipStrip.astro';
 
-const allParenting = await getCollection('parenting', ({ data }) => !data.draft);
-const sorted = allParenting.sort(
+// ---------------------------------------------------------------------------
+// Per-category curated config — option B from the audit (inline in page).
+// Migrate to a `categories` collection if a second editor needs to touch it.
+// ---------------------------------------------------------------------------
+
+const category = {
+  slug: 'parenting',
+  number: '01',
+  title: 'Parenting',
+  lede:
+    "The skills, the philosophy, the bits nobody tells you. Field notes on raising kids, kit that earns its keep, and the family-life rhythms that actually hold.",
+  cadence: 'Updated weekly',
+  editorNote: {
+    quote:
+      "Most parenting writing flatters the parent. I try to write the bits I actually needed at 2am — the second-hand kit, the awkward conversations, the thing that worked the third time.",
+    authorName: 'Daniel Betts',
+    authorRole: 'Writer, The Breaking Dad',
+    authorInitial: 'D',
+  },
+  /** Editor-curated lead pack. Slugs resolve against the `parenting` collection.
+   *  Falls back to most-recent if any slug is missing.
+   */
+  startHere: {
+    heroSlug: '',         // empty → falls back to most-recent
+    supportingSlugs: [],  // empty → falls back to next-most-recent two
+  },
+};
+
+const pillars = [
+  {
+    slug: 'raising-kids',
+    title: 'Raising kids',
+    dek: 'The skills, the philosophy, the bits nobody tells you.',
+    /** Editor-curated featured slugs; empty → most-recent in pillar */
+    featuredSlugs: [] as string[],
+    /** "Denser" pillars can show 4 cards instead of 3 */
+    cardLimit: 3,
+  },
+  {
+    slug: 'kit-and-gear',
+    title: 'Kit & gear',
+    dek: 'Gift guides, newborn essentials, honest picks from people who own kids.',
+    featuredSlugs: [],
+    cardLimit: 4,
+  },
+  {
+    slug: 'family-life',
+    title: 'Family life',
+    dek: 'Sustainability, crafts, rituals, and the weekend bits that hold it together.',
+    featuredSlugs: [],
+    cardLimit: 3,
+  },
+  {
+    slug: 'days-out',
+    title: 'Days out',
+    dek: 'Family activities — local, occasional, and genuinely worth the trip.',
+    featuredSlugs: [],
+    cardLimit: 3,
+  },
+  {
+    slug: 'digital-parenting',
+    title: 'Digital parenting',
+    dek: "AI, screens, social, and the tech conversations modern parents can't avoid.",
+    featuredSlugs: [],
+    cardLimit: 3,
+  },
+] as const;
+
+// ---------------------------------------------------------------------------
+// Data load
+// ---------------------------------------------------------------------------
+
+const allEntries = await getCollection('parenting', ({ data }) => !data.draft);
+const sorted = allEntries.sort(
   (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
 );
 
-const topics = [
-  { slug: 'raising-kids', label: 'Raising kids', description: 'The skills, the philosophy, the bits nobody tells you.' },
-  { slug: 'kit-and-gear', label: 'Kit and gear', description: 'Gift guides, newborn essentials, honest picks from people who own kids.' },
-  { slug: 'family-life', label: 'Family life', description: 'Sustainability, crafts, rituals, and the weekend bits that hold it together.' },
-  { slug: 'days-out', label: 'Days out', description: 'Family activities — local, occasional, and genuinely worth the trip.' },
-  { slug: 'digital-parenting', label: 'Digital parenting', description: 'AI, screens, social, and the tech conversations modern parents can’t avoid.' },
-];
+const slugOf = (entry: (typeof sorted)[number]) => entry.id.replace(/\.(md|mdx)$/, '');
+const bySlug = new Map(sorted.map((e) => [slugOf(e), e]));
+const topicLabel = Object.fromEntries(pillars.map((p) => [p.slug, p.title]));
 
-const topicLabels: Record<string, string> = Object.fromEntries(
-  topics.map((t) => [t.slug, t.label])
-);
+// Map a content entry → the shape our card components expect.
+const toPostRef = (entry: (typeof sorted)[number]) => {
+  const slug = slugOf(entry);
+  return {
+    title: entry.data.title,
+    description: entry.data.description,
+    href: `/parenting/${slug}/`,
+    image: entry.data.heroImage,
+    imageAlt: entry.data.heroAlt,
+    date: entry.data.publishDate,
+    categoryLabel: topicLabel[entry.data.topic] ?? entry.data.topic,
+    categoryHref: `/parenting/#${entry.data.topic}`,
+  };
+};
 
-const topicCounts: Record<string, number> = {};
-for (const p of sorted) {
-  topicCounts[p.data.topic] = (topicCounts[p.data.topic] ?? 0) + 1;
+// Resolve a curated slug list, padding with the most-recent in pillar.
+function resolveFeatured(pillarSlug: string, curated: string[], limit: number) {
+  const inPillar = sorted.filter((e) => e.data.topic === pillarSlug);
+  const seen = new Set<string>();
+  const out: ReturnType<typeof toPostRef>[] = [];
+
+  for (const slug of curated) {
+    const entry = bySlug.get(slug);
+    if (entry && !seen.has(slug)) {
+      out.push(toPostRef(entry));
+      seen.add(slug);
+    }
+    if (out.length >= limit) break;
+  }
+  for (const entry of inPillar) {
+    if (out.length >= limit) break;
+    const slug = slugOf(entry);
+    if (seen.has(slug)) continue;
+    out.push(toPostRef(entry));
+    seen.add(slug);
+  }
+  return out;
 }
 
-const cornerstone = sorted.slice(0, 3);
-const recent = sorted.slice(0, 8);
+// Lead pack — same logic, drawing from any topic.
+function resolveLeadPack() {
+  const seen = new Set<string>();
+  const heroSlug = category.startHere.heroSlug;
+  let hero = heroSlug ? bySlug.get(heroSlug) : undefined;
+  if (!hero) hero = sorted[0];
+  if (hero) seen.add(slugOf(hero));
+
+  const supporting: typeof sorted = [];
+  for (const slug of category.startHere.supportingSlugs) {
+    const entry = bySlug.get(slug);
+    if (entry && !seen.has(slug)) {
+      supporting.push(entry);
+      seen.add(slug);
+    }
+    if (supporting.length >= 2) break;
+  }
+  for (const entry of sorted) {
+    if (supporting.length >= 2) break;
+    const slug = slugOf(entry);
+    if (seen.has(slug)) continue;
+    supporting.push(entry);
+    seen.add(slug);
+  }
+  return { hero, supporting };
+}
+
+const lead = resolveLeadPack();
+
+// Pillar TOC items (counts driven by actual collection)
+const tocItems = pillars.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  dek: p.dek,
+  count: sorted.filter((e) => e.data.topic === p.slug).length,
+}));
+
+// Pillar groups — featured posts resolved per pillar
+const pillarGroups = pillars.map((p) => ({
+  ...p,
+  items: resolveFeatured(p.slug, [...p.featuredSlugs], p.cardLimit),
+}));
+
+const totalPieces = sorted.length;
+
+// Year tallies for the archive footer
+const yearMap = new Map<number, number>();
+for (const e of sorted) {
+  const y = e.data.publishDate.getFullYear();
+  yearMap.set(y, (yearMap.get(y) ?? 0) + 1);
+}
+const years = Array.from(yearMap, ([year, count]) => ({ year, count }));
+
+// Active year from ?year=YYYY (Astro is static; we render server-side from the
+// URL at build, so the active state surfaces on /parenting/?year=2026 etc.)
+const activeYearParam = Astro.url.searchParams.get('year');
+const activeYear = activeYearParam ? Number(activeYearParam) : undefined;
+
+// Mobile chip strip items — anchor to the matching pillar group
+const chipItems = pillars.map((p) => ({ label: p.title, href: `/parenting/#${p.slug}` }));
 ---
 
 <BaseLayout
-  title="Parenting — The Breaking Dad"
-  description="Practical parenting writing from a UK dad. Guides, kit, family days out, and the honest reality of raising kids — for parents, especially the ones doing it after separation."
+  title={`${category.title} — The Breaking Dad`}
+  description={category.lede}
 >
-  <PillarHeader
-    kicker="The Pillar"
-    title="Parenting"
-    breadcrumb={[
-      { label: 'Home', href: '/' },
-      { label: 'Parenting', href: '/parenting/' },
-    ]}
-  >
-    <p slot="dek" class="pillar-header__dek">
-      Practical writing from a UK dad about raising kids, the kit that actually helps, and the bits of family life
-      that are hard to explain unless you’re in them too. If your parenting is happening after a separation,
-      there’s a section dedicated to that, <a href="/separated-parents/">over here</a>.
-    </p>
-  </PillarHeader>
+  <div class="container">
+    <div class="cat-breadcrumb-row">
+      <Breadcrumbs trail={[
+        { label: 'Home', href: '/' },
+        { label: category.title, href: '/parenting/' },
+      ]} />
+    </div>
+  </div>
 
-  {cornerstone.length > 0 && (
-    <section class="home-section" aria-label="Start here">
-      <div class="container">
-        <SectionTitle
-          kicker="Start here"
-          title="The ones to read first"
-          subtitle="A short starter set across the topics."
-        />
-        <div class="card-grid card-grid--3">
-          {cornerstone.map((entry) => {
-            const slug = entry.id.replace(/\.(md|mdx)$/, '');
-            return (
-              <PostCard
-                title={entry.data.title}
-                description={entry.data.description}
-                href={`/parenting/${slug}/`}
-                image={entry.data.heroImage}
-                imageAlt={entry.data.heroAlt}
-                categoryLabel={topicLabels[entry.data.topic] ?? entry.data.topic}
-                categoryHref="/parenting/"
-                date={entry.data.publishDate}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <section class="home-section home-section--tinted" aria-label="Browse by topic">
-    <div class="container">
-      <SectionTitle kicker="Browse by topic" />
-      <ol class="subhub-list">
-        {topics.map((t, i) => (
-          <li class="subhub-item">
-            <a href={`/parenting/#${t.slug}`} class="subhub-item__link">
-              <span class="subhub-item__number">{String(i + 1).padStart(2, '0')}</span>
-              <div class="subhub-item__body">
-                <h3 class="subhub-item__title">{t.label}</h3>
-                <p class="subhub-item__description">{t.description}</p>
-              </div>
-              <span class="subhub-item__count">
-                {topicCounts[t.slug] ?? 0} {(topicCounts[t.slug] ?? 0) === 1 ? 'piece' : 'pieces'}
-              </span>
-            </a>
-          </li>
-        ))}
-      </ol>
+  <section class="container cat-masthead-section" aria-label={`${category.title} introduction`}>
+    <div class="cat-masthead-grid">
+      <CategoryMasthead
+        number={category.number}
+        title={category.title}
+        lede={category.lede}
+        pieceCount={totalPieces}
+        cadence={category.cadence}
+        pillarCount={pillars.length}
+      />
+      <EditorNoteCard
+        quote={category.editorNote.quote}
+        authorName={category.editorNote.authorName}
+        authorRole={category.editorNote.authorRole}
+        authorInitial={category.editorNote.authorInitial}
+      />
     </div>
   </section>
 
-  {topics.map((t) => {
-    const entriesForTopic = sorted.filter((e) => e.data.topic === t.slug);
-    if (entriesForTopic.length === 0) return null;
-    return (
-      <section class="home-section" id={t.slug} aria-label={t.label}>
-        <div class="container">
-          <SectionTitle
-            kicker={t.label}
-            title={t.description}
-            moreHref={entriesForTopic.length > 4 ? '/parenting/' : undefined}
-            moreLabel={entriesForTopic.length > 4 ? 'View all' : undefined}
-          />
-          <div class="card-grid card-grid--4">
-            {entriesForTopic.slice(0, 4).map((entry) => {
-              const slug = entry.id.replace(/\.(md|mdx)$/, '');
-              return (
-                <PostCard
-                  title={entry.data.title}
-                  description={entry.data.description}
-                  href={`/parenting/${slug}/`}
-                  image={entry.data.heroImage}
-                  imageAlt={entry.data.heroAlt}
-                  categoryLabel={topicLabels[entry.data.topic] ?? entry.data.topic}
-                  categoryHref="/parenting/"
-                  date={entry.data.publishDate}
-                />
-              );
-            })}
-          </div>
+  <div class="container cat-chip-row">
+    <TopicChipStrip allHref="/parenting/" items={chipItems} />
+  </div>
+
+  {lead.hero && (
+    <section class="container cat-section" aria-label="Start here">
+      <header class="cat-section__head">
+        <div>
+          <div class="eyebrow eyebrow-accent cat-section__eyebrow">Start here</div>
+          <h2 class="cat-section__title">The ones to read first</h2>
         </div>
-      </section>
-    );
-  })}
+        <span class="meta">A short starter set across the topics</span>
+      </header>
+      <LeadPack
+        hero={toPostRef(lead.hero)}
+        supporting={lead.supporting.map(toPostRef)}
+      />
+    </section>
+  )}
+
+  <section class="container cat-section" aria-label="Browse by topic">
+    <header class="cat-section__head">
+      <div>
+        <div class="eyebrow eyebrow-accent cat-section__eyebrow">Browse by topic</div>
+        <h2 class="cat-section__title">{pillars.length} threads that run through everything here</h2>
+      </div>
+      <span class="meta">Jump to any section ↓</span>
+    </header>
+    <PillarTOC items={tocItems} />
+  </section>
+
+  {/*
+    Render the first half of the pillars, then the newsletter band, then the rest.
+    Mid-page placement matches the design's pacing.
+  */}
+  {pillarGroups.slice(0, 2).map((p) => (
+    <div class="container">
+      <PillarGroup
+        slug={p.slug}
+        title={p.title}
+        eyebrow={p.title}
+        dek={p.dek}
+        moreHref={`/parenting/?pillar=${p.slug}`}
+        items={p.items}
+      />
+    </div>
+  ))}
+
+  <CategoryNewsletterBand categoryLabel={category.title} />
+
+  {pillarGroups.slice(2).map((p) => (
+    <div class="container">
+      <PillarGroup
+        slug={p.slug}
+        title={p.title}
+        eyebrow={p.title}
+        dek={p.dek}
+        moreHref={`/parenting/?pillar=${p.slug}`}
+        items={p.items}
+      />
+    </div>
+  ))}
+
+  <section class="container cat-archive-section" aria-label={`${category.title} archive`}>
+    <ArchiveFooter
+      categoryLabel={category.title}
+      totalPieces={totalPieces}
+      archiveHref="/parenting/archive/"
+      searchHref="/search/?in=parenting"
+      years={years}
+      activeYear={activeYear}
+      yearBaseHref="/parenting/"
+    />
+  </section>
 
   {sorted.length === 0 && (
-    <section class="home-section">
-      <div class="container--narrow">
-        <p class="pillar-hero__empty">Parenting posts are coming soon.</p>
-      </div>
+    <section class="container">
+      <p class="cat-empty">Parenting posts are coming soon.</p>
     </section>
   )}
 </BaseLayout>
 
 <style>
-  .home-section {
-    padding-block: 2.75rem;
+  .cat-breadcrumb-row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-rule-soft);
   }
 
-  .home-section--tinted {
-    background: var(--color-surface);
+  .cat-masthead-section {
+    padding-block: 44px 28px;
   }
 
-  .subhub-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .cat-masthead-grid {
     display: grid;
-    gap: 0;
-    border-top: 1px solid var(--color-hairline);
+    grid-template-columns: 1.4fr 1fr;
+    gap: 56px;
+    align-items: end;
   }
 
-  .subhub-item {
-    border-bottom: 1px solid var(--color-hairline);
+  .cat-chip-row {
+    /* TopicChipStrip handles its own bleed + display:none on desktop */
+    padding-block: 0;
   }
 
-  .subhub-item__link {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 1.5rem;
+  .cat-section {
+    padding-block: 20px 0;
+  }
+  .cat-section + .cat-section { padding-top: 64px; }
+
+  .cat-section__head {
+    display: flex;
+    justify-content: space-between;
     align-items: baseline;
-    padding: 1.5rem 0;
-    text-decoration: none;
-    transition: padding 0.2s ease;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-rule);
+    gap: 24px;
+    flex-wrap: wrap;
   }
-
-  @media (max-width: 560px) {
-    .subhub-item__link {
-      grid-template-columns: auto 1fr;
-      gap: 1rem;
-    }
-    .subhub-item__count {
-      grid-column: 2;
-      justify-self: start;
-      margin-top: 0.25rem;
-    }
-  }
-
-  .subhub-item__link:hover {
-    padding-left: 0.5rem;
-    background: color-mix(in srgb, var(--color-accent) 4%, transparent);
-  }
-
-  .subhub-item__number {
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
+  .cat-section__eyebrow { margin-bottom: 6px; }
+  .cat-section__title {
+    font-family: var(--font-display);
     font-weight: 700;
-    color: var(--color-accent);
-    letter-spacing: 0.08em;
-    font-feature-settings: "tnum";
-    padding-top: 0.375rem;
-  }
-
-  .subhub-item__body {
-    display: grid;
-    gap: 0.375rem;
-  }
-
-  .subhub-item__title {
-    font-family: var(--font-display);
-    font-size: 1.375rem;
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    font-size: 28px;
+    letter-spacing: -0.018em;
+    color: var(--color-ink);
     margin: 0;
-    color: var(--color-text);
-    transition: color 0.15s;
+    text-wrap: balance;
   }
 
-  .subhub-item__link:hover .subhub-item__title {
-    color: var(--color-accent);
+  .cat-archive-section {
+    padding-block: 80px;
   }
 
-  .subhub-item__description {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    line-height: 1.55;
-    color: var(--color-muted);
-    margin: 0;
-    max-width: 52ch;
-  }
-
-  .subhub-item__count {
+  .cat-empty {
     font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-muted);
-    letter-spacing: 0.02em;
-    white-space: nowrap;
+    color: var(--color-ink-3);
+    padding-block: 40px;
   }
 
-  .pillar-hero__empty {
-    font-family: var(--font-sans);
-    color: var(--color-muted);
+  @media (max-width: 768px) {
+    .cat-masthead-section { padding-block: 26px 20px; }
+    .cat-masthead-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .cat-section + .cat-section { padding-top: 40px; }
+    .cat-section__title { font-size: 22px; }
+    .cat-archive-section { padding-block: 48px; }
   }
 </style>

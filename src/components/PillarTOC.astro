@@ -1,0 +1,42 @@
+---
+/**
+ * Numbered, scannable pillar table-of-contents.
+ * Anchor href is `#${slug}` — the matching <PillarGroup> must mount with the
+ * same `id` and the global `.pillar-section` class for scroll-margin-top.
+ *
+ * Uses the global .pillar-row block (in styles/global.css).
+ */
+
+export interface PillarItem {
+  slug: string;
+  title: string;
+  dek: string;
+  count: number;
+}
+
+export interface Props {
+  items: PillarItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="pillar-toc" aria-label="Topics in this section">
+  {items.map((item, i) => (
+    <a href={`#${item.slug}`} class="pillar-row">
+      <div class="num">{String(i + 1).padStart(2, '0')}</div>
+      <div class="body">
+        <div class="title">{item.title}</div>
+        <div class="dek">{item.dek}</div>
+      </div>
+      <div class="count">{item.count} {item.count === 1 ? 'piece' : 'pieces'}</div>
+      <div class="arrow" aria-hidden="true">→</div>
+    </a>
+  ))}
+</nav>
+
+<style>
+  .pillar-toc {
+    border-top: 1px solid var(--color-rule);
+  }
+</style>

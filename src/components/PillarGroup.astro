@@ -1,0 +1,130 @@
+---
+/**
+ * Per-pillar grouped section: section head ("More in {title} →") + 3-up card grid.
+ * Standard count is 3; pass 4 items for "denser" pillars and the grid reflows.
+ *
+ * Mount with id={slug} and the global .pillar-section class (scroll-margin-top).
+ */
+import PostCard from '~/components/PostCard.astro';
+
+export interface PillarPost {
+  title: string;
+  description: string;
+  href: string;
+  image?: string;
+  imageAlt?: string;
+  date?: Date;
+  categoryLabel?: string;
+  categoryHref?: string;
+}
+
+export interface Props {
+  slug: string;
+  title: string;
+  /** Eyebrow label — usually the same as the pillar title */
+  eyebrow?: string;
+  dek?: string;
+  /** "More in {label} →" link target */
+  moreHref: string;
+  /** Override the default eyebrow on each card (defaults to `eyebrow`) */
+  cardEyebrow?: string;
+  items: PillarPost[];
+}
+
+const { slug, title, eyebrow, dek, moreHref, cardEyebrow, items } = Astro.props;
+const eyebrowText = eyebrow ?? title;
+const cardEyebrowText = cardEyebrow ?? eyebrowText;
+
+if (items.length === 0) return null;
+
+const gridClass = items.length >= 4 ? 'card-grid card-grid--4' : 'card-grid card-grid--3';
+---
+
+<section id={slug} class="pillar-section pillar-group" aria-label={title}>
+  <header class="pillar-group__head">
+    <div>
+      <div class="eyebrow eyebrow-accent pillar-group__eyebrow">{eyebrowText}</div>
+      <h2 class="pillar-group__title">{title}</h2>
+      {dek && <p class="pillar-group__dek">{dek}</p>}
+    </div>
+    <a href={moreHref} class="pillar-group__more">More in {eyebrowText} →</a>
+  </header>
+
+  <div class={gridClass}>
+    {items.map((item) => (
+      <PostCard
+        title={item.title}
+        description={item.description}
+        href={item.href}
+        image={item.image}
+        imageAlt={item.imageAlt}
+        date={item.date}
+        categoryLabel={item.categoryLabel ?? cardEyebrowText}
+        categoryHref={item.categoryHref ?? moreHref}
+      />
+    ))}
+  </div>
+</section>
+
+<style>
+  .pillar-group {
+    padding-top: 56px;
+  }
+
+  .pillar-group__head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .pillar-group__eyebrow { margin-bottom: 8px; }
+
+  .pillar-group__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1.15;
+    letter-spacing: -0.018em;
+    color: var(--color-ink);
+    margin: 0 0 8px;
+    max-width: 760px;
+    text-wrap: balance;
+  }
+
+  .pillar-group__dek {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    margin: 0;
+    max-width: 640px;
+  }
+
+  .pillar-group__more {
+    font-size: 12px;
+    color: var(--color-accent);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    transition: gap .2s, color .15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .pillar-group__more:hover { gap: 8px; }
+
+  @media (max-width: 640px) {
+    .pillar-group { padding-top: 40px; }
+    .pillar-group__head {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+    .pillar-group__title { font-size: 22px; }
+    .pillar-group__dek { font-size: 14px; }
+  }
+</style>

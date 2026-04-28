@@ -1,0 +1,85 @@
+---
+/**
+ * Mobile horizontal-scroll topic filter strip.
+ * Renders on the category page beneath the masthead. The "All" chip is active
+ * on the bare category URL; subsequent chips link to the matching pillar
+ * anchor (so tapping a topic scrolls to its pillar group rather than filtering).
+ *
+ * Hidden on >= 768px — the desktop pillar TOC is the canonical nav.
+ */
+
+export interface ChipItem {
+  label: string;
+  /** Href for the chip — typically `/{category}/#${pillar.slug}` */
+  href: string;
+}
+
+export interface Props {
+  /** href for the "All" chip — typically the bare category URL */
+  allHref: string;
+  items: ChipItem[];
+  /** Slug of the active pillar, if any. Omit to mark "All" active. */
+  activeSlug?: string;
+}
+
+const { allHref, items, activeSlug } = Astro.props;
+const allActive = !activeSlug;
+---
+
+<nav class="topic-chips" aria-label="Topic filter">
+  <a
+    href={allHref}
+    class:list={['topic-chip', allActive && 'topic-chip--active']}
+    aria-current={allActive ? 'page' : undefined}
+  >All</a>
+  {items.map((item) => {
+    const isActive = !!activeSlug && item.href.endsWith(`#${activeSlug}`);
+    return (
+      <a
+        href={item.href}
+        class:list={['topic-chip', isActive && 'topic-chip--active']}
+        aria-current={isActive ? 'page' : undefined}
+      >{item.label}</a>
+    );
+  })}
+</nav>
+
+<style>
+  .topic-chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding: 4px 18px 18px;
+    margin: 0 -18px; /* bleed past container padding on mobile */
+  }
+  .topic-chips::-webkit-scrollbar { display: none; }
+
+  .topic-chip {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+
+  .topic-chip--active,
+  .topic-chip--active:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-deep);
+  }
+
+  /* Desktop: the pillar TOC is the canonical nav, hide the strip. */
+  @media (min-width: 768px) {
+    .topic-chips { display: none; }
+  }
+</style>

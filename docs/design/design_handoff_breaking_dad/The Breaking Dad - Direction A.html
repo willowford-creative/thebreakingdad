@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Breaking Dad — Direction A · Hi-fi</title>
+<link rel="stylesheet" href="tbd-styles.css" />
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="tbd-homepage.jsx"></script>
+<script type="text/babel" src="tbd-post.jsx"></script>
+<script type="text/babel" src="tbd-category.jsx"></script>
+<script type="text/babel" src="tbd-nav.jsx"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState } = React;
+
+// Phone frame wrapper
+function Phone({ children, height = 844 }) {
+  return (
+    <div className="frame-phone">
+      <div className="screen" style={{ width: 370, height: height }}>
+        <div className="notch" />
+        <div style={{ height: "100%", overflow: "auto", paddingTop: 0 }}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Desktop frame wrapper
+function Desktop({ children, width = 1280, height = 900 }) {
+  return (
+    <div className="frame-desktop" style={{ width }}>
+      <div className="browser-bar">
+        <div className="traffic"><span/><span/><span/></div>
+        <div className="url">thebreakingdad.co.uk</div>
+        <div style={{ width: 60 }} />
+      </div>
+      <div style={{ height, overflow: "auto" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [_v, _setTweak] = (window.useTweaks || (() => [{}, () => {}]))(/*EDITMODE-BEGIN*/{
+    "accentColor": "#A66B6B",
+    "displayFont": "Newsreader",
+    "paperTone": "bone"
+  }/*EDITMODE-END*/);
+
+  // Apply tweak values as live CSS variables
+  React.useEffect(() => {
+    document.documentElement.style.setProperty("--accent", _v.accentColor);
+    if (_v.paperTone === "warm") {
+      document.documentElement.style.setProperty("--paper", "#FBF8F5");
+      document.documentElement.style.setProperty("--paper-2", "#F4EFEC");
+    } else if (_v.paperTone === "bone") {
+      document.documentElement.style.setProperty("--paper", "#F8F5F1");
+      document.documentElement.style.setProperty("--paper-2", "#EFEAE4");
+    } else {
+      document.documentElement.style.setProperty("--paper", "#FFFFFF");
+      document.documentElement.style.setProperty("--paper-2", "#FAF8F6");
+    }
+    const fontMap = {
+      "Geist": '"Geist", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+      "Inter": '"Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+      "Newsreader": '"Newsreader", Georgia, serif',
+    };
+    if (fontMap[_v.displayFont]) {
+      document.documentElement.style.setProperty("--display", fontMap[_v.displayFont]);
+    }
+  }, [_v.accentColor, _v.paperTone, _v.displayFont]);
+
+  return (
+    <>
+      <window.DesignCanvas
+        title="The Breaking Dad — Direction A"
+        subtitle="Long-read publication. Newspaper-of-record warmth. Hi-fi screens, real content, real type."
+      >
+        {/* Brief / about */}
+        <window.DCSection id="intro" title="About this direction">
+          <window.DCArtboard id="intro-1" label="The system" width={1100} height={560}>
+            <div style={{ background: "var(--paper)", padding: 56, height: "100%", fontFamily: "var(--sans)" }}>
+              <div className="eyebrow eyebrow-accent" style={{ marginBottom: 14 }}>Direction A · v2 · Built on the live site's DNA</div>
+              <h1 className="display-2" style={{ margin: "0 0 16px" }}>Honest, modern, photo-led — and unmistakably The Breaking Dad.</h1>
+              <p className="lede" style={{ maxWidth: 760, marginBottom: 24 }}>
+                Built on the existing site's DNA — dusky-rose wordmark, soft-pink section blocks, white paper, photo-led cards — and pushed more editorial. Cleaner type, more rhythm, more confident hierarchy. Warm, not wistful.
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 36, marginTop: 28 }}>
+                <div>
+                  <div className="eyebrow" style={{ marginBottom: 10 }}>Type</div>
+                  <div style={{ fontFamily: "var(--display)", fontWeight: 700, fontSize: 38, lineHeight: 1, marginBottom: 6, letterSpacing: "-0.025em" }}>Geist</div>
+                  <div style={{ fontSize: 14, lineHeight: 1.5, color: "var(--ink-2)" }}>All-sans system. Modern, neutral, screen-first. Newsreader serif used only for italic emphasis inside long-form prose.</div>
+                  <div style={{ fontSize: 11, marginTop: 8, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-3)", fontWeight: 600 }}>Geist 700 / 600 / 500 / 400</div>
+                </div>
+                <div>
+                  <div className="eyebrow" style={{ marginBottom: 10 }}>Palette</div>
+                  <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                    {["#FFFFFF", "#FAF8F6", "#F2D9D2", "#A66B6B", "#15110F"].map(c => (
+                      <div key={c} style={{ width: 38, height: 38, borderRadius: 6, background: c, border: "1px solid rgba(0,0,0,0.08)" }} />
+                    ))}
+                  </div>
+                  <div className="meta">White paper, faint warm grey, soft pink section block, dusky-rose accent, near-black ink. Lifted from the live site.</div>
+                </div>
+                <div>
+                  <div className="eyebrow" style={{ marginBottom: 10 }}>What's new vs. live</div>
+                  <ul style={{ margin: 0, padding: "0 0 0 18px", color: "var(--ink-2)", fontSize: 14, lineHeight: 1.55 }}>
+                    <li>Refined hierarchy — calmer hero, clearer rhythm</li>
+                    <li>Dusky-rose category eyebrows kept</li>
+                    <li>Soft-pink "Popular content" band kept</li>
+                    <li>experienceNote: signed long-read footer</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </window.DCArtboard>
+        </window.DCSection>
+
+        {/* Homepage */}
+        <window.DCSection id="home" title="Homepage">
+          <window.DCArtboard id="home-d" label="Desktop · 1280" width={1300} height={2400}>
+            <div style={{ padding: 24 }}>
+              <Desktop width={1280} height={2300}>
+                <window.HomepageDesktop />
+              </Desktop>
+            </div>
+          </window.DCArtboard>
+          <window.DCArtboard id="home-m" label="Mobile · iPhone 15" width={440} height={1900}>
+            <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
+              <Phone height={1820}>
+                <window.HomepageMobile onMenu={() => {}} />
+              </Phone>
+            </div>
+          </window.DCArtboard>
+        </window.DCSection>
+
+        {/* Post */}
+        <window.DCSection id="post" title="Post template — with experienceNote footer">
+          <window.DCArtboard id="post-d" label="Desktop · 1280" width={1300} height={2700}>
+            <div style={{ padding: 24 }}>
+              <Desktop width={1280} height={2600}>
+                <window.PostDesktop />
+              </Desktop>
+            </div>
+          </window.DCArtboard>
+          <window.DCArtboard id="post-m" label="Mobile · iPhone 15" width={440} height={2200}>
+            <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
+              <Phone height={2120}>
+                <window.PostMobile onMenu={() => {}} />
+              </Phone>
+            </div>
+          </window.DCArtboard>
+        </window.DCSection>
+
+        {/* Category */}
+        <window.DCSection id="category" title="Category / Hub page — Parenthood">
+          <window.DCArtboard id="cat-d" label="Desktop · 1280" width={1300} height={3600}>
+            <div style={{ padding: 24 }}>
+              <Desktop width={1280} height={3500}>
+                <window.CategoryDesktop />
+              </Desktop>
+            </div>
+          </window.DCArtboard>
+          <window.DCArtboard id="cat-m" label="Mobile · iPhone 15" width={440} height={2400}>
+            <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
+              <Phone height={2320}>
+                <window.CategoryMobile onMenu={() => {}} />
+              </Phone>
+            </div>
+          </window.DCArtboard>
+        </window.DCSection>
+
+        {/* Nav */}
+        <window.DCSection id="nav" title="Navigation — hamburger to full-screen menu">
+          <window.DCArtboard id="nav-c" label="Closed" width={440} height={780}>
+            <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
+              <Phone height={720}>
+                <window.NavClosed onMenu={() => {}} />
+              </Phone>
+            </div>
+          </window.DCArtboard>
+          <window.DCArtboard id="nav-o" label="Open" width={440} height={780}>
+            <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
+              <Phone height={720}>
+                <window.NavOpen />
+              </Phone>
+            </div>
+          </window.DCArtboard>
+        </window.DCSection>
+
+        {/* Notes */}
+        <window.DCSection id="notes" title="Notes & next steps">
+          <window.DCArtboard id="notes-1" label="What's here, what's next" width={900} height={460}>
+            <div style={{ background: "var(--paper)", padding: 40, height: "100%", fontFamily: "var(--serif)" }}>
+              <h2 className="h2" style={{ margin: "0 0 14px" }}>What's in this hi-fi pass</h2>
+              <ul style={{ paddingLeft: 18, color: "var(--ink-2)", fontSize: 16, lineHeight: 1.6 }}>
+                <li>Homepage (desktop + mobile) — masthead, lead, three-up, library, recent + sidebar with newsletter, About-the-writer, Most read.</li>
+                <li>Post template (desktop + mobile) — TOC rail, YMYL banner, drop cap body, pull-quote, <strong>experienceNote footer</strong>, related sidebar, Next.</li>
+                <li>Hamburger → full-screen menu with sections, formats, site links, embedded newsletter.</li>
+              </ul>
+              <h2 className="h2" style={{ margin: "28px 0 14px" }}>Worth your eye</h2>
+              <ul style={{ paddingLeft: 18, color: "var(--ink-2)", fontSize: 16, lineHeight: 1.6 }}>
+                <li>Voice — does <em>"Dan Foster"</em> + the strap line ("Field notes…") sit right? Or stay closer to the project name?</li>
+                <li>Accent — the dusky terracotta. Try the swatches in the Tweaks panel to test alternatives.</li>
+                <li>experienceNote treatment — warm tinted card, signed, with author row. Strong enough as the only YMYL/personality cue, or do you want it bolder?</li>
+              </ul>
+              <h2 className="h2" style={{ margin: "28px 0 14px" }}>Next up if approved</h2>
+              <ul style={{ paddingLeft: 18, color: "var(--ink-2)", fontSize: 16, lineHeight: 1.6 }}>
+                <li>Subhub index, Review template, Diary template (visually distinct from Posts).</li>
+                <li>About page, hub future-state with bylines.</li>
+              </ul>
+            </div>
+          </window.DCArtboard>
+        </window.DCSection>
+      </window.DesignCanvas>
+
+      {window.TweaksPanel && (
+        <window.TweaksPanel title="Tweaks">
+          <window.TweakSection title="Brand">
+            <window.TweakColor label="Accent" value={_v.accentColor} onChange={x => _setTweak("accentColor", x)} />
+            <window.TweakRadio
+              label="Paper tone"
+              value={_v.paperTone}
+              options={[
+                { label: "White", value: "white" },
+                { label: "Warm", value: "warm" },
+                { label: "Bone", value: "bone" },
+              ]}
+              onChange={x => _setTweak("paperTone", x)}
+            />
+            <window.TweakSelect
+              label="Display font"
+              value={_v.displayFont}
+              options={[
+                { label: "Geist (modern sans — default)", value: "Geist" },
+                { label: "Inter (modern sans alt)", value: "Inter" },
+                { label: "Newsreader (modern serif)", value: "Newsreader" },
+              ]}
+              onChange={x => _setTweak("displayFont", x)}
+            />
+          </window.TweakSection>
+        </window.TweaksPanel>
+      )}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

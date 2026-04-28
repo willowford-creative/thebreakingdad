@@ -1,0 +1,170 @@
+---
+/**
+ * Bottom-of-category archive footer.
+ * Left:  "Looking for something specific?" + ghost CTAs.
+ * Right: year-pill chips with active state on `?year=YYYY`.
+ *
+ * The full-archive flat list view + per-year filtering is deferred work —
+ * chips just navigate to the URL with the param attached for now.
+ */
+
+export interface YearTally {
+  year: number;
+  count: number;
+}
+
+export interface Props {
+  /** e.g. "Parenthood" */
+  categoryLabel: string;
+  /** Total pieces in this category */
+  totalPieces: number;
+  /** Where the "Browse the full archive →" CTA points */
+  archiveHref: string;
+  /** Optional search target (search is phase 2 — link still renders) */
+  searchHref?: string;
+  /** Year tallies, newest first. The component sorts defensively. */
+  years: YearTally[];
+  /** Currently-active year, if any (drives active-pill state) */
+  activeYear?: number;
+  /** Base href the year chips link to (year is added as ?year=YYYY) */
+  yearBaseHref: string;
+}
+
+const {
+  categoryLabel,
+  totalPieces,
+  archiveHref,
+  searchHref,
+  years,
+  activeYear,
+  yearBaseHref,
+} = Astro.props;
+
+const sortedYears = [...years].sort((a, b) => b.year - a.year);
+---
+
+<section class="archive-footer" aria-label={`${categoryLabel} archive`}>
+  <div class="archive-footer__col">
+    <div class="eyebrow eyebrow-accent archive-footer__eyebrow">Archive</div>
+    <h3 class="archive-footer__title">Looking for something specific?</h3>
+    <p class="archive-footer__lede">
+      All {totalPieces} {categoryLabel} {totalPieces === 1 ? 'piece' : 'pieces'}, browsable by year or filterable by sub-topic.
+    </p>
+    <div class="archive-footer__ctas">
+      <a href={archiveHref} class="btn ghost archive-footer__cta">Browse the full archive →</a>
+      {searchHref && (
+        <a href={searchHref} class="btn ghost archive-footer__cta">Search {categoryLabel}</a>
+      )}
+    </div>
+  </div>
+
+  <div class="archive-footer__col">
+    <div class="eyebrow eyebrow-accent archive-footer__eyebrow">By year</div>
+    <ul class="year-pills" role="list">
+      {sortedYears.map(({ year, count }) => {
+        const isActive = year === activeYear;
+        const href = `${yearBaseHref}?year=${year}`;
+        return (
+          <li>
+            <a
+              href={href}
+              class:list={['year-pill', isActive && 'year-pill--active']}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              <span class="year-pill__year">{year}</span>
+              <span class="year-pill__count">({count})</span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .archive-footer {
+    border-top: 1px solid var(--color-rule);
+    padding-top: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .archive-footer__eyebrow { margin-bottom: 10px; }
+
+  .archive-footer__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 24px;
+    letter-spacing: -0.014em;
+    line-height: 1.2;
+    color: var(--color-ink);
+    margin: 0 0 8px;
+  }
+
+  .archive-footer__lede {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    margin: 0 0 18px;
+  }
+
+  .archive-footer__ctas {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .archive-footer__cta { font-size: 12px; }
+
+  .year-pills {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .year-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--color-rule);
+    background: var(--color-paper-2);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .year-pill:hover {
+    border-color: var(--color-accent-soft);
+    background: var(--color-paper-tinted-2);
+  }
+
+  .year-pill--active,
+  .year-pill--active:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-deep);
+  }
+
+  .year-pill__count {
+    font-size: 11px;
+    color: var(--color-ink-3);
+  }
+  .year-pill--active .year-pill__count { color: var(--color-accent-deep); }
+
+  @media (max-width: 640px) {
+    .archive-footer {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>

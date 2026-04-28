@@ -1,0 +1,82 @@
+---
+/**
+ * Category / Hub page masthead.
+ * Section number tag + display headline + lede + meta row.
+ *
+ * Pair with <EditorNoteCard /> on the right via the page's grid.
+ */
+import FieldNoteTag from '~/components/FieldNoteTag.astro';
+
+export interface Props {
+  /** Section number, zero-padded for display ("01", "02"…) */
+  number: string;
+  title: string;
+  lede: string;
+  pieceCount: number;
+  cadence?: string;
+  pillarCount: number;
+}
+
+const { number, title, lede, pieceCount, cadence = 'Updated weekly', pillarCount } = Astro.props;
+---
+
+<div class="cat-masthead">
+  <FieldNoteTag label="Section" number={Number(number)} />
+  <h1 class="cat-masthead__title">{title}</h1>
+  <p class="lede cat-masthead__lede">{lede}</p>
+  <div class="cat-masthead__meta meta">
+    <strong>{pieceCount}</strong> {pieceCount === 1 ? 'piece' : 'pieces'}
+    <span class="cat-masthead__sep">·</span>
+    <span>{cadence}</span>
+    <span class="cat-masthead__sep">·</span>
+    <span>{pillarCount} sub-topics</span>
+  </div>
+</div>
+
+<style>
+  .cat-masthead :global(.field-note-tag) { margin-bottom: 18px; }
+
+  .cat-masthead__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 76px;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+
+  .cat-masthead__lede {
+    font-size: 21px;
+    max-width: 640px;
+    margin: 0 0 22px;
+  }
+
+  .cat-masthead__meta {
+    font-size: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 6px;
+  }
+  .cat-masthead__meta strong {
+    color: var(--color-ink);
+    font-weight: 600;
+  }
+  .cat-masthead__sep { color: var(--color-ink-4); }
+
+  @media (max-width: 768px) {
+    .cat-masthead :global(.field-note-tag) { margin-bottom: 14px; }
+    .cat-masthead__title {
+      font-size: 44px;
+      margin-bottom: 12px;
+    }
+    .cat-masthead__lede {
+      font-size: 16.5px;
+      margin-bottom: 14px;
+    }
+    .cat-masthead__meta { font-size: 12px; }
+  }
+</style>

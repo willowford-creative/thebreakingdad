@@ -877,6 +877,82 @@ a:hover > .wordmark::after,
 .disclosure-pill:hover { background: var(--color-paper-tinted-2); color: var(--color-ink-2); }
 
 /* ---------------------------------------------------------------------------
+   Pillar TOC rows (category page)
+   --------------------------------------------------------------------------- */
+
+.pillar-row {
+  display: grid;
+  grid-template-columns: 56px 1fr 110px 28px;
+  gap: 24px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--color-rule);
+  transition: padding-left .25s var(--ease-soft), color .15s;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+.pillar-row .num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.005em;
+  color: var(--color-accent);
+  font-feature-settings: "tnum";
+}
+.pillar-row .body .title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+  color: var(--color-ink);
+  margin: 0 0 4px;
+  transition: color .15s;
+}
+.pillar-row .body .dek {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: var(--color-ink-3);
+  line-height: 1.5;
+  margin: 0;
+}
+.pillar-row .count {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  text-align: right;
+}
+.pillar-row .arrow {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--color-ink-3);
+  text-align: right;
+  transition: transform .25s var(--ease-soft), color .15s;
+}
+.pillar-row:hover { padding-left: 12px; }
+.pillar-row:hover .body .title { color: var(--color-accent); }
+.pillar-row:hover .arrow { transform: translateX(6px); color: var(--color-accent); }
+
+/* Mobile collapse — count drops to right of body, arrow hidden */
+@media (max-width: 640px) {
+  .pillar-row {
+    grid-template-columns: 32px 1fr auto;
+    gap: 14px;
+    padding: 16px 0;
+  }
+  .pillar-row .num { font-size: 16px; }
+  .pillar-row .body .title { font-size: 16px; }
+  .pillar-row .body .dek { font-size: 12.5px; }
+  .pillar-row .arrow { display: none; }
+}
+
+/* Anchor offset so deep-links don't sit under any sticky chrome */
+.pillar-section { scroll-margin-top: 80px; }
+
+/* ---------------------------------------------------------------------------
    Reading progress bar
    --------------------------------------------------------------------------- */
 

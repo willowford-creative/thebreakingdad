@@ -1,246 +1,353 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import PillarHeader from '~/components/PillarHeader.astro';
-import SectionTitle from '~/components/SectionTitle.astro';
-import PostCard from '~/components/PostCard.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CategoryMasthead from '~/components/CategoryMasthead.astro';
+import EditorNoteCard from '~/components/EditorNoteCard.astro';
+import LeadPack from '~/components/LeadPack.astro';
+import PillarTOC from '~/components/PillarTOC.astro';
+import PillarGroup from '~/components/PillarGroup.astro';
+import CategoryNewsletterBand from '~/components/CategoryNewsletterBand.astro';
+import ArchiveFooter from '~/components/ArchiveFooter.astro';
+import TopicChipStrip from '~/components/TopicChipStrip.astro';
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
-);
+// ---------------------------------------------------------------------------
+// Per-category curated config
+// ---------------------------------------------------------------------------
 
-const subhubs = [
+const category = {
+  slug: 'separated-parents',
+  number: '02',
+  title: 'Separated parents',
+  lede:
+    "Practical, honest writing about life after separation — co-parenting, blended family life, the benefits system, the legal stuff, and starting over. Written from eight years of lived experience, not a textbook.",
+  cadence: 'Updated weekly',
+  editorNote: {
+    quote:
+      "I started writing this section because every guide I read sounded like it was written by someone who'd never had to call CMS at 8am. The bits I needed were the ones nobody admits to.",
+    authorName: 'Daniel Betts',
+    authorRole: 'Writer, The Breaking Dad',
+    authorInitial: 'D',
+  },
+  startHere: {
+    heroSlug: '',
+    supportingSlugs: [] as string[],
+  },
+};
+
+const pillars = [
   {
     slug: 'co-parenting',
-    label: 'Co-parenting',
-    description: 'Parenting plans, schedules, mediation, and what to do when it gets hard.',
+    title: 'Co-parenting',
+    dek: 'Parenting plans, schedules, mediation, and what to do when it gets hard.',
+    featuredSlugs: [] as string[],
+    cardLimit: 3,
   },
   {
     slug: 'blended-family',
-    label: 'Blended family',
-    description: 'Introducing new partners, step-parenting, the chaos and the joy of a bigger family.',
+    title: 'Blended family',
+    dek: 'Introducing new partners, step-parenting, the chaos and the joy of a bigger family.',
+    featuredSlugs: [] as string[],
+    cardLimit: 3,
   },
   {
     slug: 'money-and-benefits',
-    label: 'Money and benefits',
-    description: 'Universal Credit, child maintenance, grants, and making the numbers work.',
+    title: 'Money and benefits',
+    dek: 'Universal Credit, child maintenance, grants, and making the numbers work.',
+    featuredSlugs: [] as string[],
+    cardLimit: 4,
   },
   {
     slug: 'rights-and-law',
-    label: 'Rights and law',
-    description: 'Child arrangements, primary carer rights, CMS, and what your options really are.',
+    title: 'Rights and law',
+    dek: "Child arrangements, primary carer rights, CMS, and what your options really are.",
+    featuredSlugs: [] as string[],
+    cardLimit: 3,
   },
   {
     slug: 'starting-over',
-    label: 'Starting over',
-    description: 'Dating again, rebuilding your identity, and the emotional side of separation.',
+    title: 'Starting over',
+    dek: 'Dating again, rebuilding your identity, and the emotional side of separation.',
+    featuredSlugs: [] as string[],
+    cardLimit: 3,
   },
-];
+] as const;
 
-const subhubLabels: Record<string, string> = Object.fromEntries(
-  subhubs.map((s) => [s.slug, s.label])
+// ---------------------------------------------------------------------------
+// Data load — `posts` collection, keyed by `subhub`
+// ---------------------------------------------------------------------------
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const sorted = allPosts.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
 );
 
-// Count posts per subhub
-const subhubCounts: Record<string, number> = {};
-for (const p of sortedPosts) {
-  subhubCounts[p.data.subhub] = (subhubCounts[p.data.subhub] ?? 0) + 1;
+const slugOf = (entry: (typeof sorted)[number]) => entry.id.replace(/\.(md|mdx)$/, '');
+const bySlug = new Map(sorted.map((e) => [slugOf(e), e]));
+const subhubLabel = Object.fromEntries(pillars.map((p) => [p.slug, p.title]));
+
+const toPostRef = (entry: (typeof sorted)[number]) => {
+  const slug = slugOf(entry);
+  return {
+    title: entry.data.title,
+    description: entry.data.description,
+    href: `/separated-parents/${slug}/`,
+    image: entry.data.heroImage,
+    imageAlt: entry.data.heroAlt,
+    date: entry.data.publishDate,
+    categoryLabel: subhubLabel[entry.data.subhub] ?? entry.data.subhub,
+    categoryHref: `/separated-parents/${entry.data.subhub}/`,
+  };
+};
+
+function resolveFeatured(pillarSlug: string, curated: string[], limit: number) {
+  const inPillar = sorted.filter((e) => e.data.subhub === pillarSlug);
+  const seen = new Set<string>();
+  const out: ReturnType<typeof toPostRef>[] = [];
+
+  for (const slug of curated) {
+    const entry = bySlug.get(slug);
+    if (entry && !seen.has(slug)) {
+      out.push(toPostRef(entry));
+      seen.add(slug);
+    }
+    if (out.length >= limit) break;
+  }
+  for (const entry of inPillar) {
+    if (out.length >= limit) break;
+    const slug = slugOf(entry);
+    if (seen.has(slug)) continue;
+    out.push(toPostRef(entry));
+    seen.add(slug);
+  }
+  return out;
 }
 
-const cornerstone = sortedPosts.slice(0, 3);
-const recent = sortedPosts.slice(0, 8);
+function resolveLeadPack() {
+  const seen = new Set<string>();
+  const heroSlug = category.startHere.heroSlug;
+  let hero = heroSlug ? bySlug.get(heroSlug) : undefined;
+  if (!hero) hero = sorted[0];
+  if (hero) seen.add(slugOf(hero));
+
+  const supporting: typeof sorted = [];
+  for (const slug of category.startHere.supportingSlugs) {
+    const entry = bySlug.get(slug);
+    if (entry && !seen.has(slug)) {
+      supporting.push(entry);
+      seen.add(slug);
+    }
+    if (supporting.length >= 2) break;
+  }
+  for (const entry of sorted) {
+    if (supporting.length >= 2) break;
+    const slug = slugOf(entry);
+    if (seen.has(slug)) continue;
+    supporting.push(entry);
+    seen.add(slug);
+  }
+  return { hero, supporting };
+}
+
+const lead = resolveLeadPack();
+
+const tocItems = pillars.map((p) => ({
+  slug: p.slug,
+  title: p.title,
+  dek: p.dek,
+  count: sorted.filter((e) => e.data.subhub === p.slug).length,
+}));
+
+const pillarGroups = pillars.map((p) => ({
+  ...p,
+  items: resolveFeatured(p.slug, [...p.featuredSlugs], p.cardLimit),
+}));
+
+const totalPieces = sorted.length;
+
+const yearMap = new Map<number, number>();
+for (const e of sorted) {
+  const y = e.data.publishDate.getFullYear();
+  yearMap.set(y, (yearMap.get(y) ?? 0) + 1);
+}
+const years = Array.from(yearMap, ([year, count]) => ({ year, count }));
+
+const activeYearParam = Astro.url.searchParams.get('year');
+const activeYear = activeYearParam ? Number(activeYearParam) : undefined;
+
+// Subhubs have their own routes, so chips link to those instead of in-page anchors
+const chipItems = pillars.map((p) => ({ label: p.title, href: `/separated-parents/${p.slug}/` }));
 ---
 
 <BaseLayout
-  title="Separated parents — co-parenting, blended families, rights and money"
-  description="Practical, honest guides for separated parents in the UK — co-parenting, blended family life, benefits, legal rights, and starting over. Written by Dan Betts."
+  title={`${category.title} — co-parenting, blended families, rights and money`}
+  description={category.lede}
 >
-  <PillarHeader
-    kicker="The Pillar"
-    title="Separated parents"
-    dek="Practical, honest writing about life after separation — co-parenting, blended family life, the benefits system, the legal stuff, and starting over. Written from eight years of lived experience, not a textbook."
-    breadcrumb={[
-      { label: 'Home', href: '/' },
-      { label: 'Separated parents', href: '/separated-parents/' },
-    ]}
-  />
+  <div class="container">
+    <div class="cat-breadcrumb-row">
+      <Breadcrumbs trail={[
+        { label: 'Home', href: '/' },
+        { label: category.title, href: '/separated-parents/' },
+      ]} />
+    </div>
+  </div>
 
-  {cornerstone.length > 0 && (
-    <section class="home-section" aria-label="Start here">
-      <div class="container">
-        <SectionTitle
-          kicker="Start here"
-          title="The ones to read first"
-          subtitle="If you're new, these are the three pieces that most people find helpful."
-        />
-        <div class="card-grid card-grid--3">
-          {cornerstone.map((post) => {
-            const slugId = post.id.replace(/\.(md|mdx)$/, '');
-            return (
-              <PostCard
-                title={post.data.title}
-                description={post.data.description}
-                href={`/separated-parents/${slugId}/`}
-                image={post.data.heroImage}
-                imageAlt={post.data.heroAlt}
-                categoryLabel={subhubLabels[post.data.subhub] ?? post.data.subhub}
-                categoryHref={`/separated-parents/${post.data.subhub}/`}
-                date={post.data.publishDate}
-              />
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  )}
-
-  <section class="home-section home-section--tinted" aria-label="Browse by topic">
-    <div class="container">
-      <SectionTitle kicker="Browse by topic" />
-      <ol class="subhub-list">
-        {subhubs.map((hub, i) => (
-          <li class="subhub-item">
-            <a href={`/separated-parents/${hub.slug}/`} class="subhub-item__link">
-              <span class="subhub-item__number">{String(i + 1).padStart(2, '0')}</span>
-              <div class="subhub-item__body">
-                <h3 class="subhub-item__title">{hub.label}</h3>
-                <p class="subhub-item__description">{hub.description}</p>
-              </div>
-              <span class="subhub-item__count">
-                {subhubCounts[hub.slug] ?? 0} {(subhubCounts[hub.slug] ?? 0) === 1 ? 'piece' : 'pieces'}
-              </span>
-            </a>
-          </li>
-        ))}
-      </ol>
+  <section class="container cat-masthead-section" aria-label={`${category.title} introduction`}>
+    <div class="cat-masthead-grid">
+      <CategoryMasthead
+        number={category.number}
+        title={category.title}
+        lede={category.lede}
+        pieceCount={totalPieces}
+        cadence={category.cadence}
+        pillarCount={pillars.length}
+      />
+      <EditorNoteCard
+        quote={category.editorNote.quote}
+        authorName={category.editorNote.authorName}
+        authorRole={category.editorNote.authorRole}
+        authorInitial={category.editorNote.authorInitial}
+      />
     </div>
   </section>
 
-  {recent.length > 0 && (
-    <section class="home-section" aria-label="Recent posts">
-      <div class="container">
-        <SectionTitle
-          kicker="Recent"
-          moreHref="/separated-parents/"
-          moreLabel="View all"
-        />
-        <div class="card-grid card-grid--4">
-          {recent.map((post) => {
-            const slugId = post.id.replace(/\.(md|mdx)$/, '');
-            return (
-              <PostCard
-                title={post.data.title}
-                description={post.data.description}
-                href={`/separated-parents/${slugId}/`}
-                image={post.data.heroImage}
-                imageAlt={post.data.heroAlt}
-                categoryLabel={subhubLabels[post.data.subhub] ?? post.data.subhub}
-                categoryHref={`/separated-parents/${post.data.subhub}/`}
-                date={post.data.publishDate}
-              />
-            );
-          })}
+  <div class="container cat-chip-row">
+    <TopicChipStrip allHref="/separated-parents/" items={chipItems} />
+  </div>
+
+  {lead.hero && (
+    <section class="container cat-section" aria-label="Start here">
+      <header class="cat-section__head">
+        <div>
+          <div class="eyebrow eyebrow-accent cat-section__eyebrow">Start here</div>
+          <h2 class="cat-section__title">The ones to read first</h2>
         </div>
+        <span class="meta">If you're new, these three pieces help most</span>
+      </header>
+      <LeadPack
+        hero={toPostRef(lead.hero)}
+        supporting={lead.supporting.map(toPostRef)}
+      />
+    </section>
+  )}
+
+  <section class="container cat-section" aria-label="Browse by topic">
+    <header class="cat-section__head">
+      <div>
+        <div class="eyebrow eyebrow-accent cat-section__eyebrow">Browse by topic</div>
+        <h2 class="cat-section__title">{pillars.length} threads that run through everything here</h2>
       </div>
+      <span class="meta">Jump to any sub-hub →</span>
+    </header>
+    <PillarTOC items={tocItems} />
+  </section>
+
+  {pillarGroups.slice(0, 2).map((p) => (
+    <div class="container">
+      <PillarGroup
+        slug={p.slug}
+        title={p.title}
+        eyebrow={p.title}
+        dek={p.dek}
+        moreHref={`/separated-parents/${p.slug}/`}
+        items={p.items}
+      />
+    </div>
+  ))}
+
+  <CategoryNewsletterBand categoryLabel={category.title} />
+
+  {pillarGroups.slice(2).map((p) => (
+    <div class="container">
+      <PillarGroup
+        slug={p.slug}
+        title={p.title}
+        eyebrow={p.title}
+        dek={p.dek}
+        moreHref={`/separated-parents/${p.slug}/`}
+        items={p.items}
+      />
+    </div>
+  ))}
+
+  <section class="container cat-archive-section" aria-label={`${category.title} archive`}>
+    <ArchiveFooter
+      categoryLabel={category.title}
+      totalPieces={totalPieces}
+      archiveHref="/separated-parents/archive/"
+      searchHref="/search/?in=separated-parents"
+      years={years}
+      activeYear={activeYear}
+      yearBaseHref="/separated-parents/"
+    />
+  </section>
+
+  {sorted.length === 0 && (
+    <section class="container">
+      <p class="cat-empty">Posts are coming soon.</p>
     </section>
   )}
 </BaseLayout>
 
 <style>
-  .home-section {
-    padding-block: 2.75rem;
+  .cat-breadcrumb-row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--color-rule-soft);
   }
 
-  .home-section--tinted {
-    background: var(--color-surface);
+  .cat-masthead-section {
+    padding-block: 44px 28px;
   }
 
-  .subhub-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  .cat-masthead-grid {
     display: grid;
-    gap: 0;
-    border-top: 1px solid var(--color-hairline);
+    grid-template-columns: 1.4fr 1fr;
+    gap: 56px;
+    align-items: end;
   }
 
-  .subhub-item {
-    border-bottom: 1px solid var(--color-hairline);
-  }
+  .cat-chip-row { padding-block: 0; }
 
-  .subhub-item__link {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 1.5rem;
+  .cat-section { padding-block: 20px 0; }
+  .cat-section + .cat-section { padding-top: 64px; }
+
+  .cat-section__head {
+    display: flex;
+    justify-content: space-between;
     align-items: baseline;
-    padding: 1.5rem 0;
-    text-decoration: none;
-    transition: padding 0.2s ease;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-rule);
+    gap: 24px;
+    flex-wrap: wrap;
   }
-
-  @media (max-width: 560px) {
-    .subhub-item__link {
-      grid-template-columns: auto 1fr;
-      gap: 1rem;
-    }
-    .subhub-item__count {
-      grid-column: 2;
-      justify-self: start;
-      margin-top: 0.25rem;
-    }
-  }
-
-  .subhub-item__link:hover {
-    padding-left: 0.5rem;
-    background: color-mix(in srgb, var(--color-accent) 4%, transparent);
-  }
-
-  .subhub-item__number {
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
+  .cat-section__eyebrow { margin-bottom: 6px; }
+  .cat-section__title {
+    font-family: var(--font-display);
     font-weight: 700;
-    color: var(--color-accent);
-    letter-spacing: 0.08em;
-    font-feature-settings: "tnum";
-    padding-top: 0.375rem;
-  }
-
-  .subhub-item__body {
-    display: grid;
-    gap: 0.375rem;
-  }
-
-  .subhub-item__title {
-    font-family: var(--font-display);
-    font-size: 1.375rem;
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
+    font-size: 28px;
+    letter-spacing: -0.018em;
+    color: var(--color-ink);
     margin: 0;
-    color: var(--color-text);
-    transition: color 0.15s;
+    text-wrap: balance;
   }
 
-  .subhub-item__link:hover .subhub-item__title {
-    color: var(--color-accent);
-  }
+  .cat-archive-section { padding-block: 80px; }
 
-  .subhub-item__description {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    line-height: 1.55;
-    color: var(--color-muted);
-    margin: 0;
-    max-width: 52ch;
-  }
-
-  .subhub-item__count {
+  .cat-empty {
     font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-muted);
-    letter-spacing: 0.02em;
-    white-space: nowrap;
+    color: var(--color-ink-3);
+    padding-block: 40px;
+  }
+
+  @media (max-width: 768px) {
+    .cat-masthead-section { padding-block: 26px 20px; }
+    .cat-masthead-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .cat-section + .cat-section { padding-top: 40px; }
+    .cat-section__title { font-size: 22px; }
+    .cat-archive-section { padding-block: 48px; }
   }
 </style>

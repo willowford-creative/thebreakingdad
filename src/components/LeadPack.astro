@@ -1,0 +1,117 @@
+---
+/**
+ * Editor-curated "Start here" pack: 1 hero (5:4) + 2 supporting (5:3 stacked).
+ *
+ * Hero uses .hero-card globals; supporting cards reuse <PostCard variant="default">
+ * with a tighter layout via the wrapper class.
+ */
+import PostCard from '~/components/PostCard.astro';
+
+export interface PackItem {
+  title: string;
+  description: string;
+  href: string;
+  image?: string;
+  imageAlt?: string;
+  categoryLabel?: string;
+  categoryHref?: string;
+  date?: Date;
+  /** Optional placeholder gradient class — falls back to PostCard's hash if omitted */
+  illusVariant?: string;
+}
+
+export interface Props {
+  hero: PackItem;
+  supporting: PackItem[];
+}
+
+const { hero, supporting } = Astro.props;
+
+const heroDate = hero.date
+  ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(hero.date)
+  : null;
+---
+
+<div class="lead-pack">
+  <a href={hero.href} class="lead-pack__hero hero-card">
+    {hero.image ? (
+      <img src={hero.image} alt={hero.imageAlt ?? hero.title} class="lead-pack__hero-img" loading="lazy" />
+    ) : (
+      <div class={`illus ${hero.illusVariant ?? 'illus--toys'} lead-pack__hero-img`} aria-hidden="true"></div>
+    )}
+    <div class="hero-card__overlay"></div>
+    <div class="hero-card__text">
+      {hero.categoryLabel && (
+        <div class="eyebrow">{hero.categoryLabel}</div>
+      )}
+      <div class="title lead-pack__hero-title">{hero.title}</div>
+      {heroDate && <div class="meta">{heroDate}</div>}
+    </div>
+  </a>
+
+  <div class="lead-pack__side">
+    {supporting.map((item) => (
+      <PostCard
+        title={item.title}
+        description={item.description}
+        href={item.href}
+        image={item.image}
+        imageAlt={item.imageAlt}
+        categoryLabel={item.categoryLabel}
+        categoryHref={item.categoryHref}
+        date={item.date}
+      />
+    ))}
+  </div>
+</div>
+
+<style>
+  .lead-pack {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 28px;
+  }
+
+  .lead-pack__hero {
+    aspect-ratio: 5/4;
+    /* hero-card globals already supply: position, radius, overflow, transition */
+  }
+
+  .lead-pack__hero-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lead-pack__hero-title {
+    font-size: 32px;
+  }
+
+  .lead-pack__side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Supporting cards: tighten image to 5:3 per spec */
+  .lead-pack__side :global(.card__img-wrap) {
+    aspect-ratio: 5/3;
+  }
+
+  @media (max-width: 768px) {
+    .lead-pack {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .lead-pack__hero-title {
+      font-size: 22px;
+    }
+    .lead-pack__hero-text {
+      left: 18px;
+      right: 18px;
+      bottom: 18px;
+    }
+  }
+</style>
