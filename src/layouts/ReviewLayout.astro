@@ -23,7 +23,7 @@ export interface Props {
   heroImage?: string;
   heroAlt?: string;
   productName: string;
-  rating: number;
+  rating?: number;
   usageDuration: string;
   productCategory: string;
   pros: string[];
@@ -79,20 +79,35 @@ const breadcrumbTrail = [
   { label: title, href: canonicalUrl },
 ];
 
-const reviewSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'Review',
-  name: title,
-  description,
-  url: canonicalUrl,
-  datePublished: publishDate.toISOString(),
-  dateModified: (updatedDate ?? publishDate).toISOString(),
-  author: { '@type': 'Person', name: 'Dan Betts', url: `${siteUrl}/about/` },
-  reviewRating: { '@type': 'Rating', ratingValue: rating, bestRating: 5, worstRating: 1 },
-  itemReviewed: { '@type': 'Product', name: productName },
-  publisher: { '@type': 'Organization', name: 'The Breaking Dad', url: siteUrl },
-  ...(heroImage ? { image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}` } : {}),
-};
+// Roundups (no single rating) emit Article schema instead of Review — Google
+// rejects Review markup without reviewRating.
+const reviewSchema = rating
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Review',
+      name: title,
+      description,
+      url: canonicalUrl,
+      datePublished: publishDate.toISOString(),
+      dateModified: (updatedDate ?? publishDate).toISOString(),
+      author: { '@type': 'Person', name: 'Dan Betts', url: `${siteUrl}/about/` },
+      reviewRating: { '@type': 'Rating', ratingValue: rating, bestRating: 5, worstRating: 1 },
+      itemReviewed: { '@type': 'Product', name: productName },
+      publisher: { '@type': 'Organization', name: 'The Breaking Dad', url: siteUrl },
+      ...(heroImage ? { image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}` } : {}),
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: title,
+      description,
+      url: canonicalUrl,
+      datePublished: publishDate.toISOString(),
+      dateModified: (updatedDate ?? publishDate).toISOString(),
+      author: { '@type': 'Person', name: 'Dan Betts', url: `${siteUrl}/about/` },
+      publisher: { '@type': 'Organization', name: 'The Breaking Dad', url: siteUrl },
+      ...(heroImage ? { image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}` } : {}),
+    };
 
 const breadcrumbSchema = {
   '@context': 'https://schema.org',
@@ -105,8 +120,9 @@ const breadcrumbSchema = {
   })),
 };
 
-const filledStars = Math.round(rating);
-const emptyStars = 5 - filledStars;
+const filledStars = rating ? Math.floor(rating) : 0;
+const hasHalfStar = rating ? rating % 1 >= 0.5 : false;
+const emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
 
 const defaultDisclaimer = `This review contains affiliate links, marked with *. If you buy through these links, I earn a small commission at no extra cost to you. I only recommend things I've actually used and genuinely rate. <a href="/affiliate-disclosure/">Full disclosure here</a>.`;
 
@@ -183,12 +199,16 @@ const relatedItems = allReviews
 
           <div class="post-layout__main">
             <aside class="verdict-card" aria-label="Review verdict">
-              <span class="verdict-card__kicker">The Verdict</span>
+              <span class="verdict-card__kicker">{rating ? 'The Verdict' : 'The Roundup'}</span>
               <div class="verdict-card__rating-row">
-                <span class="verdict-card__stars" aria-label={`Rating: ${rating} out of 5`}>
-                  {'★'.repeat(filledStars)}{'☆'.repeat(emptyStars)}
-                </span>
-                <span class="verdict-card__score">{rating}/5</span>
+                {rating && (
+                  <>
+                    <span class="verdict-card__stars" aria-label={`Rating: ${rating} out of 5`}>
+                      {'★'.repeat(filledStars)}{hasHalfStar ? '½' : ''}{'☆'.repeat(emptyStars)}
+                    </span>
+                    <span class="verdict-card__score">{rating}/5</span>
+                  </>
+                )}
                 <span class="verdict-card__duration">{usageDuration}</span>
               </div>
               {verdict && <p class="verdict-card__verdict">{verdict}</p>}

@@ -54,7 +54,7 @@ const reviews = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/reviews' }),
   schema: baseSchema.extend({
     productName: z.string(),
-    rating: z.number().int().min(1).max(5),
+    rating: z.number().min(1).max(5).multipleOf(0.5).optional(), // omit for roundups; halves allowed (e.g. 4.5)
     usageDuration: z.string(), // e.g. "Used for 4 years"
     productCategory: z.enum([
       'family-tech',
@@ -124,16 +124,4 @@ const diary = defineCollection({
     }),
 });
 
-// ---------------------------------------------------------------------------
-// Pages collection — static page content (about, privacy, etc.)
-// ---------------------------------------------------------------------------
-
-const pages = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/pages' }),
-  schema: z.object({
-    title: z.string(),
-    description: z.string().optional(),
-  }),
-});
-
-export const collections = { posts, reviews, parenting, diary, pages };
+export const collections = { posts, reviews, parenting, diary };

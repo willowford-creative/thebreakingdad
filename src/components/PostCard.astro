@@ -33,7 +33,9 @@ const formattedDate = date
     }).format(date)
   : null;
 
-const filledStars = rating ? Math.round(rating) : 0;
+const filledStars = rating ? Math.floor(rating) : 0;
+const hasHalfStar = rating ? rating % 1 >= 0.5 : false;
+const emptyStars = 5 - filledStars - (hasHalfStar ? 1 : 0);
 const showImage = variant !== 'text' && image;
 
 // Random illustration class for missing images (reproducible by slug)
@@ -70,7 +72,7 @@ function illusFor(seed: string): string {
         ) : null}
         {rating && (
           <span class="card__rating" aria-label={`${rating} out of 5`}>
-            <span class="card__stars" aria-hidden="true">{'★'.repeat(filledStars)}{'☆'.repeat(5 - filledStars)}</span>
+            <span class="card__stars" aria-hidden="true">{'★'.repeat(filledStars)}{hasHalfStar ? '½' : ''}{'☆'.repeat(emptyStars)}</span>
             <span class="card__score">{rating}/5</span>
           </span>
         )}
