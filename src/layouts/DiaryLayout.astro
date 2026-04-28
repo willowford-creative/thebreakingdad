@@ -2,207 +2,238 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
-import TableOfContents from '~/components/TableOfContents.astro';
-import RelatedRail from '~/components/RelatedRail.astro';
-import KeepReading from '~/components/KeepReading.astro';
 import ReadingProgress from '~/components/ReadingProgress.astro';
-
-export interface Heading {
-  depth: number;
-  slug: string;
-  text: string;
-}
+import DateStamp from '~/components/DateStamp.astro';
+import DiaryRelatedCard from '~/components/DiaryRelatedCard.astro';
+import DiarySignoff from '~/components/DiarySignoff.astro';
+import DiaryPrevNext from '~/components/DiaryPrevNext.astro';
+import NewsletterInline from '~/components/NewsletterInline.astro';
+import { getDiaryAuditResults } from '~/utils/diaryAudit';
+import type { CollectionEntry } from 'astro:content';
 
 export interface Props {
-  title: string;
-  description: string;
-  publishDate: Date;
-  updatedDate?: Date;
-  heroImage?: string;
-  heroAlt?: string;
-  slug: string;
-  tags?: string[];
-  readingMinutes?: number;
-  headings?: Heading[];
+  entry: CollectionEntry<'diary'>;
 }
 
-const { title, description, publishDate, heroImage, heroAlt, slug, readingMinutes, headings = [] } = Astro.props;
+const { entry } = Astro.props;
+const data = entry.data;
+const slug = entry.id.replace(/\.(md|mdx)$/, '');
 
 const siteUrl = 'https://thebreakingdad.co.uk';
 const canonicalUrl = `${siteUrl}/diary/${slug}/`;
 
+// Run gates — throws if any entry has hard errors. Memoised across pages.
+const auditResults = await getDiaryAuditResults();
+const ownResult = auditResults.find((r) => r.slug === slug);
+const shouldNoindex = ownResult?.shouldNoindex ?? false;
+
+// Compute prev/next neighbours by publish date among non-draft entries.
+const allDiary = await getCollection('diary', ({ data: d }) => !d.draft);
+const sorted = allDiary
+  .slice()
+  .sort((a, b) => a.data.publishDate.getTime() - b.data.publishDate.getTime());
+const idx = sorted.findIndex((e) => e.id === entry.id);
+const prevEntry = idx > 0 ? sorted[idx - 1] : null;
+const nextEntry = idx >= 0 && idx < sorted.length - 1 ? sorted[idx + 1] : null;
+const toNeighbour = (e: CollectionEntry<'diary'> | null) =>
+  e
+    ? {
+        href: `/diary/${e.id.replace(/\.(md|mdx)$/, '')}/`,
+        title: e.data.title,
+        date: e.data.publishDate,
+      }
+    : null;
+
+// Diary No. — sequential by publish order, oldest = 1.
+const diaryNumber = idx + 1;
+
 const breadcrumbTrail = [
   { label: 'Home', href: '/' },
   { label: 'Diary', href: '/diary/' },
-  { label: title, href: canonicalUrl },
+  { label: data.title, href: canonicalUrl },
 ];
 
-const formattedDate = new Intl.DateTimeFormat('en-GB', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-}).format(publishDate);
+// Gates above guarantee these fields exist for non-draft entries.
+const lede = data.lede!;
+const heroImage = data.heroImage!;
+const heroAlt = data.heroAlt!;
+const heroCaption = data.heroCaption!;
 
-// Related diary entries — most-recent excluding current
-const allDiary = await getCollection('diary', ({ data }) => !data.draft);
-const relatedItems = allDiary
-  .filter((d) => d.id.replace(/\.(md|mdx)$/, '') !== slug)
-  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
-  .slice(0, 3)
-  .map((d) => ({
-    title: d.data.title,
-    href: `/diary/${d.id.replace(/\.(md|mdx)$/, '')}/`,
-    image: d.data.heroImage,
-    imageAlt: d.data.heroAlt,
-    kind: 'Diary',
-  }));
+// Schema.org BlogPosting
+const blogPostingSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: data.title,
+  description: lede,
+  datePublished: data.publishDate.toISOString(),
+  ...(data.updatedDate && { dateModified: data.updatedDate.toISOString() }),
+  wordCount: ownResult?.wordCount,
+  author: {
+    '@type': 'Person',
+    name: 'Daniel Betts',
+    url: `${siteUrl}/about/`,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'The Breaking Dad',
+    url: siteUrl,
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl },
+  image: heroImage.startsWith('http') ? heroImage : `${siteUrl}${heroImage}`,
+};
 ---
 
 <BaseLayout
-  title={title}
-  description={description}
+  title={data.title}
+  description={lede}
   canonicalUrl={canonicalUrl}
   ogImage={heroImage}
   ogType="article"
-  publishDate={publishDate}
+  publishDate={data.publishDate}
+  noindex={shouldNoindex}
 >
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(blogPostingSchema)} />
+  </Fragment>
+
   <ReadingProgress />
 
-  <article class="post-layout" id="post-content">
-    <div class="post-layout__crumb-row">
-      <div class="container">
+  <article class="diary-entry">
+    <div class="diary-entry__crumb-row">
+      <div class="container--narrow">
         <Breadcrumbs trail={breadcrumbTrail} />
       </div>
     </div>
 
-    <header class="post-layout__head">
-      <div class="container--narrow">
-        <span class="eyebrow eyebrow-accent diary-layout__kicker">From the Diary</span>
-        <time class="diary-layout__date" datetime={publishDate.toISOString()}>{formattedDate}</time>
-        <h1 class="diary-layout__title">{title}</h1>
+    <header class="diary-entry__head">
+      <div class="diary-entry__datestamp">
+        <DateStamp date={data.publishDate} size="lg" />
       </div>
 
-      {heroImage && (
-        <div class="container">
-          <figure class="post-layout__hero">
-            <img src={heroImage} alt={heroAlt ?? title} width="1200" height="525" loading="eager" />
-            {heroAlt && <figcaption class="meta text-c">{heroAlt}</figcaption>}
-          </figure>
-        </div>
-      )}
+      <h1 class="diary-entry__title">{data.title}</h1>
+
+      <div class="diary-entry__meta">
+        <strong>Daniel Betts</strong>
+        <span class="diary-entry__sep" aria-hidden="true">·</span>
+        {ownResult?.readMinutes ?? 1} min read
+        <span class="diary-entry__sep" aria-hidden="true">·</span>
+        Diary No. {diaryNumber}
+      </div>
     </header>
 
-    <div class="post-layout__body">
-      <div class="container">
-        <div class="post-layout__grid">
-          <TableOfContents headings={headings} totalMinutes={readingMinutes} />
+    <figure class="diary-entry__hero-figure">
+      <img
+        src={heroImage}
+        alt={heroAlt}
+        class="diary-hero"
+        loading="eager"
+        width="1600"
+        height="900"
+      />
+      <figcaption class="diary-hero-cap">{heroCaption}</figcaption>
+    </figure>
 
-          <div class="post-layout__main">
-            <div class="prose">
-              <slot />
-            </div>
-
-            <div class="post-layout__filed">
-              <span class="meta">Filed under: <a href="/diary/">Diary</a></span>
-            </div>
-          </div>
-
-          <RelatedRail items={relatedItems} title="More from the Diary" />
-        </div>
-      </div>
+    <div class="diary-prose">
+      <p class="diary-prose__lede">{lede}</p>
+      <slot />
     </div>
 
-    <KeepReading items={relatedItems} title="More from the Diary" />
+    {data.relatedPostSlug && <DiaryRelatedCard slug={data.relatedPostSlug} />}
+
+    {data.endFrame && (
+      <figure class="diary-endframe">
+        <img
+          src={data.endFrame.src}
+          alt={data.endFrame.alt}
+          class="diary-endframe-img"
+          loading="lazy"
+        />
+        <figcaption class="diary-endframe-cap">{data.endFrame.caption}</figcaption>
+      </figure>
+    )}
+
+    <DiarySignoff
+      location={data.location}
+      signOffTime={data.signOffTime}
+    />
+
+    <DiaryPrevNext prev={toNeighbour(prevEntry)} next={toNeighbour(nextEntry)} />
+
+    <div class="diary-entry__inline-newsletter">
+      <NewsletterInline
+        title="If this is helping, the diary goes out by email."
+        body="A fortnight at a time, no filler."
+      />
+    </div>
   </article>
 </BaseLayout>
 
 <style>
-  .post-layout { background: var(--color-paper); }
+  .diary-entry { background: var(--color-paper); padding-bottom: 56px; }
 
-  .post-layout__crumb-row {
+  .diary-entry__crumb-row {
     border-bottom: 1px solid var(--color-rule-soft);
     padding-block: 14px;
   }
 
-  .post-layout__head { padding-block: 44px 0; }
-
-  .diary-layout__kicker {
-    display: block;
-    margin-bottom: 12px;
+  .diary-entry__head {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 64px 22px 0;
+    text-align: center;
+  }
+  @media (max-width: 640px) {
+    .diary-entry__head { padding-top: 32px; }
   }
 
-  .diary-layout__date {
-    display: block;
-    font-family: var(--font-sans);
-    font-size: 13px;
-    color: var(--color-ink-3);
-    margin-bottom: 16px;
-    font-style: italic;
+  .diary-entry__datestamp {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 640px) {
+    .diary-entry__datestamp { margin-bottom: 22px; }
   }
 
-  .diary-layout__title {
+  .diary-entry__title {
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: clamp(28px, 4vw, 40px);
+    font-size: clamp(28px, 4.5vw, 48px);
     line-height: 1.1;
     letter-spacing: -0.022em;
     color: var(--color-ink);
-    margin: 0;
+    margin: 0 0 22px;
     text-wrap: balance;
   }
 
-  .post-layout__hero {
-    margin: 36px 0 0;
-    border-radius: 12px;
-    overflow: hidden;
-    aspect-ratio: 16/7;
+  .diary-entry__meta {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--color-ink-3);
+    margin-bottom: 36px;
   }
+  .diary-entry__meta strong { color: var(--color-ink); font-weight: 600; }
+  .diary-entry__sep { color: var(--color-ink-4); margin: 0 8px; }
 
-  .post-layout__hero img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    margin: 0;
-    border-radius: 0;
-  }
-
-  .post-layout__hero figcaption { margin-top: 12px; text-align: center; }
-
-  .post-layout__body { padding-block: 48px 0; }
-
-  .post-layout__grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
-
-  @media (min-width: 1100px) {
-    .post-layout__grid {
-      grid-template-columns: 200px minmax(0, 1fr) 260px;
-      gap: 40px;
-      align-items: start;
-    }
-  }
-
-  .post-layout__main {
+  .diary-entry__hero-figure {
     max-width: 680px;
-    width: 100%;
-    margin-inline: auto;
+    margin: 0 auto;
+    padding-inline: 22px;
+  }
+  @media (max-width: 640px) {
+    .diary-entry__hero-figure { padding-inline: 0; }
   }
 
-  .post-layout__main .prose { max-width: 680px; }
-
-  @media (max-width: 1099px) {
-    .post-layout__grid > .toc,
-    .post-layout__grid > .related-rail {
-      display: none;
-    }
+  .diary-prose,
+  .diary-entry__inline-newsletter {
+    padding-inline: 22px;
   }
 
-  .post-layout__filed {
-    margin-top: 36px;
-    padding-top: 20px;
-    border-top: 1px solid var(--color-rule);
+  .diary-entry__inline-newsletter {
+    max-width: 680px;
+    margin: 56px auto 0;
   }
-
-  .post-layout__filed a { color: var(--color-accent); }
+  @media (max-width: 640px) {
+    .diary-entry__inline-newsletter { margin-top: 32px; }
+  }
 </style>

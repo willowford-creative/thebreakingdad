@@ -1,0 +1,39 @@
+---
+/**
+ * One row in the diary timeline. Inline date stamp on the left, title + dek +
+ * read-time on the right, peek polaroid that fades in on hover (desktop only;
+ * hidden on mobile by .diary-row__peek media query).
+ */
+
+import DateStamp from '~/components/DateStamp.astro';
+
+export interface Props {
+  href: string;
+  date: Date;
+  title: string;
+  dek: string;
+  readMinutes: number;
+  peek?: { src: string; alt: string; caption: string };
+}
+
+const { href, date, title, dek, readMinutes, peek } = Astro.props;
+---
+
+<a href={href} class="diary-row">
+  <DateStamp date={date} size="inline" />
+  <div class="diary-row__body">
+    <h3 class="diary-row__title">{title}</h3>
+    <p class="diary-row__dek">{dek}</p>
+    <div class="diary-row__meta">
+      <span class="diary-row__meta-arrow" aria-hidden="true">↗</span> {readMinutes} min read
+    </div>
+  </div>
+  {peek && (
+    <div class="diary-row__peek" aria-hidden="true">
+      <div class="diary-peek-frame">
+        <img src={peek.src} alt={peek.alt} class="diary-peek-img" loading="lazy" />
+        <div class="diary-peek-cap">{peek.caption}</div>
+      </div>
+    </div>
+  )}
+</a>

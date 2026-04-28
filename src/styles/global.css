@@ -1083,3 +1083,470 @@ a:hover > .wordmark::after,
   text-decoration: underline;
   text-decoration-style: dotted;
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Diary section — lifted from design handoff (tbd-styles.css, diary blocks).
+   See docs/design/design_handoff_breaking_dad/diary/tbd-styles.css.
+   Tokens translated from --accent/--ink/--display to --color-accent/--font-display.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Date-stamp signature */
+.date-stamp {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+}
+.date-stamp__plate {
+  text-align: center;
+  border-left: 1px solid var(--color-rule);
+  border-right: 1px solid var(--color-rule);
+  padding: 6px 14px;
+}
+.date-stamp__day {
+  font-family: var(--font-sans);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.date-stamp__num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.date-stamp__month {
+  font-family: var(--font-sans);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  font-weight: 500;
+  margin-top: 4px;
+}
+/* Sizes */
+.date-stamp--lg .date-stamp__day { font-size: 11px; }
+.date-stamp--lg .date-stamp__num { font-size: 56px; }
+.date-stamp--lg .date-stamp__month { font-size: 13px; }
+.date-stamp--md .date-stamp__day { font-size: 10px; }
+.date-stamp--md .date-stamp__num { font-size: 36px; }
+.date-stamp--md .date-stamp__month { font-size: 12px; }
+.date-stamp--sm .date-stamp__day { font-size: 10px; }
+.date-stamp--sm .date-stamp__num { font-size: 22px; }
+.date-stamp--sm .date-stamp__month { font-size: 11px; }
+
+/* Inline date (timeline rows) — vertical-rule on right only, year line below */
+.date-stamp--inline {
+  text-align: center;
+  padding-right: 24px;
+  border-right: 1px solid var(--color-rule);
+  min-width: 90px;
+}
+.date-stamp--inline .date-stamp__day {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.date-stamp--inline .date-stamp__num {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.018em;
+  color: var(--color-ink);
+}
+.date-stamp--inline .date-stamp__month {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+  font-weight: 500;
+  margin-top: 4px;
+}
+.date-stamp--inline .date-stamp__year {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--color-ink-4);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Diary index — year-pill rail */
+.diary-year-rail {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 0 22px 12px;
+}
+.diary-year-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.diary-year-pill:hover { border-color: var(--color-accent); color: var(--color-accent); }
+.diary-year-pill__count {
+  font-size: 11px;
+  color: var(--color-ink-3);
+}
+.diary-year-pill.is-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-deep);
+}
+.diary-year-pill.is-active .diary-year-pill__count { color: var(--color-accent-deep); }
+
+/* Month group label */
+.diary-month-label {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-rule);
+}
+.diary-month-label + .diary-month-label,
+.diary-row + .diary-month-label { margin-top: 44px; }
+.diary-month-label h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.014em;
+  margin: 0;
+  color: var(--color-ink);
+}
+.diary-month-label__count {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--color-ink-3);
+}
+
+/* Timeline row */
+.diary-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--color-rule-soft);
+  transition: padding-left 0.25s, color 0.15s;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+}
+.diary-row:hover { padding-left: 12px; }
+.diary-row:hover .diary-row__title { color: var(--color-accent); }
+.diary-row__body { padding-left: 24px; flex: 1; min-width: 0; }
+.diary-row__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+  color: var(--color-ink);
+  margin: 0 0 8px;
+  text-wrap: balance;
+  transition: color 0.15s;
+}
+.diary-row__dek {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-ink-2);
+  margin: 0 0 10px;
+}
+.diary-row__meta {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: var(--color-ink-3);
+}
+.diary-row__meta-arrow { color: var(--color-accent); }
+
+/* Hover image preview — appears to the right of the row on hover (desktop only) */
+.diary-row__peek {
+  position: absolute;
+  top: 50%;
+  right: -8px;
+  transform: translate(20px, -50%) rotate(2deg) scale(0.92);
+  width: 168px;
+  height: 168px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.28s ease, transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1.2);
+  z-index: 5;
+  filter: drop-shadow(0 18px 32px rgba(40, 20, 20, 0.22)) drop-shadow(0 4px 8px rgba(40, 20, 20, 0.12));
+}
+@media (min-width: 900px) {
+  .diary-row:hover .diary-row__peek {
+    opacity: 1;
+    transform: translate(0, -50%) rotate(-1.4deg) scale(1);
+  }
+  .diary-row:nth-child(even):hover .diary-row__peek {
+    transform: translate(0, -50%) rotate(1.6deg) scale(1);
+  }
+}
+@media (max-width: 899px) {
+  .diary-row__peek { display: none; }
+}
+.diary-peek-frame {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  padding: 8px 8px 28px;
+  border: 1px solid var(--color-rule);
+  box-sizing: border-box;
+  position: relative;
+}
+.diary-peek-img {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.82) contrast(1.04);
+  object-fit: cover;
+  display: block;
+}
+.diary-peek-cap {
+  position: absolute;
+  bottom: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--color-ink-3);
+  letter-spacing: 0.01em;
+}
+
+/* Entry hero + caption */
+.diary-hero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.85) contrast(1.05);
+  margin: 0 0 12px;
+  display: block;
+  object-fit: cover;
+}
+.diary-hero-cap {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--color-ink-3);
+  text-align: center;
+  margin: 0 0 36px;
+  letter-spacing: 0.01em;
+}
+
+/* Postcard end-frame */
+.diary-endframe {
+  margin: 56px auto 0;
+  max-width: 460px;
+  background: #fff;
+  padding: 14px 14px 44px;
+  border: 1px solid var(--color-rule);
+  box-shadow: 0 22px 38px rgba(40, 20, 20, 0.10), 0 4px 10px rgba(40, 20, 20, 0.06);
+  transform: rotate(-0.8deg);
+  position: relative;
+}
+.diary-endframe-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.78) contrast(1.05);
+  object-fit: cover;
+  display: block;
+}
+.diary-endframe-cap {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--color-ink-3);
+}
+@media (max-width: 640px) {
+  .diary-endframe { max-width: 280px; padding: 10px 10px 36px; }
+  .diary-endframe-cap { font-size: 11px; bottom: 10px; }
+}
+
+/* Narrow journal prose — separate from .prose so we don't fight existing rules */
+.diary-prose {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--color-ink-2);
+  max-width: 680px;
+  margin: 0 auto;
+}
+.diary-prose p { margin: 0 0 1.1em; }
+.diary-prose p strong { color: var(--color-ink); font-weight: 600; }
+.diary-prose em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-ink);
+}
+.diary-prose h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.014em;
+  color: var(--color-ink);
+  margin: 1.8em 0 0.7em;
+}
+.diary-prose h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
+  margin: 1.5em 0 0.5em;
+}
+.diary-prose ul, .diary-prose ol { margin: 0 0 1.2em; padding-left: 22px; }
+.diary-prose li { margin-bottom: 0.4em; }
+.diary-prose a {
+  color: var(--color-accent);
+  border-bottom: 1px solid var(--color-accent-soft);
+}
+.diary-prose a:hover { border-bottom-color: var(--color-accent); }
+.diary-prose__lede {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--color-ink);
+  margin: 0 0 24px;
+}
+@media (max-width: 640px) {
+  .diary-prose { font-size: 17px; }
+  .diary-prose__lede { font-size: 17.5px; line-height: 1.55; margin-bottom: 18px; }
+}
+
+/* Inline "Related, properly" card */
+.diary-related-card {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+  padding: 18px 22px;
+  margin: 40px auto 0;
+  max-width: 680px;
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.diary-related-card:hover { border-color: var(--color-accent); background: var(--color-accent-soft); }
+.diary-related-card__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+}
+.diary-related-card__eyebrow { margin-bottom: 4px; }
+.diary-related-card__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-ink);
+  line-height: 1.35;
+}
+.diary-related-card__cta {
+  color: var(--color-accent);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Signoff block */
+.diary-signoff {
+  margin: 40px auto 0;
+  max-width: 680px;
+  padding-top: 28px;
+  border-top: 1px solid var(--color-rule);
+  text-align: center;
+}
+.diary-signoff__sig {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--color-accent);
+  margin-bottom: 8px;
+}
+.diary-signoff__where {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--color-ink-3);
+  margin-bottom: 24px;
+}
+
+/* Prev / next pair */
+.diary-prevnext {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  max-width: 680px;
+  margin: 56px auto 0;
+}
+.diary-prevnext__card {
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-rule);
+  border-radius: 12px;
+  padding: 18px 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.diary-prevnext__card:hover { border-color: var(--color-accent); }
+.diary-prevnext__card--next { text-align: right; }
+.diary-prevnext__dir {
+  margin-bottom: 6px;
+}
+.diary-prevnext__date {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  color: var(--color-ink-3);
+  margin-bottom: 4px;
+}
+.diary-prevnext__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--color-ink);
+  line-height: 1.3;
+}
+@media (max-width: 640px) {
+  .diary-prevnext { gap: 10px; margin-top: 32px; }
+  .diary-prevnext__card { padding: 12px 14px; border-radius: 10px; }
+  .diary-prevnext__title { font-size: 13px; }
+}

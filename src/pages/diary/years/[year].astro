@@ -1,0 +1,130 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import DiaryMasthead from '~/components/DiaryMasthead.astro';
+import DiaryRow from '~/components/DiaryRow.astro';
+import { getDiaryAuditResults } from '~/utils/diaryAudit';
+import { groupByMonth, countByYear, peekFromEntry } from '~/utils/diaryGroup';
+import type { CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const all = await getCollection('diary', ({ data }) => !data.draft);
+  const years = countByYear(all).map((y) => y.year);
+  return years.map((year) => ({
+    params: { year: String(year) },
+    props: { year, all },
+  }));
+}
+
+interface Props {
+  year: number;
+  all: CollectionEntry<'diary'>[];
+}
+
+const { year, all } = Astro.props as Props;
+
+const auditResults = await getDiaryAuditResults();
+const yearEntries = all.filter((e) => e.data.publishDate.getFullYear() === year);
+const groups = groupByMonth(yearEntries);
+const yearCounts = countByYear(all);
+const total = all.length;
+
+const erroredSlugs = new Set(
+  auditResults.filter((r) => r.errors.length > 0).map((r) => r.slug),
+);
+
+const breadcrumbTrail = [
+  { label: 'Home', href: '/' },
+  { label: 'Diary', href: '/diary/' },
+  { label: String(year), href: `/diary/years/${year}/` },
+];
+---
+
+<BaseLayout
+  title={`Diary ${year} — The Breaking Dad`}
+  description={`Diary entries from ${year}. Personal, dated pieces from Dan Betts.`}
+  ogType="website"
+>
+  <div class="diary-year__crumb-row">
+    <div class="container--narrow">
+      <Breadcrumbs trail={breadcrumbTrail} />
+    </div>
+  </div>
+
+  <DiaryMasthead
+    italicLead={`Field notes,`}
+    tail={String(year)}
+    eyebrow="The Diary"
+    lede={`The ${yearEntries.length} ${yearEntries.length === 1 ? 'entry' : 'entries'} that made it onto the page in ${year}.`}
+  />
+
+  <nav class="diary-year-rail" aria-label="Filter by year">
+    <a href="/diary/" class="diary-year-pill">
+      All <span class="diary-year-pill__count">({total})</span>
+    </a>
+    {yearCounts.map(({ year: y, count }) => (
+      <a
+        href={`/diary/years/${y}/`}
+        class={`diary-year-pill ${y === year ? 'is-active' : ''}`}
+      >
+        {y} <span class="diary-year-pill__count">({count})</span>
+      </a>
+    ))}
+  </nav>
+
+  <section class="diary-year__timeline" aria-label={`Diary entries from ${year}`}>
+    {yearEntries.length === 0 ? (
+      <p class="diary-year__empty">No entries from {year} yet.</p>
+    ) : (
+      groups.map((group) => (
+        <div class="diary-year__group">
+          <div class="diary-month-label">
+            <h2>{group.label}</h2>
+            <span class="diary-month-label__count">
+              {group.entries.length} {group.entries.length === 1 ? 'entry' : 'entries'}
+            </span>
+          </div>
+          {group.entries
+            .filter((e) => !erroredSlugs.has(e.id.replace(/\.(md|mdx)$/, '')))
+            .map((entry) => {
+              const slug = entry.id.replace(/\.(md|mdx)$/, '');
+              const result = auditResults.find((r) => r.slug === slug);
+              return (
+                <DiaryRow
+                  href={`/diary/${slug}/`}
+                  date={entry.data.publishDate}
+                  title={entry.data.title}
+                  dek={entry.data.lede ?? entry.data.description}
+                  readMinutes={result?.readMinutes ?? 1}
+                  peek={peekFromEntry(entry)}
+                />
+              );
+            })}
+        </div>
+      ))
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .diary-year__crumb-row {
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 14px;
+  }
+
+  .diary-year__timeline {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 22px 64px;
+  }
+
+  .diary-year__group + .diary-year__group { margin-top: 12px; }
+
+  .diary-year__empty {
+    text-align: center;
+    color: var(--color-ink-3);
+    font-family: var(--font-sans);
+    padding: 32px 0;
+  }
+</style>

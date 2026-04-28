@@ -1,0 +1,65 @@
+---
+/**
+ * "Related, properly" — inline card that points an entry at a Post or Review.
+ * Powers the "≥1 internal link" gate when present (counted as a link).
+ *
+ * Looks up the related slug across posts, reviews, and parenting collections.
+ * If nothing matches, renders nothing — never a broken card.
+ */
+
+import { getEntry } from 'astro:content';
+
+export interface Props {
+  /** Slug of a posts/reviews/parenting entry. Bare slug, no leading slash. */
+  slug: string;
+}
+
+const { slug } = Astro.props;
+
+type Resolved = { href: string; title: string; kind: string } | null;
+
+async function resolveRelated(s: string): Promise<Resolved> {
+  // Try each collection in turn — slugs are unique within a collection but
+  // not necessarily across all four. Order: posts → reviews → parenting →
+  // diary (cross-link to another diary entry as a fallback).
+  const collections: Array<{
+    name: 'posts' | 'reviews' | 'parenting' | 'diary';
+    pathPrefix: string;
+    label: string;
+  }> = [
+    { name: 'posts', pathPrefix: '/separated-parents/', label: 'Separated parents' },
+    { name: 'reviews', pathPrefix: '/reviews/', label: 'Reviews' },
+    { name: 'parenting', pathPrefix: '/parenting/', label: 'Parenting' },
+    { name: 'diary', pathPrefix: '/diary/', label: 'Diary' },
+  ];
+
+  for (const c of collections) {
+    try {
+      const entry = await getEntry(c.name, s);
+      if (entry && !entry.data.draft) {
+        return {
+          href: `${c.pathPrefix}${s}/`,
+          title: entry.data.title,
+          kind: c.label,
+        };
+      }
+    } catch {
+      // not found in this collection, try next
+    }
+  }
+  return null;
+}
+
+const related = await resolveRelated(slug);
+---
+
+{related && (
+  <a href={related.href} class="diary-related-card">
+    <div class="diary-related-card__icon" aria-hidden="true">↗</div>
+    <div>
+      <div class="eyebrow eyebrow-accent diary-related-card__eyebrow">Related, properly</div>
+      <div class="diary-related-card__title">{related.title}</div>
+    </div>
+    <span class="diary-related-card__cta">Read →</span>
+  </a>
+)}

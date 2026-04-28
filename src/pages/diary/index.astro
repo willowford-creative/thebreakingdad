@@ -1,123 +1,157 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import PillarHeader from '~/components/PillarHeader.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import DiaryMasthead from '~/components/DiaryMasthead.astro';
+import DiaryRow from '~/components/DiaryRow.astro';
+import CategoryNewsletterBand from '~/components/CategoryNewsletterBand.astro';
+import { getDiaryAuditResults } from '~/utils/diaryAudit';
+import { groupByMonth, countByYear, peekFromEntry } from '~/utils/diaryGroup';
+
+// Run gates first — fails the build on hard errors, writes the audit log.
+const auditResults = await getDiaryAuditResults();
 
 const allDiary = await getCollection('diary', ({ data }) => !data.draft);
-const sortedDiary = allDiary.sort(
-  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+const groups = groupByMonth(allDiary);
+const yearCounts = countByYear(allDiary);
+const total = allDiary.length;
+
+const oldestYear =
+  yearCounts.length > 0 ? yearCounts[yearCounts.length - 1].year : null;
+const sinceLabel = oldestYear
+  ? `Since ${new Intl.DateTimeFormat('en-GB', { month: 'short', year: 'numeric' }).format(
+      new Date(oldestYear, 0, 1),
+    )}`
+  : 'New section';
+
+const metaParts = [
+  `<strong>${total}</strong> ${total === 1 ? 'entry' : 'entries'}`,
+  sinceLabel,
+  'New entries most weeks',
+];
+const metaHtml = metaParts.join(' · ');
+
+const breadcrumbTrail = [
+  { label: 'Home', href: '/' },
+  { label: 'Diary', href: '/diary/' },
+];
+
+// Lookup to skip rendering rows that errored — should be impossible at this
+// point (build would have failed) but defensive.
+const erroredSlugs = new Set(
+  auditResults.filter((r) => r.errors.length > 0).map((r) => r.slug),
 );
 ---
 
 <BaseLayout
-  title="Diary — personal writing from The Breaking Dad"
-  description="Personal pieces from Dan Betts — voice, reflection, and the real day-to-day of life as a dad. Not SEO. Just honest writing."
+  title="The Diary — field notes, dated"
+  description="Shorter, more personal pieces from Dan Betts. Less guide, more journal — the things I noticed, the bits I'm still working out."
+  ogType="website"
 >
-  <PillarHeader
-    kicker="The Diary"
-    title="Writing without a brief"
-    dek="This is where I write without SEO targets or keyword research. Just the real day-to-day of being a dad — the brilliant bits, the hard bits, the bits that are difficult to explain unless you've been there."
-    breadcrumb={[
-      { label: 'Home', href: '/' },
-      { label: 'Diary', href: '/diary/' },
-    ]}
+  <div class="diary-index__crumb-row">
+    <div class="container--narrow">
+      <Breadcrumbs trail={breadcrumbTrail} />
+    </div>
+  </div>
+
+  <DiaryMasthead
+    italicLead="Field notes,"
+    tail="dated."
+    lede="Shorter, more personal pieces. Less guide, more journal — what the week actually looked like, the things I noticed, the bits I'm still working out."
+    meta={metaHtml}
   />
 
-  <section class="home-section" aria-label="All diary entries">
-    <div class="container--narrow">
-      {sortedDiary.length === 0 ? (
-        <p class="diary-empty">Diary entries are coming soon.</p>
-      ) : (
-        <ol class="diary-list">
-          {sortedDiary.map((entry) => {
-            const slugId = entry.id.replace(/\.(md|mdx)$/, '');
-            const formattedDate = new Intl.DateTimeFormat('en-GB', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            }).format(entry.data.publishDate);
+  {yearCounts.length > 0 && (
+    <nav class="diary-year-rail" aria-label="Filter by year">
+      <a href="/diary/" class="diary-year-pill is-active">
+        All <span class="diary-year-pill__count">({total})</span>
+      </a>
+      {yearCounts.map(({ year, count }) => (
+        <a href={`/diary/years/${year}/`} class="diary-year-pill">
+          {year} <span class="diary-year-pill__count">({count})</span>
+        </a>
+      ))}
+    </nav>
+  )}
 
-            return (
-              <li class="diary-entry">
-                <time class="diary-entry__date" datetime={entry.data.publishDate.toISOString()}>
-                  {formattedDate}
-                </time>
-                <h2 class="diary-entry__title">
-                  <a href={`/diary/${slugId}/`} class="diary-entry__link">
-                    {entry.data.title}
-                  </a>
-                </h2>
-                {entry.data.description && (
-                  <p class="diary-entry__description">{entry.data.description}</p>
-                )}
-              </li>
-            );
-          })}
-        </ol>
-      )}
-    </div>
+  <section class="diary-index__timeline" aria-label="Diary timeline">
+    {total === 0 ? (
+      <p class="diary-index__empty">
+        Diary entries are coming soon. The first one's nearly written.
+      </p>
+    ) : (
+      groups.map((group) => (
+        <div class="diary-index__group">
+          <div class="diary-month-label">
+            <h2>{group.label}</h2>
+            <span class="diary-month-label__count">
+              {group.entries.length} {group.entries.length === 1 ? 'entry' : 'entries'}
+            </span>
+          </div>
+          {group.entries
+            .filter((e) => !erroredSlugs.has(e.id.replace(/\.(md|mdx)$/, '')))
+            .map((entry) => {
+              const slug = entry.id.replace(/\.(md|mdx)$/, '');
+              const result = auditResults.find((r) => r.slug === slug);
+              return (
+                <DiaryRow
+                  href={`/diary/${slug}/`}
+                  date={entry.data.publishDate}
+                  title={entry.data.title}
+                  dek={entry.data.lede ?? entry.data.description}
+                  readMinutes={result?.readMinutes ?? 1}
+                  peek={peekFromEntry(entry)}
+                />
+              );
+            })}
+        </div>
+      ))
+    )}
+
+    {total > 0 && (
+      <div class="diary-index__archive">
+        <a href="/diary/archive/" class="btn ghost diary-index__archive-btn">
+          Browse the full archive
+        </a>
+      </div>
+    )}
   </section>
+
+  <CategoryNewsletterBand
+    eyebrow="Get diary entries by email"
+    title="The Field Notes letter"
+    body="One honest dispatch a fortnight. Diary entries, what we used this week, what worked, what didn't."
+  />
 </BaseLayout>
 
 <style>
-  .home-section {
-    padding-block: 2.75rem 4rem;
+  .diary-index__crumb-row {
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 14px;
   }
 
-  .diary-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: 0;
-    border-top: 1px solid var(--color-hairline);
+  .diary-index__timeline {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 22px 64px;
+    position: relative;
   }
 
-  .diary-entry {
-    padding: 1.75rem 0;
-    border-bottom: 1px solid var(--color-hairline);
-  }
+  .diary-index__group + .diary-index__group { margin-top: 12px; }
 
-  .diary-entry__date {
-    display: block;
+  .diary-index__empty {
     font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-    margin-bottom: 0.5rem;
+    color: var(--color-ink-3);
+    text-align: center;
+    padding: 32px 0;
   }
 
-  .diary-entry__title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    margin: 0 0 0.5rem;
+  .diary-index__archive {
+    display: flex;
+    justify-content: center;
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--color-rule);
   }
-
-  .diary-entry__link {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-
-  .diary-entry__link:hover {
-    color: var(--color-accent);
-  }
-
-  .diary-entry__description {
-    font-family: var(--font-display);
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--color-muted);
-    margin: 0;
-    max-width: 56ch;
-  }
-
-  .diary-empty {
-    font-family: var(--font-sans);
-    color: var(--color-muted);
-  }
+  .diary-index__archive-btn { font-size: 12px; }
 </style>

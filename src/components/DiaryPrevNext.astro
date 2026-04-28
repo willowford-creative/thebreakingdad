@@ -1,0 +1,43 @@
+---
+/**
+ * Pair of prev/next entry cards. Distinct from KeepReading (3-up tile grid in
+ * pink section) — this is a tighter pair specific to the diary entry footer.
+ * Either side can be null if no neighbour exists.
+ */
+
+type Neighbour = {
+  href: string;
+  title: string;
+  date: Date;
+};
+
+export interface Props {
+  prev?: Neighbour | null;
+  next?: Neighbour | null;
+}
+
+const { prev = null, next = null } = Astro.props;
+---
+
+{(prev || next) && (
+  <nav class="diary-prevnext" aria-label="Previous and next diary entries">
+    {prev ? (
+      <a href={prev.href} class="diary-prevnext__card diary-prevnext__card--prev">
+        <div class="eyebrow eyebrow-accent diary-prevnext__dir">← Previous</div>
+        <div class="diary-prevnext__date">
+          {new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: '2-digit', month: 'short' }).format(prev.date)}
+        </div>
+        <div class="diary-prevnext__title">{prev.title}</div>
+      </a>
+    ) : <div />}
+    {next ? (
+      <a href={next.href} class="diary-prevnext__card diary-prevnext__card--next">
+        <div class="eyebrow eyebrow-accent diary-prevnext__dir">Next →</div>
+        <div class="diary-prevnext__date">
+          {new Intl.DateTimeFormat('en-GB', { weekday: 'short', day: '2-digit', month: 'short' }).format(next.date)}
+        </div>
+        <div class="diary-prevnext__title">{next.title}</div>
+      </a>
+    ) : <div />}
+  </nav>
+)}

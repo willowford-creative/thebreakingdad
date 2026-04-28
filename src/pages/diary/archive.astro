@@ -1,0 +1,116 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import DiaryRow from '~/components/DiaryRow.astro';
+import { getDiaryAuditResults } from '~/utils/diaryAudit';
+import { groupByMonth, peekFromEntry } from '~/utils/diaryGroup';
+
+const auditResults = await getDiaryAuditResults();
+const allDiary = await getCollection('diary', ({ data }) => !data.draft);
+const groups = groupByMonth(allDiary);
+const total = allDiary.length;
+
+const erroredSlugs = new Set(
+  auditResults.filter((r) => r.errors.length > 0).map((r) => r.slug),
+);
+
+const breadcrumbTrail = [
+  { label: 'Home', href: '/' },
+  { label: 'Diary', href: '/diary/' },
+  { label: 'Archive', href: '/diary/archive/' },
+];
+---
+
+<BaseLayout
+  title="Diary archive — every entry"
+  description="The full chronological archive of diary entries from The Breaking Dad."
+  ogType="website"
+>
+  <div class="diary-archive__crumb-row">
+    <div class="container--narrow">
+      <Breadcrumbs trail={breadcrumbTrail} />
+    </div>
+  </div>
+
+  <section class="diary-archive__head">
+    <div class="container--narrow">
+      <span class="eyebrow eyebrow-accent">Archive</span>
+      <h1 class="diary-archive__title">Every diary entry, by month.</h1>
+      <p class="meta diary-archive__meta">{total} {total === 1 ? 'entry' : 'entries'}</p>
+    </div>
+  </section>
+
+  <section class="diary-archive__timeline" aria-label="Full diary archive">
+    {total === 0 ? (
+      <p class="diary-archive__empty">No entries yet.</p>
+    ) : (
+      groups.map((group) => (
+        <div class="diary-archive__group">
+          <div class="diary-month-label">
+            <h2>{group.label}</h2>
+            <span class="diary-month-label__count">
+              {group.entries.length} {group.entries.length === 1 ? 'entry' : 'entries'}
+            </span>
+          </div>
+          {group.entries
+            .filter((e) => !erroredSlugs.has(e.id.replace(/\.(md|mdx)$/, '')))
+            .map((entry) => {
+              const slug = entry.id.replace(/\.(md|mdx)$/, '');
+              const result = auditResults.find((r) => r.slug === slug);
+              return (
+                <DiaryRow
+                  href={`/diary/${slug}/`}
+                  date={entry.data.publishDate}
+                  title={entry.data.title}
+                  dek={entry.data.lede ?? entry.data.description}
+                  readMinutes={result?.readMinutes ?? 1}
+                  peek={peekFromEntry(entry)}
+                />
+              );
+            })}
+        </div>
+      ))
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .diary-archive__crumb-row {
+    border-bottom: 1px solid var(--color-rule-soft);
+    padding-block: 14px;
+  }
+
+  .diary-archive__head {
+    padding: 48px 22px 24px;
+    text-align: center;
+  }
+
+  .diary-archive__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 4.5vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+    color: var(--color-ink);
+    margin: 12px 0 8px;
+    text-wrap: balance;
+  }
+
+  .diary-archive__meta { font-size: 12px; }
+
+  .diary-archive__timeline {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 32px 22px 64px;
+  }
+
+  .diary-archive__group + .diary-archive__group { margin-top: 12px; }
+
+  .diary-archive__empty {
+    text-align: center;
+    color: var(--color-ink-3);
+    font-family: var(--font-sans);
+    padding: 32px 0;
+  }
+</style>

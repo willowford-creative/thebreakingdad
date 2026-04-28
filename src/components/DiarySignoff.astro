@@ -1,0 +1,39 @@
+---
+/**
+ * "— Daniel" signoff block: italic accent signature, location/time line,
+ * Reply-by-email mailto button.
+ */
+
+export interface Props {
+  /** Defaults to "Daniel" — the only author for now */
+  signature?: string;
+  location?: string;
+  signOffTime?: string;
+  /** Override mailto target */
+  email?: string;
+}
+
+const {
+  signature = 'Daniel',
+  location,
+  signOffTime,
+  email = 'dan@thebreakingdad.co.uk',
+} = Astro.props;
+
+const where = [
+  signOffTime && `Written ${signOffTime}`,
+  location,
+]
+  .filter(Boolean)
+  .join(', ');
+---
+
+<div class="diary-signoff">
+  <div class="diary-signoff__sig">— {signature}</div>
+  {where && <div class="diary-signoff__where">{where}.</div>}
+  <a href={`mailto:${email}`} class="btn ghost diary-signoff__btn">Reply by email</a>
+</div>
+
+<style>
+  .diary-signoff__btn { font-size: 12px; }
+</style>

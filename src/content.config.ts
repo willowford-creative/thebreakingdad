@@ -92,12 +92,36 @@ const parenting = defineCollection({
 });
 
 // ---------------------------------------------------------------------------
-// Diary collection — voice pieces, not SEO targets
+// Diary collection — dated, narrative pieces with anti-thin-content gates
 // ---------------------------------------------------------------------------
 
+// Schema fields below are zod-optional so legacy/draft entries don't break the
+// content sync. The publish-time gates in src/utils/diaryGates.ts re-enforce
+// them as hard errors for non-draft entries (where they actually matter).
 const diary = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/diary' }),
-  schema: baseSchema,
+  schema: baseSchema
+    .extend({
+      lede: z.string().optional(),
+      heroCaption: z.string().optional(),
+      endFrame: z
+        .object({
+          src: z.string(),
+          alt: z.string(),
+          caption: z.string(),
+        })
+        .optional(),
+      location: z.string().optional(),
+      signOffTime: z.string().optional(),
+      relatedPostSlug: z.string().optional(),
+      isVignette: z.boolean().optional().default(false),
+      authorId: z.string().optional().default('dan'),
+    })
+    // Diary descriptions can be tighter than baseSchema's 60-char floor —
+    // the lede carries SEO weight, description is just a one-liner.
+    .extend({
+      description: z.string().min(40).max(220),
+    }),
 });
 
 // ---------------------------------------------------------------------------

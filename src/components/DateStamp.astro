@@ -1,0 +1,59 @@
+---
+/**
+ * Diary date-stamp signature. Three sizes match the design ref:
+ *   - lg: entry header (56px numeral, full month name)
+ *   - md: mobile entry (36px numeral)
+ *   - sm: related/listing rows (22px numeral)
+ *   - inline: timeline rows (right-side rule only, includes year line)
+ *
+ * Pass a Date and the variant; component does its own formatting.
+ */
+
+export interface Props {
+  date: Date;
+  size?: 'lg' | 'md' | 'sm' | 'inline';
+  /** Override the formatted day-of-week. Useful for the entry header where
+   *  we want the full word (Tuesday) vs. timeline rows (Tue). */
+  dayOverride?: string;
+  /** Override formatted month. Same reason — full ("April") vs. abbr ("Apr"). */
+  monthOverride?: string;
+}
+
+const { date, size = 'lg', dayOverride, monthOverride } = Astro.props;
+
+const day =
+  dayOverride ??
+  new Intl.DateTimeFormat('en-GB', {
+    weekday: size === 'lg' ? 'long' : 'short',
+  }).format(date);
+
+const dayNum = new Intl.DateTimeFormat('en-GB', {
+  day: '2-digit',
+}).format(date);
+
+const month =
+  monthOverride ??
+  new Intl.DateTimeFormat('en-GB', {
+    month: size === 'lg' ? 'long' : 'short',
+  }).format(date);
+
+const year = new Intl.DateTimeFormat('en-GB', { year: 'numeric' }).format(date);
+const isInline = size === 'inline';
+---
+
+{isInline ? (
+  <div class="date-stamp date-stamp--inline">
+    <div class="date-stamp__day">{day}</div>
+    <div class="date-stamp__num">{dayNum}</div>
+    <div class="date-stamp__month">{month}</div>
+    <div class="date-stamp__year">{year}</div>
+  </div>
+) : (
+  <div class={`date-stamp date-stamp--${size}`}>
+    <div class="date-stamp__plate">
+      <div class="date-stamp__day">{day}</div>
+      <div class="date-stamp__num">{dayNum}</div>
+      <div class="date-stamp__month">{month} {year}</div>
+    </div>
+  </div>
+)}
