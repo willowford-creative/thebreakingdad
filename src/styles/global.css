@@ -447,30 +447,6 @@ a:hover > .wordmark::after,
 .ymyl strong { font-weight: 600; }
 .ymyl a { color: var(--color-accent); border-bottom: 1px solid var(--color-accent-soft); }
 
-/* legacy class names from earlier passes — keep working */
-.ymyl-disclaimer {
-  background: var(--color-accent-soft);
-  border-left: 3px solid var(--color-accent);
-  padding: 16px 20px;
-  border-radius: 0 8px 8px 0;
-  margin-block: 1.5rem 2rem;
-  font-family: var(--font-sans);
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--color-ink);
-}
-.ymyl-disclaimer::before {
-  content: "Important";
-  display: block;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  margin-bottom: 0.4rem;
-}
-
 /* ---------------------------------------------------------------------------
    .experience-note — signed footer, "Why I wrote this"
    --------------------------------------------------------------------------- */
@@ -550,31 +526,6 @@ a:hover > .wordmark::after,
 
 .experience-note__bio {
   font-family: var(--font-sans); font-size: 12.5px; color: var(--color-ink-3);
-}
-
-/* Legacy single-paragraph experience-note from earlier passes */
-.experience-note--simple {
-  background: var(--color-paper-tinted-2);
-  border: 1px solid var(--color-accent-soft);
-  border-left: 3px solid var(--color-accent);
-  padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-  font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.65;
-  color: var(--color-ink);
-}
-.experience-note--simple::before {
-  content: "Why I'm writing this";
-  display: block;
-  font-family: var(--font-sans);
-  font-style: normal;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  margin-bottom: 0.6rem;
 }
 
 /* ---------------------------------------------------------------------------
@@ -1036,8 +987,8 @@ a:hover > .wordmark::after,
 }
 
 /* ---------------------------------------------------------------------------
-   Backwards-compat utilities (kicker, byline, dek used by legacy components)
-   These will be migrated to .eyebrow / .meta / .lede over time.
+   Typographic utilities (kicker, dek) used by PillarHeader / SectionTitle /
+   PillarTOC. The matching .eyebrow / .lede tokens are preferred in new code.
    --------------------------------------------------------------------------- */
 
 .kicker {
@@ -1062,28 +1013,6 @@ a:hover > .wordmark::after,
   max-width: 56ch;
   margin: 0;
 }
-
-.byline {
-  display: flex; align-items: center; gap: 0.625rem; flex-wrap: wrap;
-  font-family: var(--font-sans);
-  font-size: var(--fs-meta);
-  color: var(--color-ink-3);
-  padding-block: 1rem;
-  border-top: 1px solid var(--color-rule-soft);
-  border-bottom: 1px solid var(--color-rule-soft);
-}
-.byline__avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-.byline__author { color: var(--color-ink-3); }
-.byline__name { color: var(--color-ink); font-weight: 600; text-decoration: none; }
-.byline__name:hover { color: var(--color-accent); }
-.byline__item { display: inline-flex; align-items: center; }
-.byline__item::before {
-  content: "·";
-  color: var(--color-ink-4);
-  margin-right: 0.625rem;
-  font-weight: 700;
-}
-.byline__updated { color: var(--color-accent); font-weight: 500; }
 
 /* Verdict card (review pages) */
 .verdict-card {
