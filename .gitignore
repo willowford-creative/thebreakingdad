@@ -8,6 +8,7 @@ dist/
 
 # Local agent state
 .claude/
+.skill-archive/
 
 # OS noise
 .DS_Store
