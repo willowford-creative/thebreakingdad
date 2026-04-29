@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import type { ProductCategory } from '~/content.config';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import FieldNoteTag from '~/components/FieldNoteTag.astro';
@@ -25,7 +26,7 @@ export interface Props {
   productName: string;
   rating?: number;
   usageDuration: string;
-  productCategory: string;
+  productCategory: ProductCategory;
   pros: string[];
   cons: string[];
   hasAffiliateLinks?: boolean;
@@ -65,7 +66,7 @@ const {
 const siteUrl = 'https://thebreakingdad.co.uk';
 const canonicalUrl = `${siteUrl}/reviews/${slug}/`;
 
-const categoryLabels: Record<string, string> = {
+const categoryLabels: Record<ProductCategory, string> = {
   'family-tech': 'Family tech',
   'parenting-kit': 'Parenting kit',
   'shoes-and-fitness': 'Shoes and fitness',

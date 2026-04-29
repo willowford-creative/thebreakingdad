@@ -26,16 +26,19 @@ const baseSchema = z.object({
 // Posts collection — Separated parents content
 // ---------------------------------------------------------------------------
 
+export const SUBHUB_VALUES = [
+  'co-parenting',
+  'blended-family',
+  'money-and-benefits',
+  'rights-and-law',
+  'starting-over',
+] as const;
+export type Subhub = (typeof SUBHUB_VALUES)[number];
+
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/posts' }),
   schema: baseSchema.extend({
-    subhub: z.enum([
-      'co-parenting',
-      'blended-family',
-      'money-and-benefits',
-      'rights-and-law',
-      'starting-over',
-    ]),
+    subhub: z.enum(SUBHUB_VALUES),
     // E-E-A-T signal — first-person lived-experience hook, shown at top of post
     experienceNote: z
       .string()
@@ -50,19 +53,22 @@ const posts = defineCollection({
 // Reviews collection
 // ---------------------------------------------------------------------------
 
+export const PRODUCT_CATEGORY_VALUES = [
+  'family-tech',
+  'parenting-kit',
+  'shoes-and-fitness',
+  'home-and-lifestyle',
+  'days-out',
+] as const;
+export type ProductCategory = (typeof PRODUCT_CATEGORY_VALUES)[number];
+
 const reviews = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/reviews' }),
   schema: baseSchema.extend({
     productName: z.string(),
     rating: z.number().min(1).max(5).multipleOf(0.5).optional(), // omit for roundups; halves allowed (e.g. 4.5)
     usageDuration: z.string(), // e.g. "Used for 4 years"
-    productCategory: z.enum([
-      'family-tech',
-      'parenting-kit',
-      'shoes-and-fitness',
-      'home-and-lifestyle',
-      'days-out',
-    ]),
+    productCategory: z.enum(PRODUCT_CATEGORY_VALUES),
     pros: z.array(z.string()).min(1, 'At least one pro is required'),
     cons: z.array(z.string()).min(1, 'At least one con is required'),
     hasAffiliateLinks: z.boolean().default(true),

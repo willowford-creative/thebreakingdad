@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import type { Subhub } from '~/content.config';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Breadcrumbs from '~/components/Breadcrumbs.astro';
 import FieldNoteTag from '~/components/FieldNoteTag.astro';
@@ -26,7 +27,7 @@ export interface Props {
   heroAlt?: string;
   experienceNote: string;
   ymylDisclaimer?: boolean;
-  subhub: string;
+  subhub: Subhub;
   slug: string;
   tags?: string[];
   relatedSlugs?: string[];
@@ -56,7 +57,7 @@ const {
 const siteUrl = 'https://thebreakingdad.co.uk';
 const canonicalUrl = `${siteUrl}/separated-parents/${slug}/`;
 
-const subhubLabels: Record<string, string> = {
+const subhubLabels: Record<Subhub, string> = {
   'co-parenting': 'Co-parenting',
   'blended-family': 'Blended family',
   'money-and-benefits': 'Money and benefits',
