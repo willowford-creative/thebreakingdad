@@ -21,11 +21,11 @@ const category = {
   number: '03',
   title: 'Reviews',
   lede:
-    "Honest, long-term reviews of things I've lived with — not press samples tested over a weekend. Every review is based on months or years of real use, in a busy family of six.",
+    "Honest, long-term reviews of things I've actually used, for months or years, in a busy family of six. Some I buy, some are sent for review. Either way, the verdict's mine.",
   cadence: 'Updated monthly',
   editorNote: {
     quote:
-      "If a thing breaks, you'll hear about it. If it survived three years and a toddler with a spoon, you'll hear about that too. I buy everything I review — no exceptions.",
+      "If a thing breaks, you'll hear about it. If it survived three years and a toddler with a spoon, you'll hear about that too. Bought or gifted, the verdict's mine.",
     authorName: 'Daniel Betts',
     authorRole: 'Writer, The Breaking Dad',
     authorInitial: 'D',
@@ -225,11 +225,11 @@ const chipItems = pillars.map((p) => ({ label: p.title, href: `/reviews/#${p.slu
   </div>
 
   {lead.hero && (
-    <section class="container cat-section" aria-label="Top rated">
+    <section class="container cat-section" aria-label="Most read">
       <header class="cat-section__head">
         <div>
-          <div class="eyebrow eyebrow-accent cat-section__eyebrow">Top rated</div>
-          <h2 class="cat-section__title">The one I'd actually recommend today</h2>
+          <div class="eyebrow eyebrow-accent cat-section__eyebrow">Most read</div>
+          <h2 class="cat-section__title">What other parents are reading right now</h2>
         </div>
         <span class="meta">Highest-rated, most-recent</span>
       </header>
@@ -248,16 +248,17 @@ const chipItems = pillars.map((p) => ({ label: p.title, href: `/reviews/#${p.slu
     <div class="method">
       <div class="method__text">
         <div class="eyebrow eyebrow-accent">How we review</div>
-        <h2 class="method__title">No press samples. No weekend tests.</h2>
+        <h2 class="method__title">Tested for months, not a weekend.</h2>
         <p class="method__body">
-          I buy everything I review myself. I use it for months, sometimes years, in a real household
-          of six. Ratings reflect long-term experience, not first impressions. Affiliate links are
-          marked and never change the verdict. <a href="/affiliate-disclosure/">Full disclosure here</a>.
+          Some items I buy, some are sent for review. Either way, I use them for months,
+          often years, in a real household of six. The verdict's mine, and gifted items
+          get disclosed. Affiliate links are marked and never change the rating.
+          <a href="/affiliate-disclosure/">Full disclosure here</a>.
         </p>
       </div>
       <ul class="method__stats">
         <li><span class="method__stat-value">Months+</span><span class="method__stat-label">minimum usage</span></li>
-        <li><span class="method__stat-value">£0</span><span class="method__stat-label">sponsored opinions</span></li>
+        <li><span class="method__stat-value">0</span><span class="method__stat-label">paid verdicts</span></li>
         <li><span class="method__stat-value">6</span><span class="method__stat-label">people stress-testing it</span></li>
       </ul>
     </div>

@@ -73,8 +73,18 @@ const heroDate = hero.date
   }
 
   .lead-pack__hero {
-    aspect-ratio: 5/4;
+    /* Override .hero-card's fixed aspect-ratio so the hero can stretch
+       to match the supporting column's height when it's taller. */
+    aspect-ratio: auto;
     /* hero-card globals already supply: position, radius, overflow, transition */
+  }
+
+  /* Minimum 5:4 aspect ratio fallback (when there are no supporting cards
+     or the supporting column is shorter than the hero). */
+  .lead-pack__hero::before {
+    content: '';
+    display: block;
+    padding-top: 80%;
   }
 
   .lead-pack__hero-img {
@@ -83,7 +93,10 @@ const heroDate = hero.date
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform .5s var(--ease-soft);
   }
+
+  .lead-pack__hero:hover .lead-pack__hero-img { transform: scale(1.04); }
 
   .lead-pack__hero-title {
     font-size: 32px;
