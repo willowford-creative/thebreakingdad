@@ -1,4 +1,9 @@
 ---
+/**
+ * Top-of-page progress bar showing scroll position through an article.
+ * One of two components in the project that ships client JS (the other is
+ * TableOfContents); kept inline (`is:inline`) to avoid a hydration bundle.
+ */
 export interface Props {
   targetId?: string;
 }

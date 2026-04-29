@@ -1,10 +1,14 @@
 /**
  * Diary anti-thin-content gates.
  *
- * Evaluated at build time. Hard failures (errors[]) fail the build via the
- * astro:build:start integration hook in astro.config.mjs. Soft failures
- * (warnings[]) print a yellow banner in the build log and may set
- * shouldNoindex.
+ * Invoked via `getDiaryAuditResults()` in diaryAudit.ts, which pages call
+ * during the static build. The first call evaluates every non-draft entry,
+ * writes docs/diary-audit-log.md, prints a coloured console summary, and
+ * throws if any entry has hard errors (failing the build). Subsequent calls
+ * reuse the same memoised promise so it runs exactly once per build.
+ *
+ * Hard failures (errors[]) fail the build. Soft failures (warnings[]) print
+ * a yellow banner and may set shouldNoindex.
  *
  * Spec: docs/design/design_handoff_breaking_dad/diary/DIARY_NOTES.md §"Anti-
  * thin-content gates" (gates 1–6).

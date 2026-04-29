@@ -35,7 +35,7 @@ const heroDate = hero.date
 <div class="lead-pack">
   <a href={hero.href} class="lead-pack__hero hero-card">
     {hero.image ? (
-      <img src={hero.image} alt={hero.imageAlt ?? hero.title} class="lead-pack__hero-img" loading="lazy" />
+      <img src={hero.image} alt={hero.imageAlt ?? hero.title} class="lead-pack__hero-img" width="1000" height="800" loading="lazy" />
     ) : (
       <div class={`illus ${hero.illusVariant ?? 'illus--toys'} lead-pack__hero-img`} aria-hidden="true"></div>
     )}

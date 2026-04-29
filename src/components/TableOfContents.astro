@@ -1,4 +1,9 @@
 ---
+/**
+ * Sticky-side table of contents built from MDX heading metadata. Includes
+ * a small inline script (`is:inline`) that highlights the active heading on
+ * scroll. Only renders when there are 3+ headings.
+ */
 export interface Heading {
   depth: number;
   slug: string;

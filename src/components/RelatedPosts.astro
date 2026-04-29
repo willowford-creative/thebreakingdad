@@ -1,4 +1,9 @@
 ---
+/**
+ * "You might also like" — renders cards for an explicit list of slugs,
+ * resolving across both posts and reviews collections. Intended for
+ * frontmatter-curated relations (vs the auto-suggested RelatedRail).
+ */
 import { getCollection } from 'astro:content';
 import PostCard from '~/components/PostCard.astro';
 

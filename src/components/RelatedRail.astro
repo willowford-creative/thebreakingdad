@@ -1,4 +1,9 @@
 ---
+/**
+ * Sidebar list of related items shown alongside the article body on wide
+ * screens. Different visual treatment from PostCard — denser, no dek, kept
+ * scannable. Hidden below 1100px (the layout's grid collapses to one column).
+ */
 export interface Item {
   title: string;
   href: string;
@@ -30,7 +35,7 @@ function illusFor(seed: string): string {
         <a href={item.href} class="related-rail__card">
           <div class="related-rail__img-wrap">
             {item.image ? (
-              <img src={item.image} alt={item.imageAlt ?? item.title} loading="lazy" />
+              <img src={item.image} alt={item.imageAlt ?? item.title} width="600" height="450" loading="lazy" />
             ) : (
               <div class={`related-rail__placeholder illus ${illusFor(item.href)}`} aria-hidden="true"></div>
             )}

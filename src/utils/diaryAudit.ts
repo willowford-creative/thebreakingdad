@@ -1,7 +1,8 @@
 /**
  * Diary audit log writer.
  *
- * Runs at build time (see astro.config.mjs integration hook). Writes:
+ * Runs at build time via `getDiaryAuditResults()` (memoised — first page that
+ * imports it triggers the audit, subsequent calls reuse the promise). Writes:
  * - docs/diary-audit-log.md — human-readable report, committed to repo so the
  *   editor can see at a glance which entries are noindexed and why.
  * - Loud console output during the build so warnings can't be missed in CI.

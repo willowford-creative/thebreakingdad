@@ -1,4 +1,9 @@
 ---
+/**
+ * Primary site header. Wordmark on the left, desktop nav inline, mobile nav
+ * collapsed into a CSS-only `<details>` overlay (with a small inline script
+ * mirroring `open` to `aria-expanded` for screen readers).
+ */
 const navLinks = [
   { label: 'Parenting', href: '/parenting/' },
   { label: 'Separated parents', href: '/separated-parents/' },
@@ -45,11 +50,11 @@ function isActive(href: string) {
         </svg>
       </button>
 
-      <details class="site-nav site-nav--mobile">
-        <summary class="burger" aria-label="Open menu">
+      <details class="site-nav site-nav--mobile" id="mobile-nav">
+        <summary class="burger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav-overlay">
           <span></span><span></span><span></span>
         </summary>
-        <nav class="site-nav__overlay" aria-label="Primary navigation">
+        <nav class="site-nav__overlay" id="mobile-nav-overlay" aria-label="Primary navigation">
           <div class="site-nav__overlay-inner">
             <span class="eyebrow">Sections</span>
             <ul class="site-nav__overlay-list">
@@ -72,6 +77,20 @@ function isActive(href: string) {
     </div>
   </div>
 </header>
+
+<script is:inline>
+  // Mirror <details open> state to aria-expanded on the burger so screen
+  // readers that don't infer state from <details> announce it correctly.
+  (() => {
+    const details = document.getElementById('mobile-nav');
+    const summary = details?.querySelector('summary');
+    if (!details || !summary) return;
+    details.addEventListener('toggle', () => {
+      summary.setAttribute('aria-expanded', details.open ? 'true' : 'false');
+      summary.setAttribute('aria-label', details.open ? 'Close menu' : 'Menu');
+    });
+  })();
+</script>
 
 <style>
   .site-header {

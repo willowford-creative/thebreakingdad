@@ -1,4 +1,9 @@
 ---
+/**
+ * Generic post/review card for listing grids. Image on top with optional
+ * category eyebrow and rating chip. Variants: default, compact (no dek),
+ * and text (no image — falls back to a deterministic illustration).
+ */
 export interface Props {
   title: string;
   description: string;
@@ -54,6 +59,8 @@ function illusFor(seed: string): string {
         src={image}
         alt={imageAlt ?? title}
         class="card__img"
+        width="800"
+        height="500"
         loading="lazy"
       />
     ) : (

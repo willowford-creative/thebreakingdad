@@ -1,4 +1,8 @@
 ---
+/**
+ * End-of-post "Keep reading" tile grid. Three square images with title
+ * overlays. Used by article layouts to surface related content.
+ */
 export interface Item {
   title: string;
   href: string;
@@ -27,7 +31,7 @@ function illusForIndex(i: number): string {
         {items.slice(0, 3).map((item, i) => (
           <a href={item.href} class="tile">
             {item.image ? (
-              <img src={item.image} alt={item.imageAlt ?? item.title} class="tile__img" loading="lazy" />
+              <img src={item.image} alt={item.imageAlt ?? item.title} class="tile__img" width="600" height="600" loading="lazy" />
             ) : (
               <div class={`tile__img illus ${illusForIndex(i)}`} aria-hidden="true"></div>
             )}

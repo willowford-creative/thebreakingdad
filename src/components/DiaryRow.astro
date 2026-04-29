@@ -31,7 +31,7 @@ const { href, date, title, dek, readMinutes, peek } = Astro.props;
   {peek && (
     <div class="diary-row__peek" aria-hidden="true">
       <div class="diary-peek-frame">
-        <img src={peek.src} alt={peek.alt} class="diary-peek-img" loading="lazy" />
+        <img src={peek.src} alt={peek.alt} class="diary-peek-img" width="400" height="400" loading="lazy" />
         <div class="diary-peek-cap">{peek.caption}</div>
       </div>
     </div>
