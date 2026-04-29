@@ -15,6 +15,10 @@ const baseSchema = z.object({
   updatedDate: z.coerce.date().optional(),
   heroImage: z.string().optional(),
   heroAlt: z.string().optional(),
+  // CSS object-position value for card crops (e.g. "right center", "70% 30%").
+  // Only affects card / shelf renderings where the 16:7 hero is cropped to a
+  // different aspect ratio. The full-width article hero is unaffected.
+  heroFocus: z.string().optional(),
   tags: z.array(z.string()).optional().default([]),
   draft: z.boolean().optional().default(false),
   // Optional Field Note issue number (long-reads, manually curated).

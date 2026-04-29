@@ -48,6 +48,7 @@ type FeatureItem = {
   href: string;
   image?: string;
   imageAlt?: string;
+  imageFocus?: string;
   kind: string;
   date: Date;
   byline?: string;
@@ -60,6 +61,7 @@ function asPost(p: typeof sortedPosts[number]): FeatureItem {
     href: `/separated-parents/${slugOf(p)}/`,
     image: p.data.heroImage,
     imageAlt: p.data.heroAlt,
+    imageFocus: p.data.heroFocus,
     kind: subhubLabels[p.data.subhub] ?? p.data.subhub,
     date: p.data.publishDate,
     byline: 'Dan Betts',
@@ -73,6 +75,7 @@ function asReview(r: typeof sortedReviews[number]): FeatureItem {
     href: `/reviews/${slugOf(r)}/`,
     image: r.data.heroImage,
     imageAlt: r.data.heroAlt,
+    imageFocus: r.data.heroFocus,
     kind: 'Reviews',
     date: r.data.publishDate,
     byline: 'Dan Betts',
@@ -86,6 +89,7 @@ function asParenting(p: typeof sortedParenting[number]): FeatureItem {
     href: `/parenting/${slugOf(p)}/`,
     image: p.data.heroImage,
     imageAlt: p.data.heroAlt,
+    imageFocus: p.data.heroFocus,
     kind: topicLabels[p.data.topic] ?? p.data.topic,
     date: p.data.publishDate,
     byline: 'Dan Betts',
@@ -167,7 +171,7 @@ const formatShort = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeri
         <div class="lead-row__grid">
           <a href={editorsPick.href} class="hero-card">
             {editorsPick.image ? (
-              <img src={editorsPick.image} alt={editorsPick.imageAlt ?? editorsPick.title} class="hero-card__img" loading="eager" />
+              <img src={editorsPick.image} alt={editorsPick.imageAlt ?? editorsPick.title} class="hero-card__img" loading="eager" style={editorsPick.imageFocus ? `object-position: ${editorsPick.imageFocus}` : undefined} />
             ) : (
               <div class="hero-card__img illus illus--review" aria-hidden="true"></div>
             )}
@@ -202,7 +206,7 @@ const formatShort = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeri
               <a href={row.href} class="article-row">
                 <div class="article-row__img-wrap">
                   {row.image ? (
-                    <img src={row.image} alt={row.imageAlt ?? row.title} class="article-row__img" loading="lazy" />
+                    <img src={row.image} alt={row.imageAlt ?? row.title} class="article-row__img" loading="lazy" style={row.imageFocus ? `object-position: ${row.imageFocus}` : undefined} />
                   ) : (
                     <div class={`img illus ${illusForIndex(i)}`} aria-hidden="true"></div>
                   )}
@@ -270,7 +274,7 @@ const formatShort = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeri
           {popular.map((item, i) => (
             <a href={item.href} class="tile">
               {item.image ? (
-                <img src={item.image} alt={item.imageAlt ?? item.title} class="tile__img" loading="lazy" />
+                <img src={item.image} alt={item.imageAlt ?? item.title} class="tile__img" loading="lazy" style={item.imageFocus ? `object-position: ${item.imageFocus}` : undefined} />
               ) : (
                 <div class={`tile__img illus ${illusForIndex(i + 3)}`} aria-hidden="true"></div>
               )}
@@ -296,7 +300,7 @@ const formatShort = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeri
             <a href={item.href} class="card">
               <div class="card__img-wrap">
                 {item.image ? (
-                  <img src={item.image} alt={item.imageAlt ?? item.title} class="card__img" loading="lazy" />
+                  <img src={item.image} alt={item.imageAlt ?? item.title} class="card__img" loading="lazy" style={item.imageFocus ? `object-position: ${item.imageFocus}` : undefined} />
                 ) : (
                   <div class={`img wide illus ${illusForIndex(i + 6)}`} aria-hidden="true"></div>
                 )}
@@ -325,7 +329,7 @@ const formatShort = (d: Date) => new Intl.DateTimeFormat('en-GB', { day: 'numeri
             <a href={item.href} class="card">
               <div class="card__img-wrap">
                 {item.image ? (
-                  <img src={item.image} alt={item.imageAlt ?? item.title} class="card__img" loading="lazy" />
+                  <img src={item.image} alt={item.imageAlt ?? item.title} class="card__img" loading="lazy" style={item.imageFocus ? `object-position: ${item.imageFocus}` : undefined} />
                 ) : (
                   <div class={`img wide illus ${illusForIndex(i + 9)}`} aria-hidden="true"></div>
                 )}
