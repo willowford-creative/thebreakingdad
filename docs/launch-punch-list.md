@@ -48,6 +48,7 @@ Current `@astrojs/cloudflare` 12.x emits `entrypointResolution: "explicit"` depr
 
 ## Deferred — post-launch
 
+- **More comprehensive consent / CMP.** Current banner is minimal: single Accept/Decline toggle, no granular categories (analytics vs marketing vs functional), no in-page "manage preferences" UI, no consent change without clearing site data. Once there's live traffic data, evaluate whether a fuller CMP (Cookiebot, Klaro, or hand-rolled with a footer link) is worth the JS weight. Logged 2026-05-06.
 - Newsletter wiring (Brevo, phase 2 per CLAUDE.md). Form is currently a stub with "Sign-up wired in phase 2" note.
 - Search bar (Pagefind, phase 2).
 - Tag archive pages (not in v1).
