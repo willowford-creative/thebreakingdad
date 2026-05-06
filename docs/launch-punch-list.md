@@ -28,13 +28,9 @@ Already shipped (live): `10k-instagram-followers`, `day-in-the-life`, `newbie-wi
 
 Built `/separated-parents/archive/`, `/reviews/archive/`, `/parenting/archive/` as year-grouped flat lists with CollectionPage + ItemList JSON-LD. Year chips on category pages now link to `${archiveHref}#${year}` instead of no-op `?year=` filter URLs (was creating duplicate-content URLs — bad for SEO). Diary archive untouched (has its own year-routes pattern at `/diary/years/{year}/`).
 
-### 3. Parenting drafts (2)
+### 3. ~~Parenting drafts (2)~~ ✅ Done 2026-05-06
 
-Two `draft: true` entries in `src/content/parenting/`. Identify and decide whether to lift or delete.
-
-```bash
-grep -l '^draft: true' src/content/parenting/*.mdx
-```
+Both lifted: `home-activities-for-kids` (2240w) and `raising-strong-daughters` (1329w post-trim). Discovery: 4 live articles linked to these — would have been broken inbound links at launch. Editorial fixes during lift: factual error (separation date 2019 → 2016), British spelling consistency, removed AI-padded "Fostering Independence" rewrite in voice, dropped unsupported "study" citation, stripped broken "10 Compliments" reference.
 
 ## Open — optional / non-blocking
 
