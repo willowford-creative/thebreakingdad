@@ -1,6 +1,8 @@
 ---
 import Nav from '~/components/Nav.astro';
 import Footer from '~/components/Footer.astro';
+import Analytics from '~/components/Analytics.astro';
+import ConsentBanner from '~/components/ConsentBanner.astro';
 import '~/styles/global.css';
 
 export interface Props {
@@ -122,6 +124,9 @@ const personSchema = {
 
     <!-- Additional head content from child layouts (Article/Review/BreadcrumbList schema etc.) -->
     <slot name="head" />
+
+    <!-- Analytics: GA4 (consent-gated) + Cloudflare Web Analytics -->
+    <Analytics />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -130,5 +135,6 @@ const personSchema = {
       <slot />
     </main>
     <Footer />
+    <ConsentBanner />
   </body>
 </html>

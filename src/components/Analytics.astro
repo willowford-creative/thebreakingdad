@@ -1,0 +1,60 @@
+---
+/**
+ * GA4 (with Consent Mode v2) + Cloudflare Web Analytics.
+ *
+ * GA4 loads on every page but starts in default-denied state — actual
+ * hits don't fire until the ConsentBanner flips analytics_storage to
+ * 'granted'. Until then, GA4 sends consent-aware modelled pings only.
+ *
+ * Cloudflare Web Analytics is cookieless and edge-collected, so it loads
+ * unconditionally — gives us a ground-truth traffic baseline regardless
+ * of consent state or ad-blockers.
+ *
+ * IDs are public-by-design (they ship to every visitor's browser
+ * anyway), so we hardcode rather than env-var.
+ */
+
+const GA_ID = 'G-3KEDKEVN1Y';
+// Cloudflare dashboard → Web Analytics → Add a site → copy the beacon token.
+// Leave empty to skip rendering the beacon (e.g. local dev, or until token is set).
+const CF_BEACON_TOKEN = '';
+---
+
+{GA_ID && (
+  <Fragment>
+    <script is:inline define:vars={{ GA_ID }}>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      window.gtag = gtag;
+
+      // Consent Mode v2 — default-deny everything.
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        analytics_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        wait_for_update: 500,
+      });
+
+      // Re-apply previously stored choice on subsequent visits.
+      try {
+        var stored = localStorage.getItem('tbd_consent');
+        if (stored === 'granted') {
+          gtag('consent', 'update', { analytics_storage: 'granted' });
+        }
+      } catch (e) {}
+
+      gtag('js', new Date());
+      gtag('config', GA_ID);
+    </script>
+    <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}></script>
+  </Fragment>
+)}
+
+{CF_BEACON_TOKEN && (
+  <script
+    defer
+    src="https://static.cloudflareinsights.com/beacon.min.js"
+    data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })}
+  ></script>
+)}

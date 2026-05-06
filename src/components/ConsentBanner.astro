@@ -1,0 +1,114 @@
+---
+/**
+ * Cookie consent banner. Shown once on first visit until the user picks
+ * Accept or Decline. Choice persists in localStorage as `tbd_consent`.
+ *
+ * On Accept: tells gtag to update analytics_storage to 'granted', so GA4
+ * starts firing real hits. On Decline: GA4 stays in default-denied state
+ * (Consent Mode v2 still sends modelled pings, no cookies set).
+ */
+---
+
+<aside id="consent-banner" class="consent-banner" hidden aria-label="Cookie consent">
+  <div class="consent-banner__inner">
+    <p class="consent-banner__text">
+      I use Google Analytics to understand which articles help most, so I can write
+      better ones. No ads, no cross-site tracking.
+      <a href="/privacy/">Privacy details</a>.
+    </p>
+    <div class="consent-banner__actions">
+      <button type="button" class="consent-banner__btn" data-consent="declined">Decline</button>
+      <button type="button" class="consent-banner__btn consent-banner__btn--primary" data-consent="granted">Accept</button>
+    </div>
+  </div>
+</aside>
+
+<script is:inline>
+  (function () {
+    var banner = document.getElementById('consent-banner');
+    if (!banner) return;
+
+    var stored;
+    try { stored = localStorage.getItem('tbd_consent'); } catch (e) {}
+    if (!stored) banner.hidden = false;
+
+    banner.addEventListener('click', function (e) {
+      var target = e.target.closest('[data-consent]');
+      if (!target) return;
+      var choice = target.getAttribute('data-consent');
+      try { localStorage.setItem('tbd_consent', choice); } catch (e) {}
+      if (choice === 'granted' && typeof window.gtag === 'function') {
+        window.gtag('consent', 'update', { analytics_storage: 'granted' });
+      }
+      banner.hidden = true;
+    });
+  })();
+</script>
+
+<style>
+  .consent-banner {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    max-width: 540px;
+    margin-inline: auto;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-rule);
+    border-radius: 12px;
+    box-shadow: 0 16px 36px -16px rgba(0, 0, 0, 0.22);
+    padding: 18px 20px;
+    z-index: 100;
+    font-family: var(--font-sans);
+  }
+
+  .consent-banner__text {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    margin: 0 0 14px;
+  }
+
+  .consent-banner__text a {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .consent-banner__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+
+  .consent-banner__btn {
+    border: 1px solid var(--color-rule);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: var(--color-ink);
+    transition: border-color .15s, background .15s, opacity .15s;
+  }
+  .consent-banner__btn:hover { border-color: var(--color-accent); }
+
+  .consent-banner__btn--primary {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+  }
+  .consent-banner__btn--primary:hover { opacity: 0.92; }
+
+  @media (max-width: 600px) {
+    .consent-banner {
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      padding: 16px;
+    }
+    .consent-banner__actions { gap: 8px; }
+    .consent-banner__btn { flex: 1; }
+  }
+</style>

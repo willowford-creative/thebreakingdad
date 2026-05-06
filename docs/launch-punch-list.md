@@ -6,6 +6,14 @@ Last reviewed: 2026-04-30.
 
 ## Open — pre-launch
 
+### 0. Add Cloudflare Web Analytics beacon token
+
+GA4 + consent banner are wired (commit pending 2026-05-06). Cloudflare Web Analytics is wired but currently inactive — the beacon `<script>` only renders when `CF_BEACON_TOKEN` in [src/components/Analytics.astro](../src/components/Analytics.astro) is non-empty.
+
+To activate: Cloudflare dashboard → Web Analytics → Add a site → copy the beacon token (32-char hex) → paste into the `CF_BEACON_TOKEN` constant.
+
+Without this, the site still has GA4 (the GSC verification path) — but no ground-truth ad-blocked traffic baseline.
+
 ### 1. Diary drafts to lift (11 entries)
 
 Each needs `lede` + `heroCaption` + at least one internal link + 250+ word body to clear the build gates in `src/utils/diaryGates.ts`. Remove `draft: true` once polished.

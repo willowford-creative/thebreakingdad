@@ -42,11 +42,21 @@ const lastUpdated = '23 April 2026';
         </p>
         <ul>
           <li>
-            <strong>Server logs and analytics.</strong> Like most websites, our hosting infrastructure
-            (Cloudflare) automatically records basic request data — IP addresses, browser type,
+            <strong>Server logs.</strong> Like most websites, our hosting infrastructure
+            (Cloudflare) automatically records basic request data: IP addresses, browser type,
             pages visited, and referrer URLs. Cloudflare's privacy policy governs this data.
-            We use aggregate analytics to understand which content is useful to readers.
-            We do not use cookies for analytics.
+          </li>
+          <li>
+            <strong>Cloudflare Web Analytics.</strong> Cookieless, edge-collected pageview data
+            (URL, referrer, country, device class). No personal data, no tracking across sites,
+            no consent banner needed. We use it for a ground-truth traffic baseline.
+          </li>
+          <li>
+            <strong>Google Analytics 4 (GA4).</strong> Once you accept the cookie banner, GA4
+            sets cookies and records anonymised event data so we can understand which articles
+            help most. If you decline (or ignore the banner), GA4 stays in default-deny mode and
+            doesn't set cookies or record identifiable data on you. You can change your choice
+            anytime: see "Managing your consent" below.
           </li>
           <li>
             <strong>Contact information.</strong> If you email us or contact us via Instagram,
@@ -63,23 +73,48 @@ const lastUpdated = '23 April 2026';
 
         <h2>Cookies</h2>
         <p>
-          This site does not set first-party cookies. Third-party services (Cloudflare, affiliate
-          networks) may set cookies. You can control cookies via your browser settings.
+          This site sets first-party cookies only when you accept the cookie banner. The cookies
+          come from Google Analytics 4 (typically <code>_ga</code> and <code>_ga_&lt;ID&gt;</code>)
+          and are used to understand aggregate site usage. We don't use them for advertising or
+          cross-site tracking.
+        </p>
+        <p>
+          If you decline the banner (or ignore it), no first-party cookies are set. Third-party
+          services (affiliate networks, embedded videos when present) may set their own cookies
+          when you interact with them.
+        </p>
+
+        <h2>Managing your consent</h2>
+        <p>
+          You can change your analytics consent at any time. The simplest way: clear this site's
+          site data (browser settings → Privacy → clear data for thebreakingdad.co.uk), then
+          reload the site — the consent banner will reappear and you can pick again.
+        </p>
+        <p>
+          You can also block analytics entirely using a privacy-focused browser extension or your
+          browser's built-in tracking protection. We respect that choice.
         </p>
 
         <h2>Third-party services</h2>
         <ul>
           <li>
-            <strong>Cloudflare</strong> — hosting and CDN. Processes request data as described above.
+            <strong>Cloudflare</strong>: hosting, CDN, and cookieless Web Analytics. Processes
+            request data and pageview metadata as described above.
             <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">Cloudflare privacy policy</a>.
           </li>
           <li>
-            <strong>Affiliate networks</strong> — when applicable. See our
+            <strong>Google Analytics 4 (Google LLC)</strong>: site usage analytics, only after
+            you accept the cookie banner. Google may transfer data to the US under their standard
+            contractual clauses.
+            <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google privacy policy</a>.
+          </li>
+          <li>
+            <strong>Affiliate networks</strong>: when applicable. See our
             <a href="/affiliate-disclosure/">affiliate disclosure</a> for details of which networks
             we work with.
           </li>
           <li>
-            <strong>Instagram / Meta</strong> — we link to our Instagram profile. If you visit
+            <strong>Instagram / Meta</strong>: we link to our Instagram profile. If you visit
             Instagram, Meta's privacy policy applies.
           </li>
         </ul>
