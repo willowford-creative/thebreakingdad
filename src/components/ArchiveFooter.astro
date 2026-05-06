@@ -63,7 +63,9 @@ const sortedYears = [...years].sort((a, b) => b.year - a.year);
     <ul class="year-pills" role="list">
       {sortedYears.map(({ year, count }) => {
         const isActive = year === activeYear;
-        const href = `${yearBaseHref}?year=${year}`;
+        // Link to the archive page's year anchor — gives crawlers a real
+        // destination instead of a no-op `?year=` filter on the category page.
+        const href = `${archiveHref}#${year}`;
         return (
           <li>
             <a

@@ -1,0 +1,289 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+
+const all = await getCollection('posts', ({ data }) => !data.draft);
+const sorted = all.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+const subhubLabel: Record<string, string> = {
+  'co-parenting': 'Co-parenting',
+  'blended-family': 'Blended family',
+  'money-and-benefits': 'Money & benefits',
+  'rights-and-law': 'Rights & law',
+  'starting-over': 'Starting over',
+};
+
+type Group = { year: number; entries: typeof sorted };
+const byYear = new Map<number, typeof sorted>();
+for (const entry of sorted) {
+  const year = entry.data.publishDate.getFullYear();
+  if (!byYear.has(year)) byYear.set(year, []);
+  byYear.get(year)!.push(entry);
+}
+const groups: Group[] = Array.from(byYear, ([year, entries]) => ({ year, entries })).sort(
+  (a, b) => b.year - a.year
+);
+const total = sorted.length;
+
+const trail = [
+  { label: 'Home', href: '/' },
+  { label: 'Separated parents', href: '/separated-parents/' },
+  { label: 'Archive', href: '/separated-parents/archive/' },
+];
+
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Separated parents archive',
+  description: `Every published article in the Separated parents section of The Breaking Dad — ${total} pieces in total.`,
+  url: 'https://thebreakingdad.co.uk/separated-parents/archive/',
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'The Breaking Dad',
+    url: 'https://thebreakingdad.co.uk',
+  },
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: total,
+    itemListElement: sorted.map((entry, i) => {
+      const slug = entry.id.replace(/\.(md|mdx)$/, '');
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://thebreakingdad.co.uk/separated-parents/${slug}/`,
+        name: entry.data.title,
+      };
+    }),
+  },
+};
+---
+
+<BaseLayout
+  title="Separated parents archive — every article"
+  description={`Every published article in the Separated parents section of The Breaking Dad — ${total} pieces in total, browsable by year.`}
+  ogType="website"
+>
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify(collectionSchema)}
+    slot="head"
+  />
+
+  <div class="container">
+    <div class="archive__crumb-row">
+      <Breadcrumbs trail={trail} />
+    </div>
+  </div>
+
+  <header class="archive__head container--narrow">
+    <span class="eyebrow eyebrow-accent">Archive</span>
+    <h1 class="archive__title">Every Separated parents article</h1>
+    <p class="archive__lede">
+      {total} {total === 1 ? 'piece' : 'pieces'} on co-parenting, blended family, money &amp;
+      benefits, rights &amp; law, and starting over. Newest first.
+    </p>
+    {groups.length > 1 && (
+      <nav class="archive__year-nav" aria-label="Jump to year">
+        {groups.map(({ year, entries }) => (
+          <a class="archive__year-pill" href={`#${year}`}>
+            <span class="archive__year-pill-year">{year}</span>
+            <span class="archive__year-pill-count">({entries.length})</span>
+          </a>
+        ))}
+      </nav>
+    )}
+  </header>
+
+  <section class="archive__body container--narrow" aria-label="All separated parents articles">
+    {groups.map(({ year, entries }) => (
+      <div class="archive__group" id={String(year)}>
+        <h2 class="archive__year-heading">
+          <span>{year}</span>
+          <span class="archive__year-count">{entries.length} {entries.length === 1 ? 'piece' : 'pieces'}</span>
+        </h2>
+        <ol class="archive__list" role="list">
+          {entries.map((entry) => {
+            const slug = entry.id.replace(/\.(md|mdx)$/, '');
+            const dateLabel = new Intl.DateTimeFormat('en-GB', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            }).format(entry.data.publishDate);
+            return (
+              <li class="archive__item">
+                <a class="archive__item-link" href={`/separated-parents/${slug}/`}>
+                  <div class="archive__item-meta">
+                    <time datetime={entry.data.publishDate.toISOString()}>{dateLabel}</time>
+                    {entry.data.subhub && (
+                      <span class="archive__item-tag">{subhubLabel[entry.data.subhub] ?? entry.data.subhub}</span>
+                    )}
+                  </div>
+                  <h3 class="archive__item-title">{entry.data.title}</h3>
+                  <p class="archive__item-desc">{entry.data.description}</p>
+                </a>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .archive__crumb-row {
+    padding-block: 14px;
+    border-bottom: 1px solid var(--color-rule-soft);
+  }
+
+  .archive__head {
+    padding-block: 48px 24px;
+    text-align: center;
+  }
+
+  .archive__title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(28px, 4.5vw, 44px);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+    color: var(--color-ink);
+    margin: 12px 0 12px;
+    text-wrap: balance;
+  }
+
+  .archive__lede {
+    font-family: var(--font-sans);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--color-ink-2);
+    max-width: 60ch;
+    margin: 0 auto 24px;
+    text-wrap: balance;
+  }
+
+  .archive__year-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .archive__year-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--color-rule);
+    border-radius: 999px;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--color-ink-2);
+    text-decoration: none;
+    background: var(--color-paper);
+    transition: border-color .15s, color .15s;
+  }
+  .archive__year-pill:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+  .archive__year-pill-year { font-weight: 600; }
+  .archive__year-pill-count { color: var(--color-ink-3); font-size: 12px; }
+
+  .archive__body { padding-block: 24px 64px; }
+
+  .archive__group { scroll-margin-top: 80px; }
+  .archive__group + .archive__group { margin-top: 48px; }
+
+  .archive__year-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: -0.018em;
+    color: var(--color-ink);
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-rule);
+  }
+
+  .archive__year-count {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  .archive__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .archive__item + .archive__item {
+    border-top: 1px solid var(--color-rule-soft);
+  }
+
+  .archive__item-link {
+    display: block;
+    padding: 18px 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .archive__item-link:hover .archive__item-title { color: var(--color-accent); }
+
+  .archive__item-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    color: var(--color-ink-3);
+    margin-bottom: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .archive__item-tag {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    color: var(--color-accent);
+    font-size: 11px;
+  }
+
+  .archive__item-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    color: var(--color-ink);
+    margin: 0 0 6px;
+    text-wrap: balance;
+    transition: color .15s;
+  }
+
+  .archive__item-desc {
+    font-family: var(--font-sans);
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--color-ink-2);
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .archive__head { padding-block: 32px 18px; }
+    .archive__year-heading { font-size: 22px; }
+    .archive__item-title { font-size: 17px; }
+    .archive__item-desc { font-size: 14px; }
+  }
+</style>
